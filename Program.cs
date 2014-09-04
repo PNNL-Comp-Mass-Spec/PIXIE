@@ -8,7 +8,7 @@ namespace IMSMzFinder
 {
 	class Program
 	{
-		private const string PROGRAM_DATE = "August 29, 2014";
+		private const string PROGRAM_DATE = "September 3, 2014";
 
 		private static string mDatasetAndMzFilePath;
 		private static string mInputFilePathSpec;
@@ -221,9 +221,9 @@ namespace IMSMzFinder
 				                  "reporting the intensity and drift time of the best match for each m/z (within a given target frame range). ");								  
 				Console.WriteLine();
 
-				Console.Write("Program syntax:" + Environment.NewLine + exeName);
-				Console.WriteLine(" DatasetAndMzFile.txt DatasetFileSpec [/PPMTol:MZTolerancePPM] " +
-								  " [/O:OutputFolderPath] [/R:ResultsFileName] [/S] [/L]");
+				Console.WriteLine("Program syntax:" + Environment.NewLine + exeName);
+				Console.WriteLine(" DatasetAndMzFile.txt DatasetFileSpec [/PPMTol:MZTolerancePPM] ");
+				Console.WriteLine(" [/O:OutputFolderPath] [/R:ResultsFileName] [/S] [/L]");
 			
 				Console.WriteLine();
 				Console.WriteLine("DatasetAndMzFile specifies a tab-delimited text file with columns:");

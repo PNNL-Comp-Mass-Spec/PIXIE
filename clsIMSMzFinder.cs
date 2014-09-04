@@ -15,7 +15,7 @@ namespace IMSMzFinder
 		/// </summary>
 		public IMSMzFinder()
 		{
-			mFileDate = "August 29, 2014";
+			mFileDate = "September 3, 2014";
 			InitializeLocalVariables();
 
 		}
@@ -309,7 +309,8 @@ namespace IMSMzFinder
 									   "MZ_Observed" + '\t' +
 				                       "FrameNum" + '\t' +
 				                       "DriftTime" + '\t' +
-									   "Abundance" + '\t' +									   
+									   "Abundance" + '\t' +
+									   "PercentMaxAbu" + '\t' +
 									   "Description");
 			}
 			catch (Exception ex)
@@ -385,6 +386,14 @@ namespace IMSMzFinder
 						}
 
 						string dataset = GetValue(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.Dataset);
+						var targetMZ = GetValueDouble(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.MZ);
+
+						if (Math.Abs(targetMZ) < double.Epsilon)
+						{
+							ShowMessage("Skipping invalid target m/z for " + dataLine);
+							continue;
+						}
+
 						List<clsMzSearchSpec> lstMZsForDataset;
 
 						if (!mTargetMZsByDataset.TryGetValue(dataset, out lstMZsForDataset))
@@ -393,9 +402,9 @@ namespace IMSMzFinder
 							mTargetMZsByDataset.Add(dataset, lstMZsForDataset);
 						}
 
-						var mzSearchSpec = new clsMzSearchSpec()
+						var mzSearchSpec = new clsMzSearchSpec
 						{
-							MZ = GetValueDouble(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.MZ),
+							MZ = targetMZ,
 							FrameNumCenter = GetValueInt(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.FrameNum),
 							FrameNumTolerance = GetValueInt(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.FrameNumTolerance),
 							Description = GetValue(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.Description)
@@ -418,7 +427,11 @@ namespace IMSMzFinder
 			return true;
 		}
 
-		private void MatchFeaturesToTargets(IEnumerable<clsMzSearchSpec> lstMzSearchInfo, List<clsIsotopicFeature> lstIsosFeatures, string datasetName)
+		private void MatchFeaturesToTargets(
+			IEnumerable<clsMzSearchSpec> lstMzSearchInfo, 
+			List<clsIsotopicFeature> lstIsosFeatures, 
+			string datasetName,
+			double maxAbundanceInDataset)
 		{
 			var mzTargetMatches = new Dictionary<clsMzSearchSpec, List<clsIsotopicFeature>>();
 
@@ -501,12 +514,17 @@ namespace IMSMzFinder
 					if (isosFeature.Abundance < abundanceThreshold)
 						break;
 
+					double percentMaxAbundance = 0;
+					if (maxAbundanceInDataset > 0)
+						percentMaxAbundance = (isosFeature.Abundance / maxAbundanceInDataset) * 100;
+
 					mResultsFile.WriteLine(datasetName + '\t' +
 									   mzTargetMatch.Key.MZ + '\t' +
 									   isosFeature.MZ + '\t' +
 									   isosFeature.FrameNum + '\t' +
 									   isosFeature.DriftTime.ToString("0.00") + '\t' +
 									   isosFeature.Abundance.ToString("0") + '\t' +
+									   percentMaxAbundance.ToString("0") + "%" + '\t' +
 									   mzTargetMatch.Key.Description
 									   );
 				}
@@ -690,6 +708,9 @@ namespace IMSMzFinder
 				// Keys are column name enums (as Int16 values); values are the column index
 				Dictionary<Int16, int> dctHeaderMap = null;
 
+				// Keep track of the highest abundance value seen
+				double maxAbundanceInDataset = 0;
+
 				var lstIsosFeatures = new List<clsIsotopicFeature>();
 
 				using (var srIsosFile = new StreamReader(new FileStream(fiIsosFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
@@ -716,7 +737,11 @@ namespace IMSMzFinder
 						{
 							FrameNum = GetValueInt(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.FrameNum),
 							MZ = GetValueDouble(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.MZ),
+							Abundance = GetValueDouble(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.Abundance)
 						};
+
+						if (isosFeature.Abundance > maxAbundanceInDataset)
+							maxAbundanceInDataset = isosFeature.Abundance;
 
 						// Check whether this feature is in lstMzSearchInfo
 						if (FeatureMatchesTargetMZs(lstMzSearchInfo, isosFeature))
@@ -724,8 +749,7 @@ namespace IMSMzFinder
 							// Keep this feature
 							// First parse the remaining values
 							isosFeature.IMSScanNum = GetValueInt(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.ImsScanNum);
-							isosFeature.Charge = GetValueInt(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.Charge);
-							isosFeature.Abundance = GetValueDouble(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.Abundance);
+							isosFeature.Charge = GetValueInt(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.Charge);							
 							isosFeature.Fit = GetValueDouble(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.Fit);
 							isosFeature.MonoisotopicMass = GetValueDouble(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.MonoisotopicMass);
 							isosFeature.SignalToNoise = GetValueDouble(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.SignalToNoise);
@@ -752,7 +776,7 @@ namespace IMSMzFinder
 
 				// Parse the cached Isos Features to find the best match (or matches) for each target m/z value
 				// Write the results to mResultsFile
-				MatchFeaturesToTargets(lstMzSearchInfo, lstIsosFeatures, datasetName);
+				MatchFeaturesToTargets(lstMzSearchInfo, lstIsosFeatures, datasetName, maxAbundanceInDataset);
 
 			}
 			catch (Exception ex)
@@ -792,6 +816,7 @@ namespace IMSMzFinder
 									   string.Empty + '\t' +	// FrameNum
 									   string.Empty + '\t' +	// Drift Time
 									   string.Empty + '\t' +    // Abundance
+									   string.Empty + '\t' +    // Percent of MaxAbundance
 									   mzTarget.Description
 									   );
 		}
