@@ -20,14 +20,6 @@ namespace IMSMzFinder
 
 		}
 
-		/// <summary>
-		///  Destructor
-		/// </summary>
-		~IMSMzFinder()
-		{
-			CloseResultsFile();
-		}
-
 		#region "Constants and enums"
 
 		public const float DEFAULT_MZ_TOLERANCE_PPM = 30;

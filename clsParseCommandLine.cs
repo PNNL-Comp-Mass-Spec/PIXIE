@@ -18,10 +18,8 @@ using ExtensionMethods;
 
 namespace FileProcessor
 {
-
 	public class clsParseCommandLine
 	{
-
 		public const char DEFAULT_SWITCH_CHAR = '/';
 
 		public const char ALTERNATE_SWITCH_CHAR = '-';

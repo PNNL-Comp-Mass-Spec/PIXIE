@@ -1,9 +1,16 @@
-﻿using System;
+﻿#define DEBUG
+#define RELEASE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FileProcessor;
 
+/**
+ * IMSMzFIner is a utility used to extract
+ * 
+ */
 namespace IMSMzFinder
 {
 	class Program
@@ -245,8 +252,10 @@ namespace IMSMzFinder
 				Console.WriteLine("Website: http://panomics.pnnl.gov/ or http://omics.pnl.gov or http://www.sysbio.org/resources/staff/");
 				Console.WriteLine();
 
-				// Delay for 750 msec in case the user double clicked this file from within Windows Explorer (or started the program via a shortcut)
-				System.Threading.Thread.Sleep(750);
+				// hault the process from exiting to give the user more time in case of user double clicking this 
+                // file from within Windows Explorer (or starting the program via a shortcut).
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
 
 			}
 			catch (Exception ex)
