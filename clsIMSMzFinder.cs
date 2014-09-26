@@ -53,7 +53,8 @@ namespace IMSMzFinder
 			MZ = 1,
 			FrameNum = 2,
 			FrameNumTolerance = 3,
-			Description = 4
+			Description = 4,
+            Ion = 5
 		}
 
 		#endregion
@@ -116,36 +117,26 @@ namespace IMSMzFinder
 			
 		}
 
-        private double ComputeMedianHighestAbuValues(List<clsIsotopicFeature> lstIsosFeatures)
+        private double ComputeMedian(List<double> lstData)
         {
-            // Filter lstIsosFeatures to find the top 5% of the data, by abundance
-            int dataCountToSelect = (int)(lstIsosFeatures.Count * 0.05);
-
-            if (dataCountToSelect < 1)
-                dataCountToSelect = 1;
-
-            var lstFilteredFeatures = (from item in lstIsosFeatures orderby item.Abundance descending select item).Take(dataCountToSelect).ToList();
 
             // Find the median value in lstFilteredFeatures
-            if (lstFilteredFeatures.Count == 0)
+            if (lstData.Count == 0)
                 return 0;
 
-            if (lstFilteredFeatures.Count == 1)
-                return lstFilteredFeatures.First().Abundance;
+            if (lstData.Count == 1)
+                return lstData.First();
 
-            int midPoint = (int)Math.Floor(lstFilteredFeatures.Count / 2.0);
+            var midPoint = (int)Math.Floor(lstData.Count / 2.0);
 
-            if (lstFilteredFeatures.Count % 2 == 0)
+            if (lstData.Count % 2 == 0)
             {
-                // Even number of data points
-                return (lstFilteredFeatures[midPoint-1].Abundance + lstFilteredFeatures[midPoint].Abundance) / 2.0;
-            }
-            else
-            {
-                // Odd number of data points
-                return lstFilteredFeatures[midPoint].Abundance;
+                // Even number of data points; return the average of midpoint and midpoint -1
+                return (lstData[midPoint - 1] + lstData[midPoint]) / 2.0;
             }
 
+            // Odd number of data points
+            return lstData[midPoint];
 
         }
 
@@ -350,7 +341,8 @@ namespace IMSMzFinder
 				                       "DriftTime" + '\t' +
 									   "Abundance" + '\t' +
 									   "PercentMaxAbu" + '\t' +
-									   "Description");
+									   "Description" + '\t' +
+                                       "Ion");
 			}
 			catch (Exception ex)
 			{
@@ -408,7 +400,7 @@ namespace IMSMzFinder
 
 					while (srTargetMZs.Peek() > -1)
 					{
-						// Required column names: DatasetName, Target_MZ, FrameNum, FrameTolerance, Description
+						// Required column names: DatasetName, Target_MZ, FrameNum, FrameTolerance, Description, Ion
 
 						var dataLine = srTargetMZs.ReadLine();
 						if (string.IsNullOrWhiteSpace(dataLine))
@@ -446,7 +438,8 @@ namespace IMSMzFinder
 							MZ = targetMZ,
 							FrameNumCenter = GetValueInt(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.FrameNum),
 							FrameNumTolerance = GetValueInt(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.FrameNumTolerance),
-							Description = GetValue(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.Description)
+							Description = GetValue(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.Description),
+                            Ion = GetValue(dataVals, dctHeaderMap, (Int16)eTargetMzColumns.Ion)
 						};
 
 						lstMZsForDataset.Add(mzSearchSpec);
@@ -470,11 +463,10 @@ namespace IMSMzFinder
 			IEnumerable<clsMzSearchSpec> lstMzSearchInfo, 
 			List<clsIsotopicFeature> lstIsosFeatures, 
 			string datasetName,
-			double maxAbundanceInDataset)
+			double maxAbundanceInDataset,
+            double abundanceThresholdBasedOnFullDataset)
 		{
-            // Find the median of the top 5% of the data in the dataset
-            var medianHighestAbundanceValues = ComputeMedianHighestAbuValues(lstIsosFeatures);
-            var abundanceThresholdBasedOnFullDataset = 0.05 * medianHighestAbundanceValues;
+           
 
 			var mzTargetMatches = new Dictionary<clsMzSearchSpec, List<clsIsotopicFeature>>();
 
@@ -573,7 +565,8 @@ namespace IMSMzFinder
 									   isosFeature.DriftTime.ToString("0.00") + '\t' +
 									   isosFeature.Abundance.ToString("0") + '\t' +
 									   percentMaxAbundance.ToString("0") + "%" + '\t' +
-									   mzTargetMatch.Key.Description
+                                       mzTargetMatch.Key.Description + '\t' +
+                                       mzTargetMatch.Key.Ion
 									   );
 				}
 				
@@ -626,7 +619,8 @@ namespace IMSMzFinder
 				{"MZ", eTargetMzColumns.MZ},
 				{"FrameNum", eTargetMzColumns.FrameNum},
 				{"FrameTolerance", eTargetMzColumns.FrameNumTolerance},
-				{"Description", eTargetMzColumns.Description}			
+				{"Description", eTargetMzColumns.Description},
+                {"Ion", eTargetMzColumns.Ion}
 			};
 
 			// Initialize the values in dctHeaderMap
@@ -748,10 +742,32 @@ namespace IMSMzFinder
 
 				if (lstMzSearchInfo.Count == 0)
 				{
-					// Nothing to do; treat this as not a success
+					// Nothing to do; show a warning, but return true
 					ShowWarning("Nothing to do: mzSearchInfo was empty for dataset " + datasetName);
-					return false;
+					return true;
 				}
+
+                // Prescan the file to determine the number of lines
+			    var dataCountTotal = 0;
+
+			    using (var srIsosFile = new StreamReader(new FileStream(fiIsosFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+			    {
+			        while (srIsosFile.Peek() > -1)
+			        {
+			            var lineIn = srIsosFile.ReadLine();
+			            if (string.IsNullOrWhiteSpace(lineIn))
+			                continue;
+
+			            dataCountTotal += 1;
+			        }
+			    }
+
+                // Cache the top 1% of the data, by intensity
+                var dataCountToCache = (int)(0.01 * dataCountTotal);
+
+			    var lstTopAbundancefeatures = new List<double>();
+                var topAbundanceListIsSorted = false;
+			    double minTopAbundance = double.MaxValue;
 
 				// Keys are column name enums (as Int16 values); values are the column index
 				Dictionary<Int16, int> dctHeaderMap = null;
@@ -788,10 +804,39 @@ namespace IMSMzFinder
 							Abundance = GetValueDouble(dataVals, dctHeaderMap, (Int16)eIsosFileColumns.Abundance)
 						};
 
-						if (isosFeature.Abundance > maxAbundanceInDataset)
-							maxAbundanceInDataset = isosFeature.Abundance;
+					    var currentFeatureAbundance = isosFeature.Abundance;
 
-						// Check whether this feature is in lstMzSearchInfo
+						if (currentFeatureAbundance > maxAbundanceInDataset)
+							maxAbundanceInDataset = currentFeatureAbundance;
+
+					    if (lstTopAbundancefeatures.Count < dataCountToCache)
+					    {
+					        lstTopAbundancefeatures.Add(currentFeatureAbundance);
+					    }
+					    else
+					    {
+					        if (!topAbundanceListIsSorted)
+					        {
+					            lstTopAbundancefeatures.Sort();
+                                topAbundanceListIsSorted = true;
+                                minTopAbundance = lstTopAbundancefeatures[0];
+					        }
+
+					        if (currentFeatureAbundance > minTopAbundance)
+					        {
+					            int targetIndex = lstTopAbundancefeatures.BinarySearch(currentFeatureAbundance);
+                                if (targetIndex < 0)
+                                    lstTopAbundancefeatures.Insert(-targetIndex-1, currentFeatureAbundance);
+                                else
+					                lstTopAbundancefeatures.Insert(targetIndex, currentFeatureAbundance);
+                                
+					            lstTopAbundancefeatures.RemoveAt(0);
+					            minTopAbundance = lstTopAbundancefeatures[0];
+					        }
+					    }
+
+
+					    // Check whether this feature is in lstMzSearchInfo
 						if (FeatureMatchesTargetMZs(lstMzSearchInfo, isosFeature))
 						{
 							// Keep this feature
@@ -822,9 +867,15 @@ namespace IMSMzFinder
 					return true;
 				}
 
+                // Find the median of the top 1% of the data in the dataset
+                var medianHighestAbundanceValues = ComputeMedian(lstTopAbundancefeatures);
+
+                // Define an abundance threshold of 75% times the median of the top 1% of the data
+                var abundanceThresholdBasedOnFullDataset = 0.25 * medianHighestAbundanceValues;
+
 				// Parse the cached Isos Features to find the best match (or matches) for each target m/z value
 				// Write the results to mResultsFile
-				MatchFeaturesToTargets(lstMzSearchInfo, lstIsosFeatures, datasetName, maxAbundanceInDataset);
+                MatchFeaturesToTargets(lstMzSearchInfo, lstIsosFeatures, datasetName, maxAbundanceInDataset, abundanceThresholdBasedOnFullDataset);
 
 			}
 			catch (Exception ex)
@@ -865,7 +916,8 @@ namespace IMSMzFinder
 									   string.Empty + '\t' +	// Drift Time
 									   string.Empty + '\t' +    // Abundance
 									   string.Empty + '\t' +    // Percent of MaxAbundance
-									   mzTarget.Description
+                                       mzTarget.Description + '\t' +
+                                       mzTarget.Ion
 									   );
 		}
 

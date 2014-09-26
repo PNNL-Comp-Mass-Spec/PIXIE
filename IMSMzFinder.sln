@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMSMzFinder", "IMSMzFinder.csproj", "{1DEF059F-5D8D-4DAC-AEE3-43561F789402}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImsInformed", "..\SlowerMethod\ImsInformed\ImsInformed.csproj", "{2AB9291A-A662-47DC-B1CC-95BD81F03A2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +15,6 @@ Global
 		{1DEF059F-5D8D-4DAC-AEE3-43561F789402}.Debug|x86.Build.0 = Debug|x86
 		{1DEF059F-5D8D-4DAC-AEE3-43561F789402}.Release|x86.ActiveCfg = Release|x86
 		{1DEF059F-5D8D-4DAC-AEE3-43561F789402}.Release|x86.Build.0 = Release|x86
-		{2AB9291A-A662-47DC-B1CC-95BD81F03A2A}.Debug|x86.ActiveCfg = Debug|x86
-		{2AB9291A-A662-47DC-B1CC-95BD81F03A2A}.Debug|x86.Build.0 = Debug|x86
-		{2AB9291A-A662-47DC-B1CC-95BD81F03A2A}.Release|x86.ActiveCfg = Release|x86
-		{2AB9291A-A662-47DC-B1CC-95BD81F03A2A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

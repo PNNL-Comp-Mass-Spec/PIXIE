@@ -26,5 +26,10 @@ namespace IMSMzFinder
 		/// Description of this species
 		/// </summary>
 		public string Description { get; set; }
+
+        /// <summary>
+        /// Ion type of the target m/z value
+        /// </summary>
+        public string Ion { get; set; }
 	}
 }
