@@ -1,5 +1,9 @@
 IMS Mz Finder Revision History
 
+Version 1.0.5382; September 26, 2014
+	- Now considering the median of the top 1% of the data when determining an abundance threshold for data to retain
+		- After determining the median of the top 1% of the data, that value is multiplied by 0.25 to determine the minimum abundance threshold
+
 Version 1.0.5354; August 29, 2014
 	- Initial release
 
