@@ -15,7 +15,7 @@ namespace IMSMzFinder
 {
 	class Program
 	{
-		private const string PROGRAM_DATE = "September 3, 2014";
+		private const string PROGRAM_DATE = "September 26, 2014";
 
 		private static string mDatasetAndMzFilePath;
 		private static string mInputFilePathSpec;
