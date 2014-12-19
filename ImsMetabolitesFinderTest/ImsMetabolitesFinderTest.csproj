@@ -60,6 +60,16 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImsMetabolitesFinderBatchProcessor\ImsMetabolitesFinderBatchProcessor.csproj">
+      <Project>{698909f3-6f6e-4de2-abf0-4d46b9a3f3f2}</Project>
+      <Name>ImsMetabolitesFinderBatchProcessor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImsMetabolitesFinder\ImsMetabolitesFinder.csproj">
+      <Project>{1def059f-5d8d-4dac-aee3-43561f789402}</Project>
+      <Name>ImsMetabolitesFinder</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

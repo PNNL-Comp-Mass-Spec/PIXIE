@@ -58,18 +58,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMSMzFinder.cs" />
-    <Compile Include="CLIOptions.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S /E /C  "$(SolutionDir)lib\UIMFLibrary" "$(TargetDir)"
-xcopy /Y /S /E /C  "$(SolutionDir)lib\ImsInfomred\PNNLOmicsElementData.xml" "$(TargetDir)"</PostBuildEvent>
+xcopy /Y /S /E /C  "$(SolutionDir)lib\ImsInfomred\PNNLOmicsElementData.xml" "$(TargetDir)"
+xcopy /Y /S /E  /C "$(TargetDir)*" "$(SolutionDir)lib\$(ProjectName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

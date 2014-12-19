@@ -18,7 +18,7 @@ namespace IMSMetabolitesFinder
 		{
 		    try
 		    {
-                var options = new CLIOptions();
+                var options = new Options();
                 if (CommandLine.Parser.Default.ParseArguments(args, options))
                 {
                     // Load parameters

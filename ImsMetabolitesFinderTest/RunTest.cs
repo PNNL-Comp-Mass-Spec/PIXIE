@@ -2,7 +2,8 @@
 namespace ImsMetabolitesFinderTest
 {
     using System;
-
+    using System.Collections.Generic;
+    using ImsMetabolitesFinderBatchProcessor;
     using NUnit.Framework;
 
     public class RunTest
@@ -46,6 +47,20 @@ namespace ImsMetabolitesFinderTest
         public static void TestBatchProcessor()
         {
         
+        }
+
+        [Test]  
+        public static void InferIonizationTest()
+        {
+            List<string> testCases = new List<string>();
+            testCases.Add("EXP-PLG_pos_28May14_Columbia_DI");
+            testCases.Add("EXP-TCY_neg_26Aug14_Columbia_DI");
+            testCases.Add("EXP-VIN_neg_25Aug14_Columbia_DI"); 
+            testCases.Add("EXP-DSS_pos_28May14_Columbia_DI"); 
+            testCases.Add("EXP-TET_neg2_28Aug14_Columbia_DI");
+            testCases.Add("There is nothing I guess");
+            testCases.Add("EXP-DSS_POS_28May14_Columbia_DI");
+            testCases.Add("EXP-DSS-28May14_Columbia_DI");
         }
     }
 }
