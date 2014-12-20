@@ -32,23 +32,37 @@ namespace ImsMetabolitesFinderBatchProcessor
                 int numberOfProcesses = options.NumberOfProcesses;
 
                 // Process the search spec file
-                SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath);
-
-                // Run the program in a single process.
-                List<Process> processes = new List<Process>();
-                if (numberOfProcesses == 1)
+                try 
                 {
-                    foreach (string command in processor.CommandList)
+                    SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath);
+                    // Run the program in a single process.
+                    List<Process> processes = new List<Process>();
+                    if (numberOfProcesses == 1)
                     {
-                        Process p = new Process();
-                        p.StartInfo.FileName = exe;
-                        p.StartInfo.Arguments = command;
-                        p.StartInfo.UseShellExecute = true;
-                        p.StartInfo.RedirectStandardOutput = true;
-                        //p.StartInfo.FileName = "YOURBATCHFILE.bat";
-                        p.Start();
+                        foreach (string command in processor.CommandList)
+                        {
+                            Console.WriteLine("Running " + exe + " " + command);
+                            Console.WriteLine(" ");
+                            Process p = new Process();
+                            p.StartInfo.FileName = exe;
+                            p.StartInfo.Arguments = command;
+                            p.StartInfo.UseShellExecute = true;
+                            // p.StartInfo.RedirectStandardOutput = true;
+                            // p.StartInfo.FileName = "YOURBATCHFILE.bat";
+                            p.Start();
+                            p.WaitForExit();
+                        }
+                    } 
+                }
+                catch (AggregateException e)
+                {
+                    Console.WriteLine(e.Message);
+                    foreach (Exception exception in e.InnerExceptions)
+                    {
+                        Console.WriteLine(exception.Message);
+                        Console.WriteLine("");
                     }
-                } 
+                }
             }
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();            

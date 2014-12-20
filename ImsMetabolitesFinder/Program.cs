@@ -72,7 +72,6 @@ namespace IMSMetabolitesFinder
                     if (Mz == 0)
                     {
                         ImsTarget sample = new ImsTarget(ID, method, formula);
-                        Console.WriteLine("BPS:");
                         Console.WriteLine("Target composition: " + sample.Composition);
                         Console.WriteLine("Monoisotopic Mass: " + sample.Mass);
                         target= new ImsTarget(ID, method, formula);
@@ -85,13 +84,11 @@ namespace IMSMetabolitesFinder
                     MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, options.OutputPath, searchParameters);
                     workflow.RunMoleculeInformedWorkFlow(target);
                 }
-                PauseProgram();
 		    }
 		    catch (Exception e)
 		    {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
-                PauseProgram();
 		    }
 			
             return 1;

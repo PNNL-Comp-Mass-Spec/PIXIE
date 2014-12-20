@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImsMetabolitesFinderBatchProcessor
 {
@@ -21,12 +19,15 @@ namespace ImsMetabolitesFinderBatchProcessor
             this.inputPath = inputPath;
 
             Console.WriteLine("Processing search spec file at" + searchSpecFilePath);
+            Console.WriteLine("");
 
             // Read the search spec
             if (!File.Exists(searchSpecFilePath))
             {
                 throw new FileNotFoundException();
             }
+
+            CommandList = new List<string>();
 
             var exceptions = new List<Exception>();
             using (var reader = new StreamReader(searchSpecFilePath))
@@ -38,7 +39,11 @@ namespace ImsMetabolitesFinderBatchProcessor
                 while ((line = reader.ReadLine()) != null)
                 {
                     lineNumber++;
-                    this.CommandList.Add(ProcessJob(line, lineNumber, exceptions, ref firstLine, ref ID));
+                    string command = ProcessJob(line, lineNumber, exceptions, ref firstLine, ref ID);
+                    if (command != null)
+                    {
+                        this.CommandList.Add(command);
+                    }
                 }
             }
             
@@ -63,7 +68,18 @@ namespace ImsMetabolitesFinderBatchProcessor
             {
                 throw new FileNotFoundException();
             }
-            return "";
+
+            string[] files = Directory.GetFiles(uimfLocation, datasetName + ".uimf", SearchOption.AllDirectories);
+            if (files.Count() > 1)
+            {
+                throw new DuplicateNameException("Multiple matches of the dataset " + datasetName + " exisit inside the directory " + uimfLocation + ". Please resolve the conclits.");
+            }
+
+            if (!files.Any())
+            {
+                throw new DuplicateNameException("Dataset " + datasetName + ".uimf was not found in the directory " + uimfLocation + ". Please refine resolve the file and try again.");
+            }
+            return files[0];
         }
 
         // process job and return the commandline, if not whitespace, set firstLine to false
@@ -85,9 +101,9 @@ namespace ImsMetabolitesFinderBatchProcessor
                     firstLine = false;
                     return null;
                 }
-                string[] parts = line.Split(null);
+                string[] parts = line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                     
-                if (parts.Count() < 3)
+                if (parts.Count() < 2)
                 {
                     throw new FormatException("Line \"" + line + "\" is not an valid ImsMetabolitesFinder batch processing Job");
                 }
@@ -97,11 +113,12 @@ namespace ImsMetabolitesFinderBatchProcessor
                 string UIMFFileDir = Path.GetDirectoryName(uimfPath);
 
                 string target = parts[1];
+
                 string ionization = "";
 
                 ionization = parts.Count() > 2 ? parts[2] : InferIonization(datasetName);
 
-                commandline += "-i" + uimfPath + " "; 
+                commandline += "-i " + uimfPath + " "; 
                 commandline += "-t " + target + " ";
                 commandline += "-m " + ionization + " ";
                 commandline += "-o " + UIMFFileDir + " ";
