@@ -3,7 +3,6 @@
 namespace ImsMetabolitesFinderBatchProcessor
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
 
     public class Program
@@ -34,25 +33,78 @@ namespace ImsMetabolitesFinderBatchProcessor
                 // Process the search spec file
                 try 
                 {
-                    SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath);
+                    SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.ShowWindow);
                     // Run the program in a single process.
-                    List<Process> processes = new List<Process>();
-                    if (numberOfProcesses == 1)
+                    int numberOfCommands = processor.TaskList.Count;
+                    int count = 1;
+                    int index = 0;
+                    HashSet<ImsInfomredProcess> runningTasks = new HashSet<ImsInfomredProcess>();
+
+                    while (count <= numberOfCommands)
                     {
-                        foreach (string command in processor.CommandList)
+                        if (runningTasks.Count < numberOfProcesses)
                         {
-                            Console.WriteLine("Running " + exe + " " + command);
+                            //Find next non-conflicting that is not done or running.
+                            while (processor.TaskList[index].Done || runningTasks.Contains(processor.TaskList[index]) || !processor.TaskList[index].AreResourcesFree(runningTasks) )
+                            {
+                                index = (index + 1 == numberOfCommands) ? 0 : index + 1;
+                            }
+
+                            runningTasks.Add(processor.TaskList[index]);
+                            processor.TaskList[index].Start();
+                            Console.WriteLine("Initiating Analysis Job {0} out of {1}", processor.TaskList[index].JobID, numberOfCommands);
+                            Console.WriteLine("Dataset Name: " + processor.TaskList[index].DataSetName);
+                            Console.WriteLine("Running " + processor.TaskList[index].StartInfo.FileName + " " + processor.TaskList[index].StartInfo.Arguments);
                             Console.WriteLine(" ");
-                            Process p = new Process();
-                            p.StartInfo.FileName = exe;
-                            p.StartInfo.Arguments = command;
-                            p.StartInfo.UseShellExecute = true;
-                            // p.StartInfo.RedirectStandardOutput = true;
-                            // p.StartInfo.FileName = "YOURBATCHFILE.bat";
-                            p.Start();
-                            p.WaitForExit();
+                            count++;
                         }
-                    } 
+
+                        else if (runningTasks.Count == numberOfProcesses)
+                        {
+                            // Wait until the at least one task is finsihed.
+                            bool found = false;
+                            while (!found)
+                            {
+                                foreach (var runningTask in runningTasks)
+                                {
+                                    if (runningTask.HasExited)
+                                    {
+                                        found = true;
+                                        runningTask.Done = true;
+                                        if (runningTask.ExitCode == 0)
+                                        {
+                                            Console.WriteLine("Analysis completed succeessfully for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName);
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Analysis failed for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName + ". Check the error file for details.");
+                                        }
+                                        
+                                        Console.WriteLine(" ");
+                                        runningTasks.Remove(runningTask);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Wait until runningTasks is empty
+                    foreach (var item in runningTasks)
+                    {
+                        item.WaitForExit();
+                        item.Done = true;
+                        if (item.ExitCode == 0)
+                        {
+                            Console.WriteLine("Analysis completed succeessfully for (ID =" + item.JobID + ") " + item.DataSetName);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Analysis failed for (ID =" + item.JobID + ") " + item.DataSetName + ". Check the error file for details.");
+                        }
+                        
+                        Console.WriteLine(" ");
+                    }
                 }
                 catch (AggregateException e)
                 {

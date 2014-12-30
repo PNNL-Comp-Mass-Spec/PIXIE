@@ -8,6 +8,9 @@
         [Option('s', "searchspec", Required = true, HelpText = "Search spec file")]
         public string SearchSpecFile { get; set; }
 
+        [Option('w', "window", DefaultValue = false, HelpText = "Show the console output for each ImsInformed workflow")]
+        public bool ShowWindow { get; set; }
+
         [Option('i', "input", Required = true, HelpText = "specify the directory containing the uimf files, could be recursive")]
         public string InputPath { get; set; }
 

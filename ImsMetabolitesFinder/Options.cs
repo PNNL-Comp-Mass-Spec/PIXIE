@@ -25,17 +25,11 @@
         [Option("isotopic", DefaultValue = false, HelpText = "Use isotopic feature instead of Mz only for feature selection.")]
         public bool IsotopicFeatureEnable { get; set; }
 
-        [Option('l', "log", DefaultValue = false, HelpText = "Enable Log File")]
-        public bool LogEnable { get; set; }
-
-        [Option('q', "qc", DefaultValue = false, HelpText = "Enable quality control")]
-        public bool QcEnable { get; set; }
+        [Option("pause", DefaultValue = false, HelpText = "Pause the program when result is generated.")]
+        public bool PalseWhenDone { get; set; }
 
         [Option("ID", DefaultValue = 0, HelpText = "An unique ID to keep track of search for batch processing")]
         public int ID{ get; set; }
-
-        [Option('v', "Verbose", DefaultValue = false, HelpText = "Detailed console output.")]
-        public bool Verbose { get; set; }
 
         [HelpOption]
         public string GetUsage()

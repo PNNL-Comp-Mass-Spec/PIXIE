@@ -1,0 +1,43 @@
+###############################################################
+# Search specification file for ImsMetabolites Batch Processor# 
+#                                                             #
+# Copyright PNNL 2014                                         #                                    
+###############################################################
+# ImsMetabolitesFinder Command-line Arguments
+-p 10 
+                                   
+
+# ImsMetabolitesFinder Job List
+# A whitespace separated list of search specs. Note that 
+# could also be left blank if ionization method can be inferred from
+# dataset name. For example, if the dataset name contains neg, then
+# the program can be sure the ionization method is M-H
+
+# <Dataset name>	               <MZ or empirical formula>   <Ionization>   
+EXP-BPS_pos2_13Sep14_Columbia_DI   C12H10O4S    M+Na 
+EXP-BPS_pos2_13Sep14_Columbia_DI   C12H10O4S    M+H 
+EXP-BPS_neg2_28Aug14_Columbia_DI   C12H10O4S    M-H 
+                                                
+EXP-24DB_pos_12Sep14_Columbia_DI   C10H10Cl2O3  M+Na
+EXP-24DB_pos_12Sep14_Columbia_DI   C10H10Cl2O3  M+H
+EXP-24DB_neg_26Aug14_Columbia_DI   C10H10Cl2O3  M-H
+                                                
+EXP-245T_pos_12Sep14_Columbia_DI   C8H5Cl3O3    M+Na
+EXP-245T_pos_12Sep14_Columbia_DI   C8H5Cl3O3    M+H
+EXP-245T_neg_25Aug14_Columbia_DI   C8H5Cl3O3    
+                                                
+EXP-AAP_pos_12Sep14_Columbia_DI   C10H11ClN4    M+Na
+EXP-AAP_pos_12Sep14_Columbia_DI   C10H11ClN4    M+H
+EXP-AAP_neg_26Aug14_Columbia_DI   C10H11ClN4    
+                                      
+EXP-ACE_pos2_13Sep14_Columbia_DI   C8H9NO2   M+Na
+EXP-ACE_pos2_13Sep14_Columbia_DI   C8H9NO2   M+H
+EXP-ACE_neg2_28Aug14_Columbia_DI   C8H9NO2   M-H
+                                             
+EXP-ACTC_pos_12Sep14_Columbia_DI   C2H2Cl4   M+Na
+EXP-ACTC_pos_12Sep14_Columbia_DI   C2H2Cl4   M+H
+EXP-ACTC_neg_25Aug14_Columbia_DI   C2H2Cl4   M-H
+                                  
+EXP-NIC_pos2_13Sep14_Columbia_DI   C10H14N2 M+Na
+EXP-NIC_neg2_28Aug14_Columbia_DI   C10H14N2 M-H
+EXP-NIC_pos2_13Sep14_Columbia_DI   C10H14N2 M+H

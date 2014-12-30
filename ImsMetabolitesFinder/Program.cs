@@ -5,6 +5,8 @@ using System;
 
 namespace IMSMetabolitesFinder
 {
+    using System.IO;
+
     using ImsInformed.Domain;
     using ImsInformed.Parameters;
     using ImsInformed.Util;
@@ -16,9 +18,18 @@ namespace IMSMetabolitesFinder
         [STAThread]
 		public static int Main(string[] args)
 		{
-		    try
-		    {
-                var options = new Options();
+            var options = new Options();
+            string uimfFile = options.InputPath; // get the UIMF file
+            string ionizationMethod = options.IonizationMethod.ToUpper(); 
+            string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
+            string resultPath = options.OutputPath + datasetName + "_" + ionizationMethod + "_Result.txt";
+            // Delete the result file if it already exists
+            if (File.Exists(resultPath))
+            {
+                File.Delete(resultPath);
+            }
+            try
+            {
                 if (CommandLine.Parser.Default.ParseArguments(args, options))
                 {
                     // Load parameters
@@ -32,15 +43,12 @@ namespace IMSMetabolitesFinder
                         formula = options.Target;
                     }
 
-                    int ID = options.ID;
-                    bool verbose = options.Verbose;
+                    bool pause = options.PalseWhenDone;
 
-                    // get the UIMF file
-                    string uimfFile = options.InputPath;
+                    int ID = options.ID;
                     
                     // get the ionization method.
                     IonizationMethod method;
-                    string ionizationMethod = options.IonizationMethod.ToUpper();
                     if (ionizationMethod == "M+H")
                     {
                         method = IonizationMethod.ProtonPlus;
@@ -72,8 +80,6 @@ namespace IMSMetabolitesFinder
                     if (Mz == 0)
                     {
                         ImsTarget sample = new ImsTarget(ID, method, formula);
-                        Console.WriteLine("Target composition: " + sample.Composition);
-                        Console.WriteLine("Monoisotopic Mass: " + sample.Mass);
                         target= new ImsTarget(ID, method, formula);
                     } 
                     else 
@@ -83,15 +89,24 @@ namespace IMSMetabolitesFinder
 
                     MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, options.OutputPath, searchParameters);
                     workflow.RunMoleculeInformedWorkFlow(target);
+                    
+                    if (pause)
+                    {
+                        PauseProgram();
+                    }
                 }
-		    }
-		    catch (Exception e)
-		    {
+                return 0;
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-		    }
-			
-            return 1;
+                using (StreamWriter errorFile = File.CreateText(resultPath))
+                {
+                    errorFile.Write(e.Message);
+                    errorFile.Write(e.StackTrace);
+                }
+                return 1;
+            }
 		}
 
         private static void PauseProgram() 

@@ -9,13 +9,14 @@ namespace ImsMetabolitesFinderBatchProcessor
 
     public class SearchSpecProcessor
     {
-        public List<string> CommandList { get; private set; }
+        public List<ImsInfomredProcess> TaskList { get; private set; }
         public string Arguments { get; private set; }
-        
         private string inputPath;
+        private bool showWindow;
 
-        public SearchSpecProcessor(string utilityPath, string searchSpecFilePath, string inputPath)
+        public SearchSpecProcessor(string utilityPath, string searchSpecFilePath, string inputPath, bool showWindow)
         {
+            this.showWindow = showWindow;
             this.inputPath = inputPath;
 
             Console.WriteLine("Processing search spec file at" + searchSpecFilePath);
@@ -27,7 +28,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                 throw new FileNotFoundException();
             }
 
-            CommandList = new List<string>();
+            TaskList = new List<ImsInfomredProcess>();
 
             var exceptions = new List<Exception>();
             using (var reader = new StreamReader(searchSpecFilePath))
@@ -39,10 +40,11 @@ namespace ImsMetabolitesFinderBatchProcessor
                 while ((line = reader.ReadLine()) != null)
                 {
                     lineNumber++;
-                    string command = ProcessJob(line, lineNumber, exceptions, ref firstLine, ref ID);
-                    if (command != null)
+                    ImsInfomredProcess process = ProcessJob(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID);
+                    if (process != null)
                     {
-                        this.CommandList.Add(command);
+                        
+                        this.TaskList.Add(process);
                     }
                 }
             }
@@ -83,7 +85,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         }
 
         // process job and return the commandline, if not whitespace, set firstLine to false
-        private string ProcessJob(string line, int lineNumber, List<Exception> exceptions , ref bool firstLine, ref int ID)
+        private ImsInfomredProcess ProcessJob(string utility, string line, int lineNumber, List<Exception> exceptions , ref bool firstLine, ref int ID)
         {
             string commandline = null;
             try
@@ -105,7 +107,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     
                 if (parts.Count() < 2)
                 {
-                    throw new FormatException("Line \"" + line + "\" is not an valid ImsMetabolitesFinder batch processing Job");
+                    exceptions.Add(new FormatException("Line " + lineNumber + " \"" + line + "\" is not an valid ImsMetabolitesFinder batch processing Job"));
                 }
                 // Find the UIMF files.
                 string datasetName = parts[0];
@@ -121,11 +123,14 @@ namespace ImsMetabolitesFinderBatchProcessor
                 commandline += "-i " + uimfPath + " "; 
                 commandline += "-t " + target + " ";
                 commandline += "-m " + ionization + " ";
-                commandline += "-o " + UIMFFileDir + " ";
+                commandline += "-o " + UIMFFileDir + "\\" + datasetName + "_ImsMetabolitesFinderResult" + "_" + ionization + " ";
                 commandline += "--ID " + ID + " ";
                 commandline += this.Arguments + " ";
                 ID++;
-                return commandline;
+
+                ImsInfomredProcess process = new ImsInfomredProcess(ID, datasetName, utility, commandline, this.showWindow);
+                process.FileResources.Add(uimfPath);
+                return process;
             }
             catch (Exception e)
             {
@@ -137,19 +142,16 @@ namespace ImsMetabolitesFinderBatchProcessor
         // Infer ionization method from data set name
         public static string InferIonization(string datasetName)
         {
-            if (datasetName.Contains("pos2"))
-            {
-                return "M+Na";
-            }
-            if (datasetName.Contains("pos"))
-            {
-                return "M+H";
-            }
+            // if (datasetName.Contains("pos"))
+            // {
+            //     return "M+H";
+            // }
+
             if (datasetName.Contains("neg"))
             {
                 return "M-H";
             }
-            throw new Exception(datasetName + ": No ionization method is given cannot infer the ionization method from the dataset name.");
+            throw new Exception(datasetName + ": No ionization method is given, and it is not possible to infer the ionization method from the dataset name " + datasetName + ".");
         }
     }
 }

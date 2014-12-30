@@ -43,6 +43,13 @@ namespace ImsMetabolitesFinderTest
             System.Diagnostics.Process.Start(exe_dir, cmd_line_opts);
         }
 
+       [Test]  
+        public static void TestImsMetabolitesFinder_Formula2() 
+        {
+            string cmd_line_opts = @"-i \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-NIC_pos2_13Sep14_Columbia_DI.uimf -t C10H14N2 -m M+H -o \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule/EXP-NIC_pos2_13Sep14_Columbia_DI_ImsMetabolitesFinderResult_M+H --ID 20 -p 10 -l -q";
+            System.Diagnostics.Process.Start(exe_dir, cmd_line_opts);
+        }
+
         [Test]  
         public static void TestBatchProcessor()
         {
