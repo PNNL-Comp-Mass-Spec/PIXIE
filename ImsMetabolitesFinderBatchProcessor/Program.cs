@@ -73,7 +73,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                         runningTask.Done = true;
                                         if (runningTask.ExitCode == 0)
                                         {
-                                            Console.WriteLine("Analysis completed succeessfully for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName);
+                                            Console.WriteLine("Analysis completed successfully for Dataset(ID =" + runningTask.JobID + ") " + runningTask.DataSetName);
                                         }
                                         else
                                         {

@@ -18,20 +18,47 @@ namespace IMSMetabolitesFinder
         [STAThread]
 		public static int Main(string[] args)
 		{
-            var options = new Options();
-            string uimfFile = options.InputPath; // get the UIMF file
-            string ionizationMethod = options.IonizationMethod.ToUpper(); 
-            string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
-            string resultPath = options.OutputPath + datasetName + "_" + ionizationMethod + "_Result.txt";
-            // Delete the result file if it already exists
-            if (File.Exists(resultPath))
-            {
-                File.Delete(resultPath);
-            }
             try
             {
+                var options = new Options();
                 if (CommandLine.Parser.Default.ParseArguments(args, options))
                 {
+                    string uimfFile = options.InputPath; // get the UIMF file
+                    string ionizationMethod = options.IonizationMethod.ToUpper(); 
+                    string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
+                    string resultName = datasetName + "_" + ionizationMethod + "_Result.txt";
+                    string resultPath = Path.Combine(options.OutputPath, resultName);
+                    string outputDirectory = options.OutputPath;
+
+                    if (outputDirectory == string.Empty)
+                    {
+                        outputDirectory = Directory.GetCurrentDirectory();
+                    } 
+                    
+                    if (!outputDirectory.EndsWith("\\"))
+                    {
+                        outputDirectory += "\\";
+                    }
+
+                    if (!Directory.Exists(outputDirectory))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(outputDirectory);
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Failed to create directory.");
+                            throw;
+                        }
+                    }
+
+                    // Delete the result file if it already exists
+                    if (File.Exists(resultPath))
+                    {
+                        File.Delete(resultPath);
+                    }
+
                     // Load parameters
                     double Mz = 0;
                     string formula = "";
@@ -87,23 +114,68 @@ namespace IMSMetabolitesFinder
                         target= new ImsTarget(ID, method, Mz);
                     }
 
-                    MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, options.OutputPath, searchParameters);
+                    MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory , resultName, searchParameters);
                     workflow.RunMoleculeInformedWorkFlow(target);
                     
                     if (pause)
                     {
                         PauseProgram();
                     }
+                    return 0;
                 }
-                return 0;
+                else
+                {
+                    return 2;
+                }
+                
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                using (StreamWriter errorFile = File.CreateText(resultPath))
+                var options = new Options();
+                if (CommandLine.Parser.Default.ParseArguments(args, options))
                 {
-                    errorFile.Write(e.Message);
-                    errorFile.Write(e.StackTrace);
+                    string uimfFile = options.InputPath; // get the UIMF file
+                    string ionizationMethod = options.IonizationMethod.ToUpper(); 
+                    string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
+                    string resultName = datasetName + "_" + ionizationMethod + "_Result.txt";
+                    string resultPath = Path.Combine(options.OutputPath, resultName);
+                    string outputDirectory = options.OutputPath;
+
+                    if (outputDirectory == string.Empty)
+                    {
+                        outputDirectory = Directory.GetCurrentDirectory();
+                    } 
+                    
+                    if (!outputDirectory.EndsWith("\\"))
+                    {
+                        outputDirectory += "\\";
+                    }
+
+                    if (!Directory.Exists(outputDirectory))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(outputDirectory);
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Failed to create directory.");
+                            throw;
+                        }
+                    }
+
+                    // Delete the result file if it already exists
+                    if (File.Exists(resultPath))
+                    {
+                        File.Delete(resultPath);
+                    }
+
+                    Console.WriteLine(e.Message);
+                    using (StreamWriter errorFile = File.CreateText(resultPath))
+                    {
+                        errorFile.Write(e.Message);
+                        errorFile.Write(e.StackTrace);
+                    }
                 }
                 return 1;
             }

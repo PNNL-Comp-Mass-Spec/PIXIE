@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImsMetabolitesFinder", "ImsMetabolitesFinder\ImsMetabolitesFinder.csproj", "{1DEF059F-5D8D-4DAC-AEE3-43561F789402}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImsMetabolitesFinderBatchProcessor", "ImsMetabolitesFinderBatchProcessor\ImsMetabolitesFinderBatchProcessor.csproj", "{698909F3-6F6E-4DE2-ABF0-4D46B9A3F3F2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1DEF059F-5D8D-4DAC-AEE3-43561F789402} = {1DEF059F-5D8D-4DAC-AEE3-43561F789402}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImsMetabolitesFinderTest", "ImsMetabolitesFinderTest\ImsMetabolitesFinderTest.csproj", "{A3E863FB-0BBB-4AEE-B38C-2DBB276AF24C}"
 EndProject
