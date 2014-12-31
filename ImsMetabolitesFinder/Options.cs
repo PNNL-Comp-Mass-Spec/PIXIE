@@ -41,7 +41,7 @@
                 AddDashesToOption = true
             };
             help.AddPreOptionsLine("");
-            help.AddPreOptionsLine("    This application searches for the precense of a");
+            help.AddPreOptionsLine("    This application searches for the presence of a");
             help.AddPreOptionsLine("    target molecule inside a UIMF file.  The target");
             help.AddPreOptionsLine("    mobility(K0) and cross sectional area(A) can be");
             help.AddPreOptionsLine("    computed with varying drift tube voltages");
