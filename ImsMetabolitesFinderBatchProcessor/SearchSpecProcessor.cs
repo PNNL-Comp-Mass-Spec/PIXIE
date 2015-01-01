@@ -40,6 +40,10 @@ namespace ImsMetabolitesFinderBatchProcessor
                 while ((line = reader.ReadLine()) != null)
                 {
                     lineNumber++;
+
+                    Console.WriteLine("Number of lines processed: {0}", lineNumber);
+                    Console.SetCursorPosition(0, Console.CursorTop - 1);
+                    
                     ImsInfomredProcess process = ProcessJob(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID);
                     if (process != null)
                     {
