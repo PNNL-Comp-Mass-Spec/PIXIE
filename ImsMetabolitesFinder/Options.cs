@@ -5,6 +5,8 @@
     using CommandLine;
     using CommandLine.Text;
 
+    using IMSMetabolitesFinder;
+
     public class Options
     {
         [Option('i', "input", Required = true, HelpText = "Input UIMF files to be read.")]
@@ -35,7 +37,7 @@
         public string GetUsage()
         {
             var help = new HelpText {
-                Heading = new HeadingInfo("ImsMetabolitesFinder", "1.0.0.0"),
+                Heading = new HeadingInfo("ImsMetabolitesFinder", typeof(Program).Assembly.GetName().Version.ToString()),
                 Copyright = new CopyrightInfo("PNNL", 2014),
                 AdditionalNewLineAfterOption = true,
                 AddDashesToOption = true

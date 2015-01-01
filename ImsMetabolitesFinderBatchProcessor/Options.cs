@@ -21,15 +21,15 @@
         public string GetUsage()
         {
             var help = new HelpText {
-                Heading = new HeadingInfo("ImsMetabolitesFinder Batch Processor", "1.0.0.0"),
+                Heading = new HeadingInfo("ImsMetabolitesFinder Batch Processor", typeof(Program).Assembly.GetName().Version.ToString()),
                 Copyright = new CopyrightInfo("PNNL", 2014),
                 AdditionalNewLineAfterOption = true,
                 AddDashesToOption = true
             };
             help.AddPreOptionsLine("");
             help.AddPreOptionsLine("    This application batche processes IMS target identification");
-            help.AddPreOptionsLine("    using ImsMetabolitesFinder. It reads in a file specifying");
-            help.AddPreOptionsLine("    the target list to be searched and their corresponding UIMF ");
+            help.AddPreOptionsLine("    using ImsMetabolitesFinder. It reads in a search spec file ");
+            help.AddPreOptionsLine("    specifying the Dataset names to be searched and their targets");
             help.AddPreOptionsLine("    files. ");
             help.AddPreOptionsLine("");
             
