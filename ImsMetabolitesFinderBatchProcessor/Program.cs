@@ -89,6 +89,8 @@ namespace ImsMetabolitesFinderBatchProcessor
                         }
                     }
 
+                    List<string> failedDatasets = new List<string>();
+
                     // Wait until runningTasks is empty
                     foreach (var item in runningTasks)
                     {
@@ -101,10 +103,29 @@ namespace ImsMetabolitesFinderBatchProcessor
                         else
                         {
                             Console.WriteLine("Analysis failed for (ID =" + item.JobID + ") " + item.DataSetName + ". Check the error file for details.");
+                            failedDatasets.Add(item.DataSetName);
                         }
                         
                         Console.WriteLine(" ");
                     }
+
+                    // Print analysis result to console
+                    Console.WriteLine();
+                    Console.WriteLine("Analysis report:");
+                    Console.WriteLine();
+                    Console.WriteLine(" {0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are,", count - failedDatasets.Count, count);
+                    Console.WriteLine();
+                    if (failedDatasets.Count > 0)
+                    {
+                        Console.WriteLine(" The analyses failed for the following {0} datasets: ", failedDatasets.Count);
+                        foreach (string dataset in failedDatasets)
+                        {
+                            Console.WriteLine(dataset);
+                        }
+                    }
+                    
+
+
                 }
                 catch (AggregateException e)
                 {
