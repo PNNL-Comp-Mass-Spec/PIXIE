@@ -4,6 +4,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading;
 
     public class Program
     {
@@ -65,6 +66,8 @@ namespace ImsMetabolitesFinderBatchProcessor
                             bool found = false;
                             while (!found)
                             {
+                                // Wait for half a second
+                                Thread.Sleep(500);
                                 foreach (var runningTask in runningTasks)
                                 {
                                     if (runningTask.HasExited)
@@ -123,9 +126,6 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Console.WriteLine(dataset);
                         }
                     }
-                    
-
-
                 }
                 catch (AggregateException e)
                 {
