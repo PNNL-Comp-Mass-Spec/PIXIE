@@ -39,13 +39,15 @@ namespace ImsMetabolitesFinderBatchProcessor
                     int numberOfCommands = processor.TaskList.Count;
                     int count = 1;
                     int index = 0;
-                    HashSet<ImsInfomredProcess> runningTasks = new HashSet<ImsInfomredProcess>();
+                    HashSet<ImsInformedProcess> runningTasks = new HashSet<ImsInformedProcess>();
 
-                    while (count <= numberOfCommands)
+                    List<ImsInformedProcess> failedAnalyses = new List<ImsInformedProcess>();
+
+                    while (count < numberOfCommands)
                     {
                         if (runningTasks.Count < numberOfProcesses)
                         {
-                            //Find next non-conflicting that is not done or running.
+                            //Find next non-conflicting task that is not done or running.
                             while (processor.TaskList[index].Done || runningTasks.Contains(processor.TaskList[index]) || !processor.TaskList[index].AreResourcesFree(runningTasks) )
                             {
                                 index = (index + 1 == numberOfCommands) ? 0 : index + 1;
@@ -53,7 +55,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                             runningTasks.Add(processor.TaskList[index]);
                             processor.TaskList[index].Start();
-                            Console.WriteLine("Initiating Analysis Job {0} out of {1}", processor.TaskList[index].JobID, numberOfCommands);
+                            Console.WriteLine("Initiating Analysis Job [ID = {0}] out of {1} jobs.", processor.TaskList[index].JobID, numberOfCommands);
                             Console.WriteLine("Dataset Name: " + processor.TaskList[index].DataSetName);
                             Console.WriteLine("Running " + processor.TaskList[index].StartInfo.FileName + " " + processor.TaskList[index].StartInfo.Arguments);
                             Console.WriteLine(" ");
@@ -81,6 +83,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                         else
                                         {
                                             Console.WriteLine("Analysis failed for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName + ". Check the error file for details.");
+                                            failedAnalyses.Add(runningTask);
                                         }
                                         
                                         Console.WriteLine(" ");
@@ -91,8 +94,6 @@ namespace ImsMetabolitesFinderBatchProcessor
                             }
                         }
                     }
-
-                    List<string> failedDatasets = new List<string>();
 
                     // Wait until runningTasks is empty
                     foreach (var item in runningTasks)
@@ -106,7 +107,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                         else
                         {
                             Console.WriteLine("Analysis failed for (ID =" + item.JobID + ") " + item.DataSetName + ". Check the error file for details.");
-                            failedDatasets.Add(item.DataSetName);
+                            failedAnalyses.Add(item);
                         }
                         
                         Console.WriteLine(" ");
@@ -116,14 +117,15 @@ namespace ImsMetabolitesFinderBatchProcessor
                     Console.WriteLine();
                     Console.WriteLine("Analysis report:");
                     Console.WriteLine();
-                    Console.WriteLine(" {0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are,", count - failedDatasets.Count, count);
+                    Console.WriteLine(" {0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are,", count - failedAnalyses.Count, count);
                     Console.WriteLine();
-                    if (failedDatasets.Count > 0)
+                    if (failedAnalyses.Count > 0)
                     {
-                        Console.WriteLine(" The analyses failed for the following {0} datasets: ", failedDatasets.Count);
-                        foreach (string dataset in failedDatasets)
+                        Console.WriteLine(" The following {0} analyses failed: ", failedAnalyses.Count);
+                        foreach (ImsInformedProcess dataset in failedAnalyses)
                         {
-                            Console.WriteLine(dataset);
+                            Console.WriteLine("{0} [ID = {1}]", dataset.DataSetName, dataset.JobID);
+                            
                         }
                     }
                 }

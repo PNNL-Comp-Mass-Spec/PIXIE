@@ -9,7 +9,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
     public class SearchSpecProcessor
     {
-        public List<ImsInfomredProcess> TaskList { get; private set; }
+        public List<ImsInformedProcess> TaskList { get; private set; }
         public string Arguments { get; private set; }
         private string inputPath;
         private bool showWindow;
@@ -28,7 +28,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                 throw new FileNotFoundException();
             }
 
-            TaskList = new List<ImsInfomredProcess>();
+            TaskList = new List<ImsInformedProcess>();
 
             var exceptions = new List<Exception>();
             using (var reader = new StreamReader(searchSpecFilePath))
@@ -44,7 +44,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     Console.WriteLine("Number of lines processed: {0}", lineNumber);
                     Console.SetCursorPosition(0, Console.CursorTop - 1);
                     
-                    ImsInfomredProcess process = ProcessJob(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID);
+                    ImsInformedProcess process = ProcessJob(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID);
                     if (process != null)
                     {
                         
@@ -83,13 +83,13 @@ namespace ImsMetabolitesFinderBatchProcessor
 
             if (!files.Any())
             {
-                throw new DuplicateNameException("Dataset " + datasetName + ".uimf was not found in the directory " + uimfLocation + ". Please refine resolve the file and try again.");
+                throw new DuplicateNameException("Dataset " + datasetName + ".uimf was not found in the directory " + uimfLocation + ". Please refine the search spec and try again.");
             }
             return files[0];
         }
 
         // process job and return the commandline, if not whitespace, set firstLine to false
-        private ImsInfomredProcess ProcessJob(string utility, string line, int lineNumber, List<Exception> exceptions , ref bool firstLine, ref int ID)
+        private ImsInformedProcess ProcessJob(string utility, string line, int lineNumber, List<Exception> exceptions , ref bool firstLine, ref int ID)
         {
             string commandline = null;
             try
@@ -130,10 +130,9 @@ namespace ImsMetabolitesFinderBatchProcessor
                 commandline += "-o " + UIMFFileDir + "\\" + datasetName + "_ImsMetabolitesFinderResult" + "_" + ionization + " ";
                 commandline += "--ID " + ID + " ";
                 commandline += this.Arguments + " ";
-                ID++;
-
-                ImsInfomredProcess process = new ImsInfomredProcess(ID, datasetName, utility, commandline, this.showWindow);
+                ImsInformedProcess process = new ImsInformedProcess(ID, datasetName, utility, commandline, this.showWindow);
                 process.FileResources.Add(uimfPath);
+                ID++;
                 return process;
             }
             catch (Exception e)

@@ -4,15 +4,14 @@
     using System.Diagnostics;
 
     [System.ComponentModel.DesignerCategory("Code")]
-    public class ImsInfomredProcess : Process
+    public class ImsInformedProcess : Process
     {
         public int JobID { get; private set; }
         public string DataSetName { get; set; }
         public bool Done { get; set; }
         public HashSet<string> FileResources { get; set; }
 
-
-        public ImsInfomredProcess(int ID, string name, string exe, string arguments, bool shell)
+        public ImsInformedProcess(int ID, string name, string exe, string arguments, bool shell)
         {
             this.JobID = ID;
             this.DataSetName = name;
@@ -24,7 +23,7 @@
             this.Done = false;
         }
 
-        public bool AreResourcesFree(IEnumerable<ImsInfomredProcess> tasks)
+        public bool AreResourcesFree(IEnumerable<ImsInformedProcess> tasks)
         {
             bool free = true;
             foreach (var task in tasks)
