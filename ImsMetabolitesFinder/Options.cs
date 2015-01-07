@@ -52,7 +52,7 @@
             help.AddPreOptionsLine("    Usage:");
             help.AddPreOptionsLine("        Example 1: To search for Mz = 255.4 in UIMF file Example.uimf");
             help.AddPreOptionsLine("");
-            help.AddPreOptionsLine("               ImsMetabolitesFinder.exe -i Example.uimf, -m M+H, -t 255.4");
+            help.AddPreOptionsLine("               ImsMetabolitesFinder.exe -i Example.uimf -m M+H -t 255.4");
             help.AddPreOptionsLine("");
                         help.AddPreOptionsLine("    ");
 

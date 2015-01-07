@@ -35,7 +35,7 @@
             
             help.AddPreOptionsLine("    Usage:");
             help.AddPreOptionsLine("      Example: To use <SEARCH_FILE> on UIMF files in directory <UIMF_DIR>");
-            help.AddPreOptionsLine("        ImsMetabolitesFinderBatchProcessor.exe -i <UIMF_DIR>, -s <SEARCH_FILE>");
+            help.AddPreOptionsLine("        ImsMetabolitesFinderBatchProcessor.exe -i <UIMF_DIR> -s <SEARCH_FILE>");
             help.AddPreOptionsLine("");
 
             help.AddDashesToOption = true;
