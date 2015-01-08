@@ -4,6 +4,8 @@ namespace ImsMetabolitesFinderTest
     using System;
     using System.Collections.Generic;
 
+    using ImsMetabolitesFinder.Preprocess;
+
     using NUnit.Framework;
 
     public class RunTest
@@ -51,9 +53,16 @@ namespace ImsMetabolitesFinderTest
         }
 
         [Test]  
-        public static void TestBatchProcessor()
+        public static void TestPreprocessing()
         {
-        
+            BincCentricIndexing.IndexUimfFile(@"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-NIC_pos2_13Sep14_Columbia_DI.uimf");
+        }
+
+        [Test]
+        public static void TestMedac2UIMFConvert()
+        {
+            const string filePath = @"\\proto-2\UnitTest_Files\Midac\EXP-PRO_pos2_9Oct14_Columbia_DI\EXP-PRO_pos2_9Oct14_Columbia_DI.d";
+            Midac2UIMFConvert.Convert(filePath, "");
         }
 
         [Test]  

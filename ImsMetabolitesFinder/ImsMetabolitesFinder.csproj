@@ -39,6 +39,16 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BaseCommon">
+      <HintPath>..\lib\Midac\BaseCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="BaseDataAccess, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Midac\BaseDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="BaseTof">
+      <HintPath>..\lib\Midac\BaseTof.dll</HintPath>
+    </Reference>
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
@@ -48,6 +58,12 @@
     <Reference Include="InformedProteomics.Backend">
       <HintPath>..\lib\ImsInfomred\InformedProteomics.Backend.dll</HintPath>
     </Reference>
+    <Reference Include="MassSpecDataReader">
+      <HintPath>..\lib\Midac\MassSpecDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="MIDAC-PNNL">
+      <HintPath>..\lib\Midac\MIDAC-PNNL.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,10 +71,16 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIMFLibrary, Version=3.0.5452.22853, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\UimfLibrary\UIMFLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMSMzFinder.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="Preprocess\BincCentricIndexing.cs" />
+    <Compile Include="Preprocess\Midac2UIMFConvert.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

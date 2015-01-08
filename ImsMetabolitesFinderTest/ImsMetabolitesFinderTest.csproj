@@ -36,6 +36,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BaseCommon">
+      <HintPath>..\lib\Midac\BaseCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="BaseDataAccess">
+      <HintPath>..\lib\Midac\BaseDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="BaseTof, Version=1.0.5141.27367, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Midac\BaseTof.dll</HintPath>
+    </Reference>
+    <Reference Include="MassSpecDataReader">
+      <HintPath>..\lib\Midac\MassSpecDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="MIDAC-PNNL, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Midac\MIDAC-PNNL.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>

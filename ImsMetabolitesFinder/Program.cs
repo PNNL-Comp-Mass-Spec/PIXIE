@@ -12,6 +12,7 @@ namespace IMSMetabolitesFinder
     using ImsInformed.Util;
 
     using ImsMetabolitesFinder;
+    using ImsMetabolitesFinder.Preprocess;
 
     public class Program
 	{
@@ -114,6 +115,11 @@ namespace IMSMetabolitesFinder
                         target= new ImsTarget(ID, method, Mz);
                     }
 
+                    // Preprocessing
+                    Console.WriteLine("Start Preprocessing:");
+                    BincCentricIndexing.IndexUimfFile(uimfFile);
+
+                    // Run algorithms in IMSInformed
                     MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory , resultName, searchParameters);
                     workflow.RunMoleculeInformedWorkFlow(target);
                     

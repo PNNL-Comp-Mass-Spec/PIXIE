@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Threading.Tasks;
 
     public class ResultAggregator
     {
@@ -17,15 +16,15 @@
         // process result files collected and generate a final report.
         public void ProcessResultFiles(string analysisDirectory)
         {
-            using (StreamWriter aggregatedResultFile = File.CreateText("analysis_summary_" + DateTime.Now + ".txt"))
+            string summaryFileDir = Path.Combine(analysisDirectory, "analysis_summary_" + DateTime.Now + ".txt");
+            using (StreamWriter aggregatedResultFile = File.CreateText(summaryFileDir))
             {
                 foreach (var task in this.Tasks)
                 {
-                    
+                    // Dispose the task as it is no longer used.
+                    task.Dispose();
                 }
             }
-
-            
         }
     }
 }
