@@ -3,6 +3,13 @@ namespace ImsMetabolitesFinderTest
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Formatters.Binary;
+
+    using ImsInformed.Domain;
+    using ImsInformed.Parameters;
+    using ImsInformed.Util;
 
     using ImsMetabolitesFinder.Preprocess;
 
@@ -77,6 +84,67 @@ namespace ImsMetabolitesFinderTest
             testCases.Add("There is nothing I guess");
             testCases.Add("EXP-DSS_POS_28May14_Columbia_DI");
             testCases.Add("EXP-DSS-28May14_Columbia_DI");
+        }
+
+                /// <summary>
+        /// The test single molecule with formula.
+        /// </summary>
+        [Test][STAThread]
+        public void TestSingleMoleculeWithFormula()
+        {
+            // Nicotine
+            string formula = "C10H14N2";
+            ImsTarget sample = new ImsTarget(1, IonizationMethod.Proton2Plus, formula);
+            Console.WriteLine("Nicotine:");
+            Console.WriteLine("Monoisotopic Mass: " + sample.Mass);
+            string fileLocation = @"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-NIC_pos2_13Sep14_Columbia_DI.uimf";
+
+            MoleculeWorkflowParameters parameters = new MoleculeWorkflowParameters 
+            {
+                IsotopicFitScoreMax = 0.15,
+                MassToleranceInPpm = 10,
+                NumPointForSmoothing = 9
+            };
+
+            MoleculeInformedWorkflow informedWorkflow = new MoleculeInformedWorkflow(fileLocation, "output", "result.txt", parameters);
+            informedWorkflow.RunMoleculeInformedWorkFlow(sample);
+        }
+
+        [Test]  
+        public static void SerializerDeserializerTest()
+        {
+            // create fake result struct
+            MoleculeInformedWorkflowResult result;
+            result.AnalysisStatus = AnalysisStatus.ChargeStateCorrelation;
+            result.CrossSectionalArea = 22;
+            result.DatasetName = "Nothing";
+            result.IonizationMethod = IonizationMethod.ProtonPlus;
+            result.Mobility = 1;
+            result.RSquared = 2;
+            result.TargetDescriptor = "H2O";
+
+            // Serialize fake result struct
+            IFormatter formatter = new BinaryFormatter();
+            using (Stream stream = new FileStream("serialized_result.bin", FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                formatter.Serialize(stream, result);
+            }
+
+            // deserialize fake result struct
+            MoleculeInformedWorkflowResult result2;
+            using (Stream stream = new FileStream("serialized_result.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                result2 = (MoleculeInformedWorkflowResult) formatter.Deserialize(stream);
+            }
+
+            // Compare it
+            Assert.AreEqual(result.AnalysisStatus, result2.AnalysisStatus);
+            Assert.AreEqual(result.CrossSectionalArea, result2.CrossSectionalArea);
+            Assert.AreEqual(result.DatasetName, result2.DatasetName);
+            Assert.AreEqual(result.IonizationMethod, result2.IonizationMethod);
+            Assert.AreEqual(result.Mobility, result2.Mobility);
+            Assert.AreEqual(result.RSquared, result2.RSquared);
+            Assert.AreEqual(result.TargetDescriptor, result2.TargetDescriptor);
         }
     }
 }

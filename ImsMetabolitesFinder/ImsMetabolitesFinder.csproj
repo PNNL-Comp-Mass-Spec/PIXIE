@@ -52,7 +52,8 @@
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="ImsInformed">
+    <Reference Include="ImsInformed, Version=1.0.5486.21788, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ImsInfomred\ImsInformed.dll</HintPath>
     </Reference>
     <Reference Include="InformedProteomics.Backend">
@@ -73,7 +74,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UIMFLibrary, Version=3.0.5452.22853, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\UimfLibrary\UIMFLibrary.dll</HintPath>
+      <HintPath>..\lib\ImsInfomred\UIMFLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

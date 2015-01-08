@@ -46,6 +46,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Midac\BaseTof.dll</HintPath>
     </Reference>
+    <Reference Include="ImsInformed, Version=1.0.5486.20186, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\ImsInfomred\ImsInformed.dll</HintPath>
+    </Reference>
+    <Reference Include="InformedProteomics.Backend, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\ImsInfomred\InformedProteomics.Backend.dll</HintPath>
+    </Reference>
     <Reference Include="MassSpecDataReader">
       <HintPath>..\lib\Midac\MassSpecDataReader.dll</HintPath>
     </Reference>

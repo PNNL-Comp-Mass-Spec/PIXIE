@@ -1,11 +1,12 @@
 ﻿#define DEBUG
-#define RELEASE
 
 using System;
 
 namespace IMSMetabolitesFinder
 {
     using System.IO;
+    using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Formatters.Binary;
 
     using ImsInformed.Domain;
     using ImsInformed.Parameters;
@@ -121,7 +122,15 @@ namespace IMSMetabolitesFinder
 
                     // Run algorithms in IMSInformed
                     MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory , resultName, searchParameters);
-                    workflow.RunMoleculeInformedWorkFlow(target);
+                    MoleculeInformedWorkflowResult result = workflow.RunMoleculeInformedWorkFlow(target);
+
+                    // Serialize the result
+                     IFormatter formatter = new BinaryFormatter();
+                     string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
+                     using (Stream stream = new FileStream(binPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                     {
+                         formatter.Serialize(stream, result);
+                     }
                     
                     if (pause)
                     {
@@ -182,6 +191,12 @@ namespace IMSMetabolitesFinder
                         errorFile.Write(e.Message);
                         errorFile.Write(e.StackTrace);
                     }
+
+                    if (options.PalseWhenDone)
+                    {
+                        PauseProgram();
+                    }
+                    return 0;
                 }
                 return 1;
             }
