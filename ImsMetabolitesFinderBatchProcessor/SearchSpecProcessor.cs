@@ -124,13 +124,18 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                 ionization = parts.Count() > 2 ? parts[2] : InferIonization(datasetName);
 
+                string outputDirectory = UIMFFileDir + "\\" + datasetName + "_ImsMetabolitesFinderResult" + "_" + ionization;
+
                 commandline += "-i " + uimfPath + " "; 
                 commandline += "-t " + target + " ";
                 commandline += "-m " + ionization + " ";
-                commandline += "-o " + UIMFFileDir + "\\" + datasetName + "_ImsMetabolitesFinderResult" + "_" + ionization + " ";
+                commandline += "-o " + outputDirectory + " ";
                 commandline += "--ID " + ID + " ";
                 commandline += this.Arguments + " ";
-                ImsInformedProcess process = new ImsInformedProcess(ID, datasetName, utility, commandline, this.showWindow);
+
+                string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionization + "_Result.bin");
+
+                ImsInformedProcess process = new ImsInformedProcess(ID, datasetName, utility, commandline, this.showWindow, binPath);
                 process.FileResources.Add(uimfPath);
                 ID++;
                 return process;

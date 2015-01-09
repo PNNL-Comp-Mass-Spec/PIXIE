@@ -3,8 +3,11 @@
 namespace ImsMetabolitesFinderBatchProcessor
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Threading;
+
+    using ImsInformed.Domain;
 
     public class Program
     {
@@ -113,19 +116,71 @@ namespace ImsMetabolitesFinderBatchProcessor
                         Console.WriteLine(" ");
                     }
 
-                    // Print analysis result to console
-                    Console.WriteLine();
-                    Console.WriteLine("Analysis report:");
-                    Console.WriteLine();
-                    Console.WriteLine(" {0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are,", count - failedAnalyses.Count, count);
-                    Console.WriteLine();
-                    if (failedAnalyses.Count > 0)
+                    // Collect result from result files
+                    Console.WriteLine("Aggregating Analyses Results");
+
+                    ResultAggregator resultAggregator = new ResultAggregator(processor.TaskList);
+                    try
                     {
-                        Console.WriteLine(" The following {0} analyses failed: ", failedAnalyses.Count);
-                        foreach (ImsInformedProcess dataset in failedAnalyses)
+                        resultAggregator.ProcessResultFiles(options.InputPath);
+                    }
+                    catch (Exception e)
+                    {
+                        // Message
+                        Console.WriteLine(e.Message);
+                    }
+                    
+                    Console.WriteLine("Done");
+
+                    // Print analysis result to console and summary file.
+                    string summaryFilePath = Path.Combine(options.InputPath, "analysis_summary.txt");
+                    
+                    // Setup result file.
+                    Trace.Listeners.Clear();
+                    ConsoleTraceListener consoleTraceListener = new ConsoleTraceListener(false);
+                    consoleTraceListener.TraceOutputOptions = TraceOptions.DateTime;
+
+                    using (FileStream resultFile = new FileStream(summaryFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        TextWriterTraceListener resultFileTraceListener = new TextWriterTraceListener(resultFile)
                         {
-                            Console.WriteLine("{0} [ID = {1}]", dataset.DataSetName, dataset.JobID);
-                            
+                            Name = "Result",
+                            TraceOutputOptions = TraceOptions.ThreadId | TraceOptions.DateTime
+                        };
+
+                        Trace.Listeners.Add(consoleTraceListener);
+                        Trace.Listeners.Add(resultFileTraceListener);
+                        Trace.AutoFlush = true;
+
+                        
+                        Trace.WriteLine("Results summary:");
+                        Trace.WriteLine("<Dataset Name> <M+H> <M-H> <M+Na>");
+                        Trace.WriteLine("");
+
+                        // Write the summary file.
+                        foreach (var item in resultAggregator.ResultCollection)
+                        {
+                            AnalysisStatus hPlus = (item.Value.ContainsKey((IonizationMethod.ProtonPlus))) ? item.Value[IonizationMethod.ProtonPlus].AnalysisStatus : AnalysisStatus.Nah;
+                            AnalysisStatus hMinus = (item.Value.ContainsKey((IonizationMethod.ProtonMinus))) ? item.Value[IonizationMethod.ProtonMinus].AnalysisStatus : AnalysisStatus.Nah;
+                            AnalysisStatus naPlus = (item.Value.ContainsKey((IonizationMethod.SodiumPlus))) ? item.Value[IonizationMethod.SodiumPlus].AnalysisStatus : AnalysisStatus.Nah;
+
+                            Trace.WriteLine(String.Format("{0}, {1}, {2}, {3}", item.Key, hPlus, hMinus, naPlus));
+                        }
+
+                        Trace.WriteLine("");
+
+                        Console.WriteLine();
+                        Trace.WriteLine("Analysis summary:");
+                        Trace.WriteLine("");
+                        Trace.WriteLine(String.Format(" {0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are.", count - failedAnalyses.Count,     count));
+                        Trace.WriteLine("");
+                        if (failedAnalyses.Count > 0)
+                        {
+                            Trace.WriteLine(String.Format(" The following {0} analyses failed: ", failedAnalyses.Count));
+                            foreach (ImsInformedProcess dataset in failedAnalyses)
+                            {
+                                Trace.WriteLine(String.Format("{0} [ID = {1}]", dataset.DataSetName, dataset.JobID));
+                            }
                         }
                     }
                 }

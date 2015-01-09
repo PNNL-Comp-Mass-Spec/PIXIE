@@ -2,6 +2,11 @@
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
+    using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Formatters.Binary;
+
+    using ImsInformed.Domain;
 
     [System.ComponentModel.DesignerCategory("Code")]
     public class ImsInformedProcess : Process
@@ -10,8 +15,9 @@
         public string DataSetName { get; set; }
         public bool Done { get; set; }
         public HashSet<string> FileResources { get; set; }
+        private string resultBinFile;
 
-        public ImsInformedProcess(int ID, string name, string exe, string arguments, bool shell)
+        public ImsInformedProcess(int ID, string name, string exe, string arguments, bool shell, string resultBinFile)
         {
             this.JobID = ID;
             this.DataSetName = name;
@@ -21,6 +27,7 @@
             this.StartInfo.CreateNoWindow = !shell;
             this.FileResources = new HashSet<string>();
             this.Done = false;
+            this.resultBinFile = resultBinFile;
         }
 
         public bool AreResourcesFree(IEnumerable<ImsInformedProcess> tasks)
@@ -37,6 +44,17 @@
                 }
             }
             return free;
+        }
+
+        public MoleculeInformedWorkflowResult DeserializeResultBinFile()
+        {
+            MoleculeInformedWorkflowResult result;
+            IFormatter formatter = new BinaryFormatter();
+            using (Stream stream = new FileStream(this.resultBinFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                result = (MoleculeInformedWorkflowResult) formatter.Deserialize(stream);
+            }
+            return result;
         }
     }
 }

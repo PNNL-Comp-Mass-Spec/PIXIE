@@ -127,6 +127,11 @@ namespace IMSMetabolitesFinder
                     // Serialize the result
                      IFormatter formatter = new BinaryFormatter();
                      string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
+                     if (!File.Exists(binPath))
+                     {
+                        File.Create(binPath);
+                     }
+
                      using (Stream stream = new FileStream(binPath, FileMode.Create, FileAccess.Write, FileShare.None))
                      {
                          formatter.Serialize(stream, result);
