@@ -8,8 +8,6 @@ namespace ImsMetabolitesFinderTest
     using System.Runtime.Serialization.Formatters.Binary;
 
     using ImsInformed.Domain;
-    using ImsInformed.Parameters;
-    using ImsInformed.Util;
 
     using ImsMetabolitesFinder.Preprocess;
 
@@ -63,15 +61,16 @@ namespace ImsMetabolitesFinderTest
         [Test]  
         public static void TestPreprocessing()
         {
-            BincCentricIndexing.IndexUimfFile(@"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-NIC_pos2_13Sep14_Columbia_DI.uimf");
+            BincCentricIndexing.IndexUimfFile(@"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-AAP_pos_12Sep14_Columbia_DI.uimf");
         }
 
-        [Test]
-        public static void TestMedac2UIMFConvert()
-        {
-            const string filePath = @"\\proto-2\UnitTest_Files\Midac\EXP-PRO_pos2_9Oct14_Columbia_DI\EXP-PRO_pos2_9Oct14_Columbia_DI.d";
-            Midac2UIMFConvert.Convert(filePath, "");
-        }
+        // This test is too destructive. Disabled for good.
+        //[Test]
+        //public static void TestMedac2UIMFConvert()
+        //{
+        //    const string filePath = @"\\proto-2\UnitTest_Files\Midac\EXP-PRO_pos2_9Oct14_Columbia_DI\EXP-PRO_pos2_9Oct14_Columbia_DI.d";
+        //    Midac2UIMFConvert.Convert(filePath, "");
+        //}
 
         [Test]  
         public static void InferIonizationTest()
@@ -85,30 +84,6 @@ namespace ImsMetabolitesFinderTest
             testCases.Add("There is nothing I guess");
             testCases.Add("EXP-DSS_POS_28May14_Columbia_DI");
             testCases.Add("EXP-DSS-28May14_Columbia_DI");
-        }
-
-                /// <summary>
-        /// The test single molecule with formula.
-        /// </summary>
-        [Test][STAThread]
-        public void TestSingleMoleculeWithFormula()
-        {
-            // Nicotine
-            string formula = "C10H14N2";
-            ImsTarget sample = new ImsTarget(1, IonizationMethod.Proton2Plus, formula);
-            Console.WriteLine("Nicotine:");
-            Console.WriteLine("Monoisotopic Mass: " + sample.Mass);
-            string fileLocation = @"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-NIC_pos2_13Sep14_Columbia_DI.uimf";
-
-            MoleculeWorkflowParameters parameters = new MoleculeWorkflowParameters 
-            {
-                IsotopicFitScoreMax = 0.15,
-                MassToleranceInPpm = 10,
-                NumPointForSmoothing = 9
-            };
-
-            MoleculeInformedWorkflow informedWorkflow = new MoleculeInformedWorkflow(fileLocation, "output", "result.txt", parameters);
-            informedWorkflow.RunMoleculeInformedWorkFlow(sample);
         }
 
         [Test]  
