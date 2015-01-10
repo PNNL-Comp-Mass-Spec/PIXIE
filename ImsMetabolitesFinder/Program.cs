@@ -105,15 +105,39 @@ namespace IMSMetabolitesFinder
                         FeatureScoreThreshold = 2
                     };
 
+                    IFormatter formatter = new BinaryFormatter();
+
+                    // If target cannot be constructed. Create a result 
                     ImsTarget target = null;
-                    if (Mz == 0)
+                    try
                     {
-                        ImsTarget sample = new ImsTarget(ID, method, formula);
-                        target= new ImsTarget(ID, method, formula);
-                    } 
-                    else 
+                        if (Mz == 0)
+                        {
+                            ImsTarget sample = new ImsTarget(ID, method, formula);
+                            target= new ImsTarget(ID, method, formula);
+                        } 
+                        else 
+                        {
+                            target= new ImsTarget(ID, method, Mz);
+                        }
+                    }
+                    catch (Exception)
                     {
-                        target= new ImsTarget(ID, method, Mz);
+                        MoleculeInformedWorkflowResult targetErrorResult;
+                        targetErrorResult.DatasetName = datasetName;
+                        targetErrorResult.TargetDescriptor = null;
+                        targetErrorResult.IonizationMethod = method;
+                        targetErrorResult.AnalysisStatus = AnalysisStatus.TAR;
+                        targetErrorResult.Mobility = 0;
+                        targetErrorResult.CrossSectionalArea = 0;
+                        targetErrorResult.RSquared = 0;
+
+                        string errorBinPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
+
+                        using (Stream stream = new FileStream(errorBinPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            formatter.Serialize(stream, targetErrorResult);
+                        }
                     }
 
                     // Preprocessing
@@ -125,17 +149,12 @@ namespace IMSMetabolitesFinder
                     MoleculeInformedWorkflowResult result = workflow.RunMoleculeInformedWorkFlow(target);
 
                     // Serialize the result
-                     IFormatter formatter = new BinaryFormatter();
-                     string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
-                     if (!File.Exists(binPath))
-                     {
-                        File.Create(binPath);
-                     }
+                    string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
 
-                     using (Stream stream = new FileStream(binPath, FileMode.Create, FileAccess.Write, FileShare.None))
-                     {
-                         formatter.Serialize(stream, result);
-                     }
+                    using (Stream stream = new FileStream(binPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        formatter.Serialize(stream, result);
+                    }
                     
                     if (pause)
                     {

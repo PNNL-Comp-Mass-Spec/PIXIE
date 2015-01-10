@@ -15,9 +15,11 @@
         public string DataSetName { get; set; }
         public bool Done { get; set; }
         public HashSet<string> FileResources { get; set; }
+        public int LineNumber { get; private set; }
+
         private string resultBinFile;
 
-        public ImsInformedProcess(int ID, string name, string exe, string arguments, bool shell, string resultBinFile)
+        public ImsInformedProcess(int ID, string name, string exe, string arguments, bool shell, string resultBinFile, int lineNumber)
         {
             this.JobID = ID;
             this.DataSetName = name;

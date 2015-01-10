@@ -40,7 +40,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.ShowWindow);
                     // Run the program in a single process.
                     int numberOfCommands = processor.TaskList.Count;
-                    int count = 1;
+                    int count = 0;
                     int index = 0;
                     HashSet<ImsInformedProcess> runningTasks = new HashSet<ImsInformedProcess>();
 
@@ -72,7 +72,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             while (!found)
                             {
                                 // Wait for half a second
-                                Thread.Sleep(500);
+                                Thread.Sleep(100);
                                 foreach (var runningTask in runningTasks)
                                 {
                                     if (runningTask.HasExited)
@@ -117,20 +117,14 @@ namespace ImsMetabolitesFinderBatchProcessor
                     }
 
                     // Collect result from result files
-                    Console.WriteLine("Aggregating Analyses Results");
+                    Console.WriteLine("Aggregating Analyses Results...");
+
+
 
                     ResultAggregator resultAggregator = new ResultAggregator(processor.TaskList);
-                    try
-                    {
-                        resultAggregator.ProcessResultFiles(options.InputPath);
-                    }
-                    catch (Exception e)
-                    {
-                        // Message
-                        Console.WriteLine(e.Message);
-                    }
-                    
-                    Console.WriteLine("Done");
+                    resultAggregator.ProcessResultFiles(options.InputPath);
+                    Console.WriteLine("Aggregating Analyses Done");
+                    Console.WriteLine();
 
                     // Print analysis result to console and summary file.
                     string summaryFilePath = Path.Combine(options.InputPath, "analysis_summary.txt");
@@ -154,8 +148,9 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                         
                         Trace.WriteLine("Results summary:");
-                        Trace.WriteLine("<Dataset Name> <M+H> <M-H> <M+Na>");
                         Trace.WriteLine("");
+                        Trace.WriteLine("<Dataset Name> <M+H> <M-H> <M+Na>");
+                        
 
                         // Write the summary file.
                         foreach (var item in resultAggregator.ResultCollection)
@@ -179,7 +174,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Trace.WriteLine(String.Format(" The following {0} analyses failed: ", failedAnalyses.Count));
                             foreach (ImsInformedProcess dataset in failedAnalyses)
                             {
-                                Trace.WriteLine(String.Format("{0} [ID = {1}]", dataset.DataSetName, dataset.JobID));
+                                Trace.WriteLine(String.Format("Line {0} : {1} [ID = {2}]", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
                             }
                         }
                     }
@@ -187,8 +182,13 @@ namespace ImsMetabolitesFinderBatchProcessor
                 catch (AggregateException e)
                 {
                     Console.WriteLine(e.Message);
+                    Console.WriteLine();
                     foreach (Exception exception in e.InnerExceptions)
                     {
+                        if (exception.Data.Contains("lineNumber"))
+                        {
+                            Console.Write("Line {0}: ", exception.Data["lineNumber"]);
+                        }
                         Console.WriteLine(exception.Message);
                         Console.WriteLine("");
                     }

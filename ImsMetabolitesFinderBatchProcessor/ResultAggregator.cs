@@ -1,9 +1,7 @@
 ﻿namespace ImsMetabolitesFinderBatchProcessor
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
 
     using ImsInformed.Domain;
 
@@ -24,26 +22,35 @@
         {
             foreach (var task in this.Tasks)
             {
-                // Dispose the task as it is no longer used.
-                MoleculeInformedWorkflowResult result = task.DeserializeResultBinFile();
-
-                // Remove the pos, neg signatures from dataset name.
-                // string chemicalName = result.DatasetName.Replace("pos", "");
-                // chemicalName = chemicalName.Replace("neg", "");
-
-                string chemicalName = result.DatasetName;
-
-                if (!this.ResultCollection.ContainsKey(chemicalName))
+                try
                 {
-                    IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> ionizationResult = new Dictionary<IonizationMethod, MoleculeInformedWorkflowResult>();
-                    ionizationResult.Add(result.IonizationMethod, result);
-                    ResultCollection.Add(chemicalName, ionizationResult);
-                } 
-                else 
-                {
-                    ResultCollection[chemicalName].Add(result.IonizationMethod, result);
+                    // Dispose the task as it is no longer used.
+                    MoleculeInformedWorkflowResult result = task.DeserializeResultBinFile();
+
+                    // Remove the pos, neg signatures from dataset name.
+                    // string chemicalName = result.DatasetName.Replace("pos", "");
+                    // chemicalName = chemicalName.Replace("neg", "");
+
+                    string chemicalName = result.DatasetName;
+
+                    if (!this.ResultCollection.ContainsKey(chemicalName))
+                    {
+                        IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> ionizationResult = new Dictionary<IonizationMethod, MoleculeInformedWorkflowResult>();
+                        ionizationResult.Add(result.IonizationMethod, result);
+                        ResultCollection.Add(chemicalName, ionizationResult);
+                    } 
+                    else 
+                    {
+                        ResultCollection[chemicalName].Add(result.IonizationMethod, result);
+                    }
+                    task.Dispose();
                 }
-                task.Dispose();
+                catch (Exception e)
+                {
+                    Console.WriteLine("Result processing for {0} failed", task.DataSetName);
+                    Console.WriteLine("Exception: {0}", e.Message);
+                    Console.WriteLine("");
+                }
             }
         }
     }

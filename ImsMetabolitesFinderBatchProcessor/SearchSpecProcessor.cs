@@ -135,13 +135,14 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                 string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionization + "_Result.bin");
 
-                ImsInformedProcess process = new ImsInformedProcess(ID, datasetName, utility, commandline, this.showWindow, binPath);
+                ImsInformedProcess process = new ImsInformedProcess(ID, datasetName, utility, commandline, this.showWindow, binPath, lineNumber);
                 process.FileResources.Add(uimfPath);
                 ID++;
                 return process;
             }
             catch (Exception e)
             {
+                e.Data.Add("lineNumber", lineNumber);
                 exceptions.Add(e);
                 return null;
             }

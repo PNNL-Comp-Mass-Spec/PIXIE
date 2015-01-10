@@ -19,7 +19,8 @@ namespace ImsMetabolitesFinderTest
     {
         //default values
         private const string OutputFileDir = @"output\";
-        private const string ExeDir = @"..\..\..\ImsMetabolitesFinder\Bin\Debug\ImsMetabolitesFinder.exe";
+        private const string Finder = @"..\..\..\ImsMetabolitesFinder\Bin\Debug\ImsMetabolitesFinder.exe";
+        private const string BatchProcessor = @"..\..\..\ImsMetabolitesFinderBatchProcessor\Bin\Debug\ImsMetabolitesFinderBatchProcessor.exe";
         private const string UimfFilePath = @"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-BPS_pos2_13Sep14_Columbia_DI.uimf";
 
         [Test]  
@@ -29,7 +30,7 @@ namespace ImsMetabolitesFinderTest
             string cmd_line_opts = "-h"; 
             Console.WriteLine("Test case: Help page " + sample_name + "\r\n");
             Console.WriteLine("invoking ImsMetabolitesFinder . . .\r\n");
-            System.Diagnostics.Process.Start(ExeDir, cmd_line_opts);
+            System.Diagnostics.Process.Start(Finder, cmd_line_opts);
         }
 
         [Test]  
@@ -39,7 +40,7 @@ namespace ImsMetabolitesFinderTest
             string cmd_line_opts = "-i " + UimfFilePath + " -t 273.0192006876" + " -m M+Na" + " -o output/"; 
             Console.WriteLine("Test case: detecting target particle list using its Mz value, for " + sample_name + "\r\n");
             Console.WriteLine("invoking ImsMetabolitesFinder . . .\r\n");
-            System.Diagnostics.Process.Start(ExeDir, cmd_line_opts);
+            System.Diagnostics.Process.Start(Finder, cmd_line_opts);
         }
 
         [Test]  
@@ -49,14 +50,14 @@ namespace ImsMetabolitesFinderTest
             string cmd_line_opts = "-i " + UimfFilePath + " -t C12H10O4S" + " -m M+Na" + " -o output/"; 
             Console.WriteLine("Test case: detecting target particle using its empirical formula, for " + sample_name + "\r\n");
             Console.WriteLine("invoking ImsMetabolitesFinder . . .\r\n");
-            System.Diagnostics.Process.Start(ExeDir, cmd_line_opts);
+            System.Diagnostics.Process.Start(Finder, cmd_line_opts);
         }
 
        [Test]  
-        public static void TestImsMetabolitesFinder_Formula2() 
+        public static void TestFailReadingSpecs() 
         {
-            string cmd_line_opts = @"-i \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-NIC_pos2_13Sep14_Columbia_DI.uimf -t C10H14N2 -m M+H -o \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule/EXP-NIC_pos2_13Sep14_Columbia_DI_ImsMetabolitesFinderResult_M+H --ID 20 -p 10";
-            System.Diagnostics.Process.Start(ExeDir, cmd_line_opts);
+            string cmd_line_opts = @"-i \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule -s  \\proto-2\UnitTest_Files\ImsMetabolitesFinderBatchProcessorTestFiles\ExampleSearchSpecError.txt -p 5 -w";
+            System.Diagnostics.Process.Start(BatchProcessor, cmd_line_opts);
         }
 
         [Test]  
