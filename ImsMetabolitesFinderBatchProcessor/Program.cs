@@ -167,11 +167,11 @@ namespace ImsMetabolitesFinderBatchProcessor
                         Console.WriteLine();
                         Trace.WriteLine("Analysis summary:");
                         Trace.WriteLine("");
-                        Trace.WriteLine(String.Format(" {0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are.", count - failedAnalyses.Count,     count));
+                        Trace.WriteLine(String.Format("{0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are.", count - failedAnalyses.Count,     count));
                         Trace.WriteLine("");
                         if (failedAnalyses.Count > 0)
                         {
-                            Trace.WriteLine(String.Format(" The following {0} analyses failed: ", failedAnalyses.Count));
+                            Trace.WriteLine(String.Format("The following {0} analyses failed, please check result file for details: ", failedAnalyses.Count));
                             foreach (ImsInformedProcess dataset in failedAnalyses)
                             {
                                 Trace.WriteLine(String.Format("Line {0} : {1} [ID = {2}]", dataset.LineNumber, dataset.DataSetName, dataset.JobID));

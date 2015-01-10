@@ -30,6 +30,7 @@
             this.FileResources = new HashSet<string>();
             this.Done = false;
             this.resultBinFile = resultBinFile;
+            this.LineNumber = lineNumber;
         }
 
         public bool AreResourcesFree(IEnumerable<ImsInformedProcess> tasks)

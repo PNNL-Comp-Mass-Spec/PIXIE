@@ -160,11 +160,21 @@ namespace IMSMetabolitesFinder
                     {
                         PauseProgram();
                     }
-                    return 0;
+
+                    // Define success
+                    if (result.AnalysisStatus == AnalysisStatus.POS || result.AnalysisStatus == AnalysisStatus.NEG)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
+                    
                 }
                 else
                 {
-                    return 2;
+                    return 1;
                 }
                 
             }
@@ -220,7 +230,7 @@ namespace IMSMetabolitesFinder
                     {
                         PauseProgram();
                     }
-                    return 0;
+                    return 1;
                 }
                 return 1;
             }
