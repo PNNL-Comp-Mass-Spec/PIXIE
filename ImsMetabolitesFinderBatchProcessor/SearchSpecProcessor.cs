@@ -75,17 +75,18 @@ namespace ImsMetabolitesFinderBatchProcessor
                 throw new FileNotFoundException();
             }
 
-            string[] files = Directory.GetFiles(uimfLocation, datasetName + ".uimf", SearchOption.AllDirectories);
-            if (files.Count() > 1)
-            {
-                throw new DuplicateNameException("Multiple matches of the dataset " + datasetName + " exisit inside the directory " + uimfLocation + ". Please resolve the conclits.");
-            }
+            //string[] files = Directory.GetFiles(uimfLocation, datasetName + ".uimf", SearchOption.AllDirectories);
 
-            if (!files.Any())
+            IEnumerable<string> files = Directory.EnumerateFiles(uimfLocation, datasetName + ".uimf", SearchOption.AllDirectories);
+
+            try
             {
-                throw new DuplicateNameException("Dataset " + datasetName + ".uimf was not found in the directory " + uimfLocation + ". Please refine the search spec and try again.");
+                return files.First();
             }
-            return files[0];
+            catch (Exception)
+            {
+                throw new FileNotFoundException("Dataset " + datasetName + ".uimf was not found in the directory " + uimfLocation + ". Please refine the search spec and try again.");
+            }
         }
 
         // process job and return the commandline, if not whitespace, set firstLine to false
