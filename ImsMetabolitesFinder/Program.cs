@@ -138,6 +138,7 @@ namespace IMSMetabolitesFinder
                         {
                             formatter.Serialize(stream, targetErrorResult);
                         }
+                        throw;
                     }
 
                     // Preprocessing
