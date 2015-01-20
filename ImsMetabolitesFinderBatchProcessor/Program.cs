@@ -155,11 +155,16 @@ namespace ImsMetabolitesFinderBatchProcessor
                         // Write the summary file.
                         foreach (var item in resultAggregator.ResultCollection)
                         {
-                            AnalysisStatus hPlus = (item.Value.ContainsKey((IonizationMethod.ProtonPlus))) ? item.Value[IonizationMethod.ProtonPlus].AnalysisStatus : AnalysisStatus.Nah;
-                            AnalysisStatus hMinus = (item.Value.ContainsKey((IonizationMethod.ProtonMinus))) ? item.Value[IonizationMethod.ProtonMinus].AnalysisStatus : AnalysisStatus.Nah;
-                            AnalysisStatus naPlus = (item.Value.ContainsKey((IonizationMethod.SodiumPlus))) ? item.Value[IonizationMethod.SodiumPlus].AnalysisStatus : AnalysisStatus.Nah;
+                            // Result for M+H
+                            string protonPlusSummary = ResultAggregator.SummarizeResult(item.Value, IonizationMethod.ProtonPlus);
 
-                            Trace.WriteLine(String.Format("{0}, {1}, {2}, {3}", item.Key, hPlus, hMinus, naPlus));
+                            // Result for M-H
+                            string protonMinusSummary = ResultAggregator.SummarizeResult(item.Value, IonizationMethod.ProtonMinus);
+
+                            // Result for M+Na
+                            string sodiumPlusSummary = ResultAggregator.SummarizeResult(item.Value, IonizationMethod.SodiumPlus);
+
+                            Trace.WriteLine(String.Format("{0}, {1}, {2}, {3}", item.Key, protonPlusSummary, protonMinusSummary, sodiumPlusSummary));
                         }
 
                         Trace.WriteLine("");

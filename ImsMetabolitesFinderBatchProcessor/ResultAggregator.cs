@@ -17,6 +17,23 @@
             ResultCollection = new Dictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>>();
         }
 
+        public static string SummarizeResult(IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> chemicalResult, IonizationMethod ionization)
+        {
+            string result = "Nah";
+            if (chemicalResult.ContainsKey((ionization)))
+            {
+                MoleculeInformedWorkflowResult workflowResult = chemicalResult[ionization];
+                result = workflowResult.AnalysisStatus.ToString();
+
+                // Print out mobility instead of POS. You can change this at will.
+                if (result == "POS")
+                {
+                    result = String.Format("{0:0.00}", workflowResult.Mobility);
+                }
+            }
+            return result;
+        }
+
         // process result files collected and generate a final report.
         public void ProcessResultFiles(string analysisDirectory)
         {

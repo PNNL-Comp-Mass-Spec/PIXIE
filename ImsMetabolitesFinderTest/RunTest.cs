@@ -44,8 +44,9 @@ namespace ImsMetabolitesFinderTest
         [Test]  
         public static void TestImsMetabolitesFinder_Formula() 
         {
+
             string sample_name = "EXP-BPS_pos2_13Sep14_Columbia_DI";
-            string cmd_line_opts = "-i " + UimfFilePath + " -t C12H10O4S" + " -m M+Na" + " -o output/"; 
+            string cmd_line_opts = "-i " + UimfFilePath + " -t C12H10NNaO3S" + " -m M+Na" + " -o output/ --pause"; 
             Console.WriteLine("Test case: detecting target particle using its empirical formula, for " + sample_name + "\r\n");
             Console.WriteLine("invoking ImsMetabolitesFinder . . .\r\n");
             System.Diagnostics.Process.Start(Finder, cmd_line_opts);

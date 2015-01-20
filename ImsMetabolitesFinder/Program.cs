@@ -163,7 +163,7 @@ namespace IMSMetabolitesFinder
                     }
 
                     // Define success
-                    if (result.AnalysisStatus == AnalysisStatus.POS || result.AnalysisStatus == AnalysisStatus.NEG)
+                    if (result.AnalysisStatus == AnalysisStatus.POS || result.AnalysisStatus == AnalysisStatus.NEG || result.AnalysisStatus == AnalysisStatus.NSP)
                     {
                         return 0;
                     }
