@@ -16,8 +16,7 @@
         public bool Done { get; set; }
         public HashSet<string> FileResources { get; set; }
         public int LineNumber { get; private set; }
-
-        private string resultBinFile;
+        public string ResultBinFile { get; private set; }
 
         public ImsInformedProcess(int ID, string name, string exe, string arguments, bool shell, string resultBinFile, int lineNumber)
         {
@@ -29,7 +28,7 @@
             this.StartInfo.CreateNoWindow = !shell;
             this.FileResources = new HashSet<string>();
             this.Done = false;
-            this.resultBinFile = resultBinFile;
+            this.ResultBinFile = resultBinFile;
             this.LineNumber = lineNumber;
         }
 
@@ -38,12 +37,15 @@
             bool free = true;
             foreach (var task in tasks)
             {
-                HashSet<string> sharedResources = new HashSet<string>(this.FileResources);
-                sharedResources.IntersectWith(task.FileResources);
-                if (sharedResources.Count != 0)
+                if (!task.Done)
                 {
-                    free = false;
-                    break;
+                    HashSet<string> sharedResources = new HashSet<string>(this.FileResources);
+                    sharedResources.IntersectWith(task.FileResources);
+                    if (sharedResources.Count != 0)
+                    {
+                        free = false;
+                        break;
+                    }
                 }
             }
             return free;
@@ -53,7 +55,7 @@
         {
             MoleculeInformedWorkflowResult result;
             IFormatter formatter = new BinaryFormatter();
-            using (Stream stream = new FileStream(this.resultBinFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream stream = new FileStream(this.ResultBinFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 result = (MoleculeInformedWorkflowResult) formatter.Deserialize(stream);
             }

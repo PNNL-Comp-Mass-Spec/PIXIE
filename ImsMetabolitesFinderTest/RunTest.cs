@@ -97,8 +97,13 @@ namespace ImsMetabolitesFinderTest
             result.DatasetName = "Nothing";
             result.IonizationMethod = IonizationMethod.ProtonPlus;
             result.Mobility = 1;
-            result.RSquared = 2;
+            result.AnalysisScoresHolder.AnalysisScore = 2;
+            result.AnalysisScoresHolder.AverageBestFeatureScores.IntensityScore = 3;
+            result.AnalysisScoresHolder.AverageBestFeatureScores.IsotopicScore = 4;
+            result.AnalysisScoresHolder.AverageBestFeatureScores.PeakShapeScore = 5;
+            result.AnalysisScoresHolder.AverageVoltageGroupStabilityScore = 6;
             result.TargetDescriptor = "H2O";
+            result.LastVoltageGroupAverageDriftTime = -1;
 
             // Serialize fake result struct
             IFormatter formatter = new BinaryFormatter();
@@ -120,7 +125,9 @@ namespace ImsMetabolitesFinderTest
             Assert.AreEqual(result.DatasetName, result2.DatasetName);
             Assert.AreEqual(result.IonizationMethod, result2.IonizationMethod);
             Assert.AreEqual(result.Mobility, result2.Mobility);
-            Assert.AreEqual(result.RSquared, result2.RSquared);
+            Assert.AreEqual(result.AnalysisScoresHolder.AverageBestFeatureScores.IntensityScore, result2.AnalysisScoresHolder.AverageBestFeatureScores.IntensityScore);
+            Assert.AreEqual(result.AnalysisScoresHolder.AverageBestFeatureScores.IsotopicScore, result2.AnalysisScoresHolder.AverageBestFeatureScores.IsotopicScore);
+            Assert.AreEqual(result.AnalysisScoresHolder.AverageBestFeatureScores.PeakShapeScore, result2.AnalysisScoresHolder.AverageBestFeatureScores.PeakShapeScore);
             Assert.AreEqual(result.TargetDescriptor, result2.TargetDescriptor);
         }
     }

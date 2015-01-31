@@ -17,6 +17,12 @@
         [Option('p', "parallel", DefaultValue = 1, HelpText = "specify the number of processes allocated to run the program.")]
         public int NumberOfProcesses { get; set; }
 
+        [Option('n', "temsperplot", DefaultValue = 20, HelpText = "specify the number of items per plot in the final sore summary.")]
+        public int NumberOfAnalysesPerPlot { get; set; }
+
+        [Option('r', "reanalyze", DefaultValue = false, HelpText = "If reanalyze is specified, the batch processor would overwrite results from the previous runs if present, instead of using existing results")]
+        public bool Reanalyze { get; set; }
+
         [HelpOption]
         public string GetUsage()
         {

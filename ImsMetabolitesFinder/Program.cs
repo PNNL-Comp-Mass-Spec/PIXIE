@@ -128,9 +128,15 @@ namespace IMSMetabolitesFinder
                         targetErrorResult.TargetDescriptor = null;
                         targetErrorResult.IonizationMethod = method;
                         targetErrorResult.AnalysisStatus = AnalysisStatus.TAR;
-                        targetErrorResult.Mobility = 0;
-                        targetErrorResult.CrossSectionalArea = 0;
-                        targetErrorResult.RSquared = 0;
+                        targetErrorResult.Mobility = -1;
+                        targetErrorResult.LastVoltageGroupAverageDriftTime = -1;
+                        targetErrorResult.CrossSectionalArea = -1;
+                        targetErrorResult.AnalysisScoresHolder.AnalysisScore = 0;
+                        targetErrorResult.AnalysisScoresHolder.AverageBestFeatureScores.IntensityScore = 0;
+                        targetErrorResult.AnalysisScoresHolder.AverageBestFeatureScores.IsotopicScore = 0;
+                        targetErrorResult.AnalysisScoresHolder.AverageBestFeatureScores.PeakShapeScore = 0;
+                        targetErrorResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore = 0;
+
 
                         string errorBinPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
 

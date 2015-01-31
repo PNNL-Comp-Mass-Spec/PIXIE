@@ -52,12 +52,11 @@
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="ImsInformed, Version=1.0.5486.21788, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ImsInfomred\ImsInformed.dll</HintPath>
+    <Reference Include="ImsInformed">
+      <HintPath>..\lib\ImsInformed\ImsInformed.dll</HintPath>
     </Reference>
     <Reference Include="InformedProteomics.Backend">
-      <HintPath>..\lib\ImsInfomred\InformedProteomics.Backend.dll</HintPath>
+      <HintPath>..\lib\ImsInformed\InformedProteomics.Backend.dll</HintPath>
     </Reference>
     <Reference Include="MassSpecDataReader">
       <HintPath>..\lib\Midac\MassSpecDataReader.dll</HintPath>
@@ -75,9 +74,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIMFLibrary, Version=3.0.5452.22853, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ImsInfomred\UIMFLibrary.dll</HintPath>
+    <Reference Include="UIMFLibrary">
+      <HintPath>..\lib\UimfLibrary\UIMFLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

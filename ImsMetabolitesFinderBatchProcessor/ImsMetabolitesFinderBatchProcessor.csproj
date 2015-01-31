@@ -37,9 +37,16 @@
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="ImsInformed, Version=1.0.5486.21788, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="FalkorSignalPlotter">
+      <HintPath>..\lib\FalkorSignalPlotter\FalkorSignalPlotter.dll</HintPath>
+    </Reference>
+    <Reference Include="ImsInformed, Version=1.0.5507.27953, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ImsInfomred\ImsInformed.dll</HintPath>
+      <HintPath>..\lib\ImsInformed\ImsInformed.dll</HintPath>
+    </Reference>
+    <Reference Include="OxyPlot, Version=2014.1.546.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\FalkorSignalPlotter\OxyPlot.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
