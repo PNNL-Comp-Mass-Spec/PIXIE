@@ -7,9 +7,11 @@ namespace ImsMetabolitesFinderBatchProcessor
     using System.IO;
     using System.Threading;
 
+    using FalkorSDK.SignalPlotter;
+    using FalkorSDK.SignalPlotter.Data;
+    using FalkorSDK.SignalPlotter.PlottableDataModel;
+
     using FalkorSignalPlotter;
-    using FalkorSignalPlotter.Collections;
-    using FalkorSignalPlotter.PlottableDataModel;
     using FalkorSignalPlotter.Util;
 
     using ImsInformed.Domain;
@@ -251,7 +253,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             plotItemCount = 0; // reset the plot item count
                             plotPageCount++;
 
-                            var model = table.ToPlotModel(PlotType.StackedBarPlot, new PlotOptions() 
+                            var model = table.ToPlotModel(new PlotOptions() 
                             {
                                 Title = "Analyses Scores Summary Plot",
                                 Subtitle = "Page " + plotPageCount
@@ -268,7 +270,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     // Plot the last few items
                     if (plotItemCount > 0)
                     {
-                        var remainder = table.ToPlotModel(PlotType.StackedBarPlot, new PlotOptions() 
+                        var remainder = table.ToPlotModel(new PlotOptions() 
                         {
                             Title = "Analyses Scores Summary Plot",
                                     Subtitle = "Page " + plotPageCount + 1
