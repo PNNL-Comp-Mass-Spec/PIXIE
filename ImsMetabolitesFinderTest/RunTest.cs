@@ -17,8 +17,14 @@ namespace ImsMetabolitesFinderTest
     {
         //default values
         private const string OutputFileDir = @"output\";
-        private const string Finder = @"..\..\..\ImsMetabolitesFinder\Bin\Debug\ImsMetabolitesFinder.exe";
-        private const string BatchProcessor = @"..\..\..\ImsMetabolitesFinderBatchProcessor\Bin\Debug\ImsMetabolitesFinderBatchProcessor.exe";
+        #if DEBUG
+            private const string Finder = @"..\..\..\..\ImsMetabolitesFinder\bin\x64\Debug\ImsMetabolitesFinder.exe";
+            private const string BatchProcessor = @"..\..\..\..\ImsMetabolitesFinderBatchProcessor\bin\x64\Debug\ImsMetabolitesFinderBatchProcessor.exe";
+        #else
+            private const string Finder = @"..\..\..\..\ImsMetabolitesFinder\bin\x64\Release\ImsMetabolitesFinder.exe";
+            private const string BatchProcessor = @"..\..\..\..\ImsMetabolitesFinderBatchProcessor\bin\x64\Release\ImsMetabolitesFinderBatchProcessor.exe";
+        #endif
+        
         private const string UimfFilePath = @"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-BPS_pos2_13Sep14_Columbia_DI.uimf";
 
         [Test]  
