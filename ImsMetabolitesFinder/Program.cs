@@ -97,12 +97,12 @@ namespace IMSMetabolitesFinder
 
                     MoleculeWorkflowParameters searchParameters = new MoleculeWorkflowParameters 
                     {
-                        IsotopicFitScoreMax = 0.15,
                         MassToleranceInPpm = options.PpmError,
                         NumPointForSmoothing = 9,
-                        ConfidenceThreshold = 0.5,
                         FeatureFilterLevel = 0.25,
-                        FeatureScoreThreshold = 2
+                        IsotopicFitScoreThreshold = options.IsotopicScoreThreshold,
+                        IntensityThreshold = options.IntensityThreshold,
+                        PeakShapeThreshold = options.PeakShapeScoreThreshold
                     };
 
                     IFormatter formatter = new BinaryFormatter();

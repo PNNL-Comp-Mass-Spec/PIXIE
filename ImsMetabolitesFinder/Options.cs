@@ -1,5 +1,6 @@
 ﻿namespace ImsMetabolitesFinder
 {
+    using System;
     using System.Text;
 
     using CommandLine;
@@ -9,6 +10,12 @@
 
     public class Options
     {
+        private double isotopicScoreThreshold;
+                
+        private double intensityThreshold;
+                
+        private double peakShapeScoreThreshold;
+
         [Option('i', "input", Required = true, HelpText = "Input UIMF files to be read.")]
         public string InputPath { get; set; }
 
@@ -18,20 +25,77 @@
         [Option('m', "method", Required = true, HelpText = "Select the ionization method used for the given experiment(M+H, M-H, M+Na)")]
         public string IonizationMethod { get; set; }
 
-        [Option('p', "ppm", DefaultValue = 10, HelpText = "Specify the PPM error allowed for MZ search.")]
-        public int PpmError { get; set; }
-
         [Option('o', "output", DefaultValue = "", HelpText = "Folder where the search result and the QC file get stored.")]
         public string OutputPath { get; set; }
-
-        [Option("isotopic", DefaultValue = false, HelpText = "Use isotopic feature instead of Mz only for feature selection.")]
-        public bool IsotopicFeatureEnable { get; set; }
 
         [Option("pause", DefaultValue = false, HelpText = "Pause the program when result is generated.")]
         public bool PalseWhenDone { get; set; }
 
         [Option("ID", DefaultValue = 0, HelpText = "An unique ID to keep track of search for batch processing")]
         public int ID{ get; set; }
+
+        [Option('p', "ppm", DefaultValue = 10, HelpText = "Specify the PPM error allowed for MZ search.")]
+        public int PpmError { get; set; }
+
+        [Option("Tintensity", DefaultValue = 0.5, HelpText = "Specify intensity score threshold for features")]
+        public double IntensityThreshold
+        {
+            get
+            {
+                return this.intensityThreshold;
+            }
+            set
+            {
+                if (value > 0 || value < 1)
+                {
+                    this.intensityThreshold = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Score threshold needs to be between 0 and 1.");
+                }
+            }
+        }
+
+        [Option("Tisotopic", DefaultValue = 0.4, HelpText = "Specify isotopic profile score threshold for features")]
+        public double IsotopicScoreThreshold
+        {
+            get
+            {
+                return this.isotopicScoreThreshold;
+            }
+            set
+            {
+                if (value > 0 || value < 1)
+                {
+                    this.isotopicScoreThreshold = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Score threshold needs to be between 0 and 1.");
+                }
+            }
+        }
+
+        [Option("Tpeakshape", DefaultValue = 0.4, HelpText = "Specify peak shape score threshold for features.")]
+        public double PeakShapeScoreThreshold
+        {
+            get
+            {
+                return this.peakShapeScoreThreshold;
+            }
+            set
+            {
+                if (value > 0 || value < 1)
+                {
+                    this.peakShapeScoreThreshold = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Score threshold needs to be between 0 and 1.");
+                }
+            }
+        }
 
         [HelpOption]
         public string GetUsage()
