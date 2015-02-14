@@ -66,9 +66,9 @@ namespace IMSMetabolitesFinder
                     string formula = "";
 
                     // get the target
-                    if (!Double.TryParse(options.Target, out Mz))
+                    bool isDouble = Double.TryParse(options.Target, out Mz);
+                    if (!isDouble)
                     {
-                        Mz = 0;
                         formula = options.Target;
                     }
 
@@ -111,7 +111,7 @@ namespace IMSMetabolitesFinder
                     ImsTarget target = null;
                     try
                     {
-                        if (Mz == 0)
+                        if (!isDouble)
                         {
                             ImsTarget sample = new ImsTarget(ID, method, formula);
                             target= new ImsTarget(ID, method, formula);

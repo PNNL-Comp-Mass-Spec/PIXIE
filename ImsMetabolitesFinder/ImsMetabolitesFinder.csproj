@@ -114,7 +114,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S /E /C  "$(SolutionDir)lib\UIMFLibrary" "$(TargetDir)"
-xcopy /Y /S /E /C  "$(SolutionDir)lib\ImsInfomred\PNNLOmicsElementData.xml" "$(TargetDir)"
+xcopy /Y /S /E /C  "$(SolutionDir)lib\ImsInformed\PNNLOmicsElementData.xml" "$(TargetDir)"
 xcopy /Y /S /E  /C "$(TargetDir)*" "$(SolutionDir)lib\$(ProjectName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
