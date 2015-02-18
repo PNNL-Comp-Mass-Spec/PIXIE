@@ -13,6 +13,8 @@
         private double isotopicScoreThreshold;
                 
         private double intensityThreshold;
+
+        private int minFitPoints;
                 
         private double peakShapeScoreThreshold;
 
@@ -53,6 +55,26 @@
                 else
                 {
                     throw new ArgumentException("Score threshold needs to be between 0 and 1.");
+                }
+            }
+        }
+
+        [Option("minfitpoints", DefaultValue = 4, HelpText = "Specify minimum number of fit points required to compute cross section")]
+        public int MinFitPoints
+        {
+            get
+            {
+                return this.minFitPoints;
+            }
+            set
+            {
+                if (value > 1)
+                {
+                    this.minFitPoints = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Minimium fit points should be greaster than 1.");
                 }
             }
         }

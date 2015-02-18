@@ -102,7 +102,8 @@ namespace IMSMetabolitesFinder
                         FeatureFilterLevel = 0.25,
                         IsotopicFitScoreThreshold = options.IsotopicScoreThreshold,
                         IntensityThreshold = options.IntensityThreshold,
-                        PeakShapeThreshold = options.PeakShapeScoreThreshold
+                        PeakShapeThreshold = options.PeakShapeScoreThreshold,
+                        MinFitPoints = options.MinFitPoints
                     };
 
                     IFormatter formatter = new BinaryFormatter();
