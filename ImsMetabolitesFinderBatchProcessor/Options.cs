@@ -23,6 +23,9 @@
         [Option('r', "reanalyze", DefaultValue = false, HelpText = "If reanalyze is specified, the batch processor would overwrite results from the previous runs if present, instead of using existing results")]
         public bool Reanalyze { get; set; }
 
+        [Option("sortby", DefaultValue = "name", HelpText = "The way you want the result be sorted, either by chemical name[name] or by conclusion[conclusion]")]
+        public string SortOption { get; set; }
+
         [HelpOption]
         public string GetUsage()
         {

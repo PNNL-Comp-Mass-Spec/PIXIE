@@ -5,6 +5,7 @@ namespace ImsMetabolitesFinderBatchProcessor
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading;
 
     using FalkorSDK.SignalPlotter;
@@ -157,7 +158,10 @@ namespace ImsMetabolitesFinderBatchProcessor
                     // Collect result from result files
                     Console.WriteLine("Aggregating Analyses Results...");
 
-                    ResultAggregator resultAggregator = new ResultAggregator(processor.TaskList);
+                    
+                    IEnumerable<ImsInformedProcess> sortedTasks = processor.TaskList;
+                    
+                    ResultAggregator resultAggregator = new ResultAggregator(sortedTasks);
                     resultAggregator.ProcessResultFiles(options.InputPath);
                     Console.WriteLine("Aggregating Analyses Done");
                     Console.WriteLine();
@@ -242,6 +246,19 @@ namespace ImsMetabolitesFinderBatchProcessor
                     int width = 1500;
                     int height = 700;
 
+                    // TODO implement sorting analysis conclusion on a chemical by chemical basis.
+                    var orderMap = new Dictionary<AnalysisStatus, int>() {
+                        { AnalysisStatus.POS, 0 },
+                        { AnalysisStatus.REJ, 1 },
+                        { AnalysisStatus.NSP, 2 },
+                        { AnalysisStatus.NEG, 3 },
+                        { AnalysisStatus.TAR, 4 },
+                        { AnalysisStatus.ERR, 5 },
+                        { AnalysisStatus.PeakToLeft, 6 },
+                        { AnalysisStatus.MassError, 7 },
+                        { AnalysisStatus.XicNotFound, 8 },
+                    };
+
                     foreach (var item in resultAggregator.ResultCollection)
                     {
                         plotItemCount += AddResultToScoresTable(item.Key, item.Value, IonizationMethod.ProtonPlus, table, colDef);
@@ -277,7 +294,8 @@ namespace ImsMetabolitesFinderBatchProcessor
                         });
 
                         string plotFilePath = Path.Combine(options.InputPath, "ScoresPlotPage" + (plotPageCount + 1) + ".png");
-                        int lastHeight = (int)Math.Round(700.0 / numberOfAnalysesPerPlot * plotItemCount);
+                        double lastHeightDouble = (plotItemCount > (numberOfAnalysesPerPlot / 2)) ? (height / numberOfAnalysesPerPlot * plotItemCount) : height / 2;
+                        int lastHeight = (int)Math.Round(lastHeightDouble);
                         PlotterUtil.ExportPlotModel(plotFilePath, remainder, DPI, width, lastHeight);
                     }
                     
@@ -310,11 +328,11 @@ namespace ImsMetabolitesFinderBatchProcessor
                 TableRow dict = new TableRow(dataset + ionization);
                 MoleculeInformedWorkflowResult workflowResult = chemicalResult[ionization];
                 dict.Name += "(" + workflowResult.AnalysisStatus + ")";
-                dict.Add(colDef[1], workflowResult.AnalysisScoresHolder.AverageBestFeatureScores.IntensityScore);
-                dict.Add(colDef[2], workflowResult.AnalysisScoresHolder.AverageBestFeatureScores.IsotopicScore);
-                dict.Add(colDef[3], workflowResult.AnalysisScoresHolder.AverageBestFeatureScores.PeakShapeScore);
+                dict.Add(colDef[1], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore);
+                dict.Add(colDef[2], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore);
+                dict.Add(colDef[3], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore);
                 dict.Add(colDef[0], workflowResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore);
-                dict.Add(colDef[4], workflowResult.AnalysisScoresHolder.AnalysisScore);
+                dict.Add(colDef[4], workflowResult.AnalysisScoresHolder.RSquared);
                 table.Add(dict);
                 return 1;
             }

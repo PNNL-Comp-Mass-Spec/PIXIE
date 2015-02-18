@@ -131,10 +131,10 @@ namespace IMSMetabolitesFinder
                         targetErrorResult.Mobility = -1;
                         targetErrorResult.LastVoltageGroupAverageDriftTime = -1;
                         targetErrorResult.CrossSectionalArea = -1;
-                        targetErrorResult.AnalysisScoresHolder.AnalysisScore = 0;
-                        targetErrorResult.AnalysisScoresHolder.AverageBestFeatureScores.IntensityScore = 0;
-                        targetErrorResult.AnalysisScoresHolder.AverageBestFeatureScores.IsotopicScore = 0;
-                        targetErrorResult.AnalysisScoresHolder.AverageBestFeatureScores.PeakShapeScore = 0;
+                        targetErrorResult.AnalysisScoresHolder.RSquared = 0;
+                        targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore = 0;
+                        targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore = 0;
+                        targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore = 0;
                         targetErrorResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore = 0;
 
 
@@ -169,7 +169,7 @@ namespace IMSMetabolitesFinder
                     }
 
                     // Define success
-                    if (result.AnalysisStatus == AnalysisStatus.POS || result.AnalysisStatus == AnalysisStatus.NEG || result.AnalysisStatus == AnalysisStatus.NSP)
+                    if (result.AnalysisStatus == AnalysisStatus.POS || result.AnalysisStatus == AnalysisStatus.NEG || result.AnalysisStatus == AnalysisStatus.NSP || result.AnalysisStatus == AnalysisStatus.REJ)
                     {
                         return 0;
                     }
