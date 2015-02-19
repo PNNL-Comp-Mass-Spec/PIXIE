@@ -77,6 +77,16 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                             if (!File.Exists(processor.TaskList[index].ResultBinFile) || reanalyze)
                             {
+                                string outputDir = Path.GetDirectoryName(processor.TaskList[index].ResultBinFile);
+                                DirectoryInfo di = new DirectoryInfo(outputDir);
+                                FileInfo[] files = di.GetFiles("*.png")
+                                                     .Where(p => p.Extension == ".png").ToArray();
+                                foreach (FileInfo file in files)
+                                {
+                                        file.Attributes = FileAttributes.Normal;
+                                        File.Delete(file.FullName);
+                                }
+
                                 processor.TaskList[index].Start();
                                 Console.WriteLine("Initiating Analysis Job [ID = {0}] out of {1} jobs.", processor.TaskList[index].JobID, numberOfCommands);
                                 Console.WriteLine("Dataset Name: " + processor.TaskList[index].DataSetName);

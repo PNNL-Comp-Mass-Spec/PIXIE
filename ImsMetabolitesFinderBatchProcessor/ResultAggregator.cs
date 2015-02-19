@@ -26,11 +26,11 @@
                 MoleculeInformedWorkflowResult workflowResult = chemicalResult[ionization];
                 result = workflowResult.AnalysisStatus.ToString();
 
-                // Print out mobility instead of POS. You can change this at will.
-                if (result == "POS")
-                {
-                    result = String.Format("{0:0.00}", workflowResult.Mobility);
-                }
+                // // Print out mobility instead of POS. You can change this at will.
+                // if (result == "POS")
+                // {
+                //     result = String.Format("{0:0.00}", workflowResult.Mobility);
+                // }
             }
             return result;
         }

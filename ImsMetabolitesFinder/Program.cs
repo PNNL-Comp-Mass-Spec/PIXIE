@@ -100,6 +100,7 @@ namespace IMSMetabolitesFinder
                         MassToleranceInPpm = options.PpmError,
                         NumPointForSmoothing = 9,
                         FeatureFilterLevel = 0.25,
+                        ScanWindowWidth = 4,
                         IsotopicFitScoreThreshold = options.IsotopicScoreThreshold,
                         IntensityThreshold = options.IntensityThreshold,
                         PeakShapeThreshold = options.PeakShapeScoreThreshold,
