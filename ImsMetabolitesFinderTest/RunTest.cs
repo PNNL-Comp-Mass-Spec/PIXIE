@@ -109,7 +109,8 @@ namespace ImsMetabolitesFinderTest
             result.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore = 5;
             result.AnalysisScoresHolder.AverageVoltageGroupStabilityScore = 6;
             result.TargetDescriptor = "H2O";
-            result.LastVoltageGroupAverageDriftTime = -1;
+            result.LastVoltageGroupDriftTimeInMs = -1;
+            result.MonoisotopicMass = 1.2;
 
             // Serialize fake result struct
             IFormatter formatter = new BinaryFormatter();

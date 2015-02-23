@@ -78,13 +78,16 @@ namespace ImsMetabolitesFinderBatchProcessor
                             if (!File.Exists(processor.TaskList[index].ResultBinFile) || reanalyze)
                             {
                                 string outputDir = Path.GetDirectoryName(processor.TaskList[index].ResultBinFile);
-                                DirectoryInfo di = new DirectoryInfo(outputDir);
-                                FileInfo[] files = di.GetFiles("*.png")
-                                                     .Where(p => p.Extension == ".png").ToArray();
-                                foreach (FileInfo file in files)
+                                if (outputDir != null && Directory.Exists(outputDir))
                                 {
-                                        file.Attributes = FileAttributes.Normal;
-                                        File.Delete(file.FullName);
+                                    DirectoryInfo di = new DirectoryInfo(outputDir);
+                                    FileInfo[] files = di.GetFiles("*.png")
+                                                         .Where(p => p.Extension == ".png").ToArray();
+                                    foreach (FileInfo file in files)
+                                    {
+                                            file.Attributes = FileAttributes.Normal;
+                                            File.Delete(file.FullName);
+                                    }
                                 }
 
                                 processor.TaskList[index].Start();
@@ -167,7 +170,6 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                     // Collect result from result files
                     Console.WriteLine("Aggregating Analyses Results...");
-
                     
                     IEnumerable<ImsInformedProcess> sortedTasks = processor.TaskList;
                     
@@ -231,9 +233,12 @@ namespace ImsMetabolitesFinderBatchProcessor
                             {
                                 Trace.WriteLine(String.Format("Line {0} : {1} [ID = {2}]", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
                             }
+                            Console.WriteLine();
                         }
                     }
 
+                    Console.WriteLine("Exporting results to viper input...");
+                    ViperExporter.ExportViperInputFile(resultAggregator, options.InputPath);
                     Console.WriteLine("Done.");
                     Console.WriteLine();
 

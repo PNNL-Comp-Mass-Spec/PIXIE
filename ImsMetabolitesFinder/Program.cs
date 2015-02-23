@@ -131,13 +131,14 @@ namespace IMSMetabolitesFinder
                         targetErrorResult.IonizationMethod = method;
                         targetErrorResult.AnalysisStatus = AnalysisStatus.TAR;
                         targetErrorResult.Mobility = -1;
-                        targetErrorResult.LastVoltageGroupAverageDriftTime = -1;
+                        targetErrorResult.LastVoltageGroupDriftTimeInMs = -1;
                         targetErrorResult.CrossSectionalArea = -1;
                         targetErrorResult.AnalysisScoresHolder.RSquared = 0;
                         targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore = 0;
                         targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore = 0;
                         targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore = 0;
                         targetErrorResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore = 0;
+                        targetErrorResult.MonoisotopicMass = 0;
 
 
                         string errorBinPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
