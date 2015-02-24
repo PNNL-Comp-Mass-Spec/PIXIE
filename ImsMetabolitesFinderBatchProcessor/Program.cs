@@ -205,18 +205,34 @@ namespace ImsMetabolitesFinderBatchProcessor
                         
 
                         // Write the summary file.
-                        foreach (var item in resultAggregator.ResultCollection)
+                        int identifiedChemicalCounter = 0;
+                        int totalChemicalCounter = 0;
+
+                        foreach (var chem in resultAggregator.ChemicalDatasetsMap)
                         {
-                            // Result for M+H
-                            string protonPlusSummary = ResultAggregator.SummarizeResult(item.Value, IonizationMethod.ProtonPlus);
+                            // TODO: experiment conflict identification
 
-                            // Result for M-H
-                            string protonMinusSummary = ResultAggregator.SummarizeResult(item.Value, IonizationMethod.ProtonMinus);
+                            string chemName = chem.Key;
+                            bool found = false;
+                            Trace.WriteLine(String.Format("{0}: ", chemName));
+                            foreach (var dataset in chem.Value)
+                            {
+                                // Result for M+H
+                                string protonPlusSummary = ResultAggregator.SummarizeResult(resultAggregator.ResultCollection[dataset], IonizationMethod.ProtonPlus, ref found);
 
-                            // Result for M+Na
-                            string sodiumPlusSummary = ResultAggregator.SummarizeResult(item.Value, IonizationMethod.SodiumPlus);
+                                // Result for M-H
+                                string protonMinusSummary = ResultAggregator.SummarizeResult(resultAggregator.ResultCollection[dataset], IonizationMethod.ProtonMinus, ref found);
 
-                            Trace.WriteLine(String.Format("{0}, {1}, {2}, {3}", item.Key, protonPlusSummary, protonMinusSummary, sodiumPlusSummary));
+                                // Result for M+Na
+                                string sodiumPlusSummary = ResultAggregator.SummarizeResult(resultAggregator.ResultCollection[dataset], IonizationMethod.SodiumPlus, ref found);
+
+                                Trace.WriteLine(String.Format("    {0}, {1}, {2}, {3}", dataset, protonPlusSummary, protonMinusSummary, sodiumPlusSummary));
+                            }
+                            if (found)
+                            {
+                                identifiedChemicalCounter++;
+                            }
+                            totalChemicalCounter++;
                         }
 
                         Trace.WriteLine("");
@@ -224,7 +240,17 @@ namespace ImsMetabolitesFinderBatchProcessor
                         Console.WriteLine();
                         Trace.WriteLine("Analysis summary:");
                         Trace.WriteLine("");
-                        Trace.WriteLine(String.Format("{0} out of {1} analysis jobs succeeded. Results and QA data were written to where input UIMF files are.", count - failedAnalyses.Count,     count));
+                        Trace.WriteLine(String.Format("{0} out of {1} analysis jobs finished without errors.", count - failedAnalyses.Count,     count));
+                        Trace.WriteLine("");
+                        Trace.WriteLine(String.Format("{0} out of {1} chemicals have at least 1 ionization mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
+                        Trace.WriteLine("");
+                        Trace.WriteLine("Results and QA data were written where the input UIMF files are.");
+                        Trace.WriteLine(String.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.POS]));
+                        Trace.WriteLine(String.Format("   Analyses concluded Negative            (NEG) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NEG]));
+                        Trace.WriteLine(String.Format("   Analyses concluded Rejected            (REJ) : {0}", resultAggregator.ResultCounter[AnalysisStatus.REJ]));
+                        Trace.WriteLine(String.Format("   Analyses concluded Insufficent Points  (NSP) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NSP]));
+                        Trace.WriteLine(String.Format("   Analyses concluded Analysis Error      (ERR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
+                        Trace.WriteLine(String.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
                         Trace.WriteLine("");
                         if (failedAnalyses.Count > 0)
                         {

@@ -103,7 +103,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatasetNameParser.cs" />
+    <Compile Include="DatasetMetadata.cs" />
     <Compile Include="ImsInformedProcess.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
