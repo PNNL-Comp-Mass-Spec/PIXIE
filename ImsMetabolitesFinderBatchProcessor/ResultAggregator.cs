@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Management.Instrumentation;
 
     using ImsInformed.Domain;
 
@@ -9,11 +10,14 @@
     {
         public IDictionary<AnalysisStatus, int> ResultCounter { get; private set; }  
 
-        public IEnumerable<ImsInformedProcess>  Tasks { get; private set; }
+        public IEnumerable<ImsInformedProcess> Tasks { get; private set; }
 
         public IDictionary<string, ICollection<string>> ChemicalDatasetsMap { get; private set; }
         
         public IDictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>> ResultCollection { get; private set; }
+
+        private const double CollisionCrossSectionTolerance = 5;
+        private const double NormalizedDriftTimeTolerance = 0.75;
 
         public ResultAggregator(IEnumerable<ImsInformedProcess> processes)
         {
@@ -30,19 +34,31 @@
             this.ChemicalDatasetsMap = new Dictionary<string, ICollection<string>>();
         }
 
-        public static string SummarizeResult(IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> chemicalResult, IonizationMethod ionization, ref bool found)
+        public ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization)
         {
-            string result = "Nah";
-            if (chemicalResult.ContainsKey((ionization)))
-            {
-                MoleculeInformedWorkflowResult workflowResult = chemicalResult[ionization];
-                result = workflowResult.AnalysisStatus.ToString();
+            ChemicalBasedAnalysisResult result;
+            result.AnalysisStatus = AnalysisStatus.Nah;
+            result.ChemicalName = chemicalName;
+            result.CrossSectionalArea = 0;
+            result.FusionNumber = 0;
+            result.IonizationMethod = ionization;
+            result.LastVoltageGroupDriftTimeInMs = 0;
+            result.MonoisotopicMass = 0;
 
-                // Print out mobility instead of POS. You can change this at will.
-                if (workflowResult.AnalysisStatus == AnalysisStatus.POS)
+            if (!this.ChemicalDatasetsMap.Keys.Contains(chemicalName))
+            {
+                throw new InstanceNotFoundException(chemicalName + " not found in ChemicalDatasetsMap");
+            }
+
+            IEnumerable<string> datasets = this.ChemicalDatasetsMap[chemicalName];
+            foreach (string dataset in datasets)
+            {
+                if (this.ResultCollection[dataset].ContainsKey(ionization))
                 {
-                    found = true;
+                    MoleculeInformedWorkflowResult workflowResult = this.ResultCollection[dataset][ionization];
+                    result = FuseResults(result, workflowResult);
                 }
+                
             }
             return result;
         }
@@ -102,6 +118,90 @@
                     Console.WriteLine("");
                 }
             }
+        }
+
+        private static ChemicalBasedAnalysisResult InitiateChemicalBasedAnalysisResult(MoleculeInformedWorkflowResult result, string chemName)
+        {
+            ChemicalBasedAnalysisResult chemicalBasedAnalysisResult;
+            chemicalBasedAnalysisResult.AnalysisStatus = result.AnalysisStatus;
+            chemicalBasedAnalysisResult.ChemicalName = chemName;
+            chemicalBasedAnalysisResult.FusionNumber = 1;
+            chemicalBasedAnalysisResult.IonizationMethod = result.IonizationMethod;
+            chemicalBasedAnalysisResult.LastVoltageGroupDriftTimeInMs = result.LastVoltageGroupDriftTimeInMs;
+            chemicalBasedAnalysisResult.MonoisotopicMass = result.MonoisotopicMass;
+            chemicalBasedAnalysisResult.CrossSectionalArea = result.CrossSectionalArea;
+            return chemicalBasedAnalysisResult;
+        }
+
+        private static bool IsConclusive(AnalysisStatus status)
+        {
+            if (status == AnalysisStatus.POS || status == AnalysisStatus.NEG)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static ChemicalBasedAnalysisResult FuseResults(ChemicalBasedAnalysisResult result, MoleculeInformedWorkflowResult newWorkflowResult)
+        {
+            // previous results inconclusive
+            if (!IsConclusive(result.AnalysisStatus))
+            {
+                result = InitiateChemicalBasedAnalysisResult(newWorkflowResult, result.ChemicalName);
+                return result;
+            }
+            // previous results conclusive, new result not conclusive
+            else if (!IsConclusive(newWorkflowResult.AnalysisStatus))
+            {
+                return result;
+            }
+            // both result conclusive
+            else 
+            {
+                if (CheckConflict(result, newWorkflowResult))
+                {
+                    result.AnalysisStatus = AnalysisStatus.Conflict;
+                }
+
+                result.CrossSectionalArea = result.CrossSectionalArea * result.FusionNumber + newWorkflowResult.CrossSectionalArea;
+                result.CrossSectionalArea /= (result.FusionNumber + 1);
+
+                if (newWorkflowResult.LastVoltageGroupDriftTimeInMs > 0)
+                {
+                    result.LastVoltageGroupDriftTimeInMs = result.LastVoltageGroupDriftTimeInMs * result.FusionNumber + newWorkflowResult.LastVoltageGroupDriftTimeInMs;
+                    result.LastVoltageGroupDriftTimeInMs /= (result.FusionNumber + 1);
+                }
+
+                result.FusionNumber++;
+                return result;
+            }
+        }
+
+        // Check if there are conflicts in 
+        private static bool CheckConflict(ChemicalBasedAnalysisResult result, MoleculeInformedWorkflowResult newWorkflowResult)
+        {
+            if (newWorkflowResult.IonizationMethod != result.IonizationMethod)
+            {
+                throw new InvalidOperationException("Cannot check conflict for results from different chemicals or with different ionization methods");
+            }
+
+            if (result.AnalysisStatus != newWorkflowResult.AnalysisStatus)
+            {
+                return true;
+            }
+
+            if (Math.Abs(result.CrossSectionalArea - newWorkflowResult.CrossSectionalArea) > CollisionCrossSectionTolerance)
+            {
+                return true;
+            }
+
+            if (Math.Abs(result.LastVoltageGroupDriftTimeInMs - newWorkflowResult.LastVoltageGroupDriftTimeInMs) > NormalizedDriftTimeTolerance)
+            {
+                result.AnalysisStatus = AnalysisStatus.Conflict;
+            }
+
+            return false;
         }
     }
 }

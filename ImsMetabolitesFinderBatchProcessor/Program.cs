@@ -214,20 +214,33 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                             string chemName = chem.Key;
                             bool found = false;
-                            Trace.WriteLine(String.Format("{0}: ", chemName));
-                            foreach (var dataset in chem.Value)
+
+                            // Result for M+H
+                            ChemicalBasedAnalysisResult protonPlusResult = resultAggregator.SummarizeResult(chemName, IonizationMethod.ProtonPlus);
+                            string protonPlusSummary = protonPlusResult.AnalysisStatus.ToString();
+                            if (protonPlusResult.AnalysisStatus == AnalysisStatus.POS)
                             {
-                                // Result for M+H
-                                string protonPlusSummary = ResultAggregator.SummarizeResult(resultAggregator.ResultCollection[dataset], IonizationMethod.ProtonPlus, ref found);
-
-                                // Result for M-H
-                                string protonMinusSummary = ResultAggregator.SummarizeResult(resultAggregator.ResultCollection[dataset], IonizationMethod.ProtonMinus, ref found);
-
-                                // Result for M+Na
-                                string sodiumPlusSummary = ResultAggregator.SummarizeResult(resultAggregator.ResultCollection[dataset], IonizationMethod.SodiumPlus, ref found);
-
-                                Trace.WriteLine(String.Format("    {0}, {1}, {2}, {3}", dataset, protonPlusSummary, protonMinusSummary, sodiumPlusSummary));
+                                found = true;
                             }
+
+                            // Result for M-H
+                            ChemicalBasedAnalysisResult protonMinusResult = resultAggregator.SummarizeResult(chemName, IonizationMethod.ProtonMinus);
+                            string protonMinusSummary = protonMinusResult.AnalysisStatus.ToString();
+                            if (protonPlusResult.AnalysisStatus == AnalysisStatus.POS)
+                            {
+                                found = true;
+                            }
+
+                            // Result for M+Na
+                            ChemicalBasedAnalysisResult sodiumPlusResult = resultAggregator.SummarizeResult(chemName, IonizationMethod.SodiumPlus);
+                            string sodiumPlusSummary = sodiumPlusResult.AnalysisStatus.ToString();
+                            if (protonPlusResult.AnalysisStatus == AnalysisStatus.POS)
+                            {
+                                found = true;
+                            }
+
+                            Trace.WriteLine(String.Format("    {0}: {1}, {2}, {3}", chemName, protonPlusSummary, protonMinusSummary, sodiumPlusSummary));
+                            
                             if (found)
                             {
                                 identifiedChemicalCounter++;
