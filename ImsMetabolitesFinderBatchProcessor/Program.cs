@@ -275,7 +275,8 @@ namespace ImsMetabolitesFinderBatchProcessor
                     }
 
                     Console.WriteLine("Exporting results to viper input...");
-                    ViperExporter.ExportViperInputFile(resultAggregator, options.InputPath);
+                    ViperExporter.ExportViperChemicalBased(resultAggregator, options.InputPath);
+                    ViperExporter.ExportViperDatasetBased(resultAggregator, options.InputPath);
                     Console.WriteLine("Done.");
                     Console.WriteLine();
 
