@@ -58,12 +58,12 @@ namespace ImsMetabolitesFinderTest
             System.Diagnostics.Process.Start(Finder, cmd_line_opts);
         }
 
-       [Test]  
-        public static void TestFailReadingSpecs() 
-        {
-            string cmd_line_opts = @"-i \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule -s  \\proto-2\UnitTest_Files\ImsMetabolitesFinderBatchProcessorTestFiles\ExampleSearchSpecError.txt -p 5 -w";
-            System.Diagnostics.Process.Start(BatchProcessor, cmd_line_opts);
-        }
+        // [Test]  
+        //  public static void TestFailReadingSpecs() 
+        //  {
+        //      string cmd_line_opts = @"-i \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule -s  \\proto-2\UnitTest_Files\ImsMetabolitesFinderBatchProcessorTestFiles // \ExampleSearchSpecError.txt -p 5 -w";
+        //      System.Diagnostics.Process.Start(BatchProcessor, cmd_line_opts);
+        //  }
 
         [Test]  
         public static void TestPreprocessing()
