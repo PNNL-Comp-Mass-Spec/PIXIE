@@ -105,7 +105,7 @@
         private ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization)
         {
             ChemicalBasedAnalysisResult result;
-            result.AnalysisStatus = AnalysisStatus.Nah;
+            result.AnalysisStatus = AnalysisStatus.NAH;
             result.ChemicalName = chemicalName;
             result.CrossSectionalArea = 0;
             result.FusionNumber = 0;
@@ -171,7 +171,7 @@
             {
                 if (CheckConflict(result, newWorkflowResult))
                 {
-                    result.AnalysisStatus = AnalysisStatus.Conflict;
+                    result.AnalysisStatus = AnalysisStatus.CON;
                 }
 
                 result.CrossSectionalArea = result.CrossSectionalArea * result.FusionNumber + newWorkflowResult.CrossSectionalArea;
@@ -208,7 +208,7 @@
 
             if (Math.Abs(result.LastVoltageGroupDriftTimeInMs - newWorkflowResult.LastVoltageGroupDriftTimeInMs) > NormalizedDriftTimeTolerance)
             {
-                result.AnalysisStatus = AnalysisStatus.Conflict;
+                result.AnalysisStatus = AnalysisStatus.CON;
             }
 
             return false;
