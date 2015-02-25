@@ -19,7 +19,7 @@
                 using (StreamWriter writer = new StreamWriter(resultFile))
                 {
                     writer.WriteLine("[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
-                    foreach (var item in resultAggregator.ResultCollection)
+                    foreach (var item in resultAggregator.DatasetBasedResultCollection)
                     {
                         string posResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonPlus);
                         string sodiumResult = SummarizeResultViper(item.Value, IonizationMethod.SodiumPlus);
@@ -42,7 +42,7 @@
                 using (StreamWriter writer = new StreamWriter(resultFile))
                 {
                     writer.WriteLine("[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
-                    foreach (var item in resultAggregator.ResultCollection)
+                    foreach (var item in resultAggregator.DatasetBasedResultCollection)
                     {
                         string negResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonMinus);
                         if (!String.IsNullOrEmpty(negResult))

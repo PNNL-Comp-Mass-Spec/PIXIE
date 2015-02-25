@@ -120,7 +120,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                         
                                         if (runningTask.Done)
                                         {
-                                            Console.WriteLine("Analysis was completed before and Reanalyze setting is on, skipping analysis for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName);
+                                            Console.WriteLine("Analysis was completed before and Reanalyze([-r]) was turned off, skipping analysis for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName);
                                         }
                                         else if (runningTask.ExitCode == 0)
                                         {
@@ -210,13 +210,11 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                         foreach (var chem in resultAggregator.ChemicalDatasetsMap)
                         {
-                            // TODO: experiment conflict identification
-
                             string chemName = chem.Key;
                             bool found = false;
 
                             // Result for M+H
-                            ChemicalBasedAnalysisResult protonPlusResult = resultAggregator.SummarizeResult(chemName, IonizationMethod.ProtonPlus);
+                            ChemicalBasedAnalysisResult protonPlusResult = resultAggregator.ChemicalBasedResultCollection[chemName][IonizationMethod.ProtonPlus];
                             string protonPlusSummary = protonPlusResult.AnalysisStatus.ToString();
                             if (protonPlusResult.AnalysisStatus == AnalysisStatus.POS)
                             {
@@ -224,17 +222,17 @@ namespace ImsMetabolitesFinderBatchProcessor
                             }
 
                             // Result for M-H
-                            ChemicalBasedAnalysisResult protonMinusResult = resultAggregator.SummarizeResult(chemName, IonizationMethod.ProtonMinus);
+                            ChemicalBasedAnalysisResult protonMinusResult = resultAggregator.ChemicalBasedResultCollection[chemName][IonizationMethod.ProtonMinus];
                             string protonMinusSummary = protonMinusResult.AnalysisStatus.ToString();
-                            if (protonPlusResult.AnalysisStatus == AnalysisStatus.POS)
+                            if (protonMinusResult.AnalysisStatus == AnalysisStatus.POS)
                             {
                                 found = true;
                             }
 
                             // Result for M+Na
-                            ChemicalBasedAnalysisResult sodiumPlusResult = resultAggregator.SummarizeResult(chemName, IonizationMethod.SodiumPlus);
+                            ChemicalBasedAnalysisResult sodiumPlusResult = resultAggregator.ChemicalBasedResultCollection[chemName][IonizationMethod.SodiumPlus];
                             string sodiumPlusSummary = sodiumPlusResult.AnalysisStatus.ToString();
-                            if (protonPlusResult.AnalysisStatus == AnalysisStatus.POS)
+                            if (sodiumPlusResult.AnalysisStatus == AnalysisStatus.POS)
                             {
                                 found = true;
                             }
@@ -313,7 +311,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                         { AnalysisStatus.XicNotFound, 8 },
                     };
 
-                    foreach (var item in resultAggregator.ResultCollection)
+                    foreach (var item in resultAggregator.DatasetBasedResultCollection)
                     {
                         plotItemCount += AddResultToScoresTable(item.Key, item.Value, IonizationMethod.ProtonPlus, table, colDef);
                         plotItemCount += AddResultToScoresTable(item.Key, item.Value, IonizationMethod.ProtonMinus, table, colDef);

@@ -8,16 +8,16 @@
         [Option('s', "searchspec", Required = true, HelpText = "Search spec file")]
         public string SearchSpecFile { get; set; }
 
-        [Option('w', "window", DefaultValue = false, HelpText = "Show the console output for each ImsInformed workflow")]
-        public bool ShowWindow { get; set; }
-
         [Option('i', "input", Required = true, HelpText = "specify the directory containing the uimf files, could be recursive")]
         public string InputPath { get; set; }
 
         [Option('p', "parallel", DefaultValue = 1, HelpText = "specify the number of processes allocated to run the program.")]
         public int NumberOfProcesses { get; set; }
 
-        [Option('n', "temsperplot", DefaultValue = 20, HelpText = "specify the number of items per plot in the final sore summary.")]
+        [Option('w', "window", DefaultValue = false, HelpText = "Show the console output for each ImsInformed workflow")]
+        public bool ShowWindow { get; set; }
+
+        [Option('n', "datasetsperplot", DefaultValue = 20, HelpText = "specify the number of items per plot in the final sore summary.")]
         public int NumberOfAnalysesPerPlot { get; set; }
 
         [Option('r', "reanalyze", DefaultValue = false, HelpText = "If reanalyze is specified, the batch processor would overwrite results from the previous runs if present, instead of using existing results")]

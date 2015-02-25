@@ -13,8 +13,10 @@
         public IEnumerable<ImsInformedProcess> Tasks { get; private set; }
 
         public IDictionary<string, ICollection<string>> ChemicalDatasetsMap { get; private set; }
+
+        public IDictionary<string, IDictionary<IonizationMethod, ChemicalBasedAnalysisResult>> ChemicalBasedResultCollection { get; private set; }
         
-        public IDictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>> ResultCollection { get; private set; }
+        public IDictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>> DatasetBasedResultCollection { get; private set; }
 
         private const double CollisionCrossSectionTolerance = 5;
         private const double NormalizedDriftTimeTolerance = 0.75;
@@ -30,37 +32,9 @@
             this.ResultCounter.Add(AnalysisStatus.NEG, 0);
             this.ResultCounter.Add(AnalysisStatus.REJ, 0);
             this.ResultCounter.Add(AnalysisStatus.MassError, 0);
-            this.ResultCollection = new Dictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>>();
             this.ChemicalDatasetsMap = new Dictionary<string, ICollection<string>>();
-        }
-
-        public ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization)
-        {
-            ChemicalBasedAnalysisResult result;
-            result.AnalysisStatus = AnalysisStatus.Nah;
-            result.ChemicalName = chemicalName;
-            result.CrossSectionalArea = 0;
-            result.FusionNumber = 0;
-            result.IonizationMethod = ionization;
-            result.LastVoltageGroupDriftTimeInMs = 0;
-            result.MonoisotopicMass = 0;
-
-            if (!this.ChemicalDatasetsMap.Keys.Contains(chemicalName))
-            {
-                throw new InstanceNotFoundException(chemicalName + " not found in ChemicalDatasetsMap");
-            }
-
-            IEnumerable<string> datasets = this.ChemicalDatasetsMap[chemicalName];
-            foreach (string dataset in datasets)
-            {
-                if (this.ResultCollection[dataset].ContainsKey(ionization))
-                {
-                    MoleculeInformedWorkflowResult workflowResult = this.ResultCollection[dataset][ionization];
-                    result = FuseResults(result, workflowResult);
-                }
-                
-            }
-            return result;
+            this.DatasetBasedResultCollection = new Dictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>>();
+            this.ChemicalBasedResultCollection = new Dictionary<string, IDictionary<IonizationMethod, ChemicalBasedAnalysisResult>>();
         }
 
         // process result files collected and generate a final report.
@@ -86,15 +60,15 @@
 
                     string datasetName = result.DatasetName;
 
-                    if (!this.ResultCollection.ContainsKey(datasetName))
+                    if (!this.DatasetBasedResultCollection.ContainsKey(datasetName))
                     {
                         IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> ionizationResult = new Dictionary<IonizationMethod, MoleculeInformedWorkflowResult>();
                         ionizationResult.Add(result.IonizationMethod, result);
-                        ResultCollection.Add(datasetName, ionizationResult);
+                        this.DatasetBasedResultCollection.Add(datasetName, ionizationResult);
                     } 
                     else 
                     {
-                        ResultCollection[datasetName].Add(result.IonizationMethod, result);
+                        this.DatasetBasedResultCollection[datasetName].Add(result.IonizationMethod, result);
                     }
 
                     var meta = new DatasetMetadata(datasetName);
@@ -108,7 +82,6 @@
                     {
                         this.ChemicalDatasetsMap[chemName].Add(datasetName);
                     }
-
                     task.Dispose();
                 }
                 catch (Exception e)
@@ -118,6 +91,43 @@
                     Console.WriteLine("");
                 }
             }
+            foreach (var chem in this.ChemicalDatasetsMap)
+            {
+                string chemName = chem.Key;
+                Dictionary<IonizationMethod, ChemicalBasedAnalysisResult> dict = new Dictionary<IonizationMethod, ChemicalBasedAnalysisResult>();
+                dict.Add(IonizationMethod.ProtonPlus, this.SummarizeResult(chemName, IonizationMethod.ProtonPlus));
+                dict.Add(IonizationMethod.ProtonMinus, this.SummarizeResult(chemName, IonizationMethod.ProtonMinus));
+                dict.Add(IonizationMethod.SodiumPlus, this.SummarizeResult(chemName, IonizationMethod.SodiumPlus));
+                this.ChemicalBasedResultCollection.Add(chemName, dict);
+            }
+        }
+
+        private ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization)
+        {
+            ChemicalBasedAnalysisResult result;
+            result.AnalysisStatus = AnalysisStatus.Nah;
+            result.ChemicalName = chemicalName;
+            result.CrossSectionalArea = 0;
+            result.FusionNumber = 0;
+            result.IonizationMethod = ionization;
+            result.LastVoltageGroupDriftTimeInMs = 0;
+            result.MonoisotopicMass = 0;
+
+            if (!this.ChemicalDatasetsMap.Keys.Contains(chemicalName))
+            {
+                throw new InstanceNotFoundException(chemicalName + " not found in ChemicalDatasetsMap");
+            }
+
+            IEnumerable<string> datasets = this.ChemicalDatasetsMap[chemicalName];
+            foreach (string dataset in datasets)
+            {
+                if (this.DatasetBasedResultCollection[dataset].ContainsKey(ionization))
+                {
+                    MoleculeInformedWorkflowResult workflowResult = this.DatasetBasedResultCollection[dataset][ionization];
+                    result = FuseResults(result, workflowResult);
+                }
+            }
+            return result;
         }
 
         private static ChemicalBasedAnalysisResult InitiateChemicalBasedAnalysisResult(MoleculeInformedWorkflowResult result, string chemName)
