@@ -37,7 +37,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                 // Check if searchSpec file exisits.
                 if (!File.Exists(searchSpecPath))
                 {
-                    throw new FileNotFoundException();
+                    throw new FileNotFoundException("Search spec file: " + searchSpecPath + " not found");
                 }
                 
                 int numberOfProcesses = options.NumberOfProcesses;
