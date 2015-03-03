@@ -40,7 +40,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     throw new FileNotFoundException("Search spec file: " + searchSpecPath + " not found");
                 }
                 
-                int numberOfProcesses = options.NumberOfProcesses;
+                int maxNumberOfProcesses = options.NumberOfProcesses;
                 bool reanalyze = options.Reanalyze;
                 int numberOfAnalysesPerPlot = options.NumberOfAnalysesPerPlot;
 
@@ -58,7 +58,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                     while (count < numberOfCommands)
                     {
-                        if (runningTasks.Count < numberOfProcesses)
+                        if (runningTasks.Count < maxNumberOfProcesses)
                         {
                             // Find the next non-conflicting task that is not done yet and resource-free and is not running.
                             bool done = processor.TaskList[index].Done;
@@ -104,7 +104,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             count++;
                         }
 
-                        else if (runningTasks.Count == numberOfProcesses)
+                        else if (runningTasks.Count == maxNumberOfProcesses)
                         {
                             // Wait until the at least one task is finsihed.
                             bool found = false;

@@ -2,4 +2,4 @@ Harmless unit test Search spec
 ImsMetabolitesFinderBatchProcessor.exe -i  \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\ -s \\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\ExampleSearchSpec.txt -p 5 -r -w
 
 Master Search spec
-ImsMetabolitesFinderBatchProcessor.exe -i \\protoapps\ims08_UIMFs -s  \\PNL\Projects\ExposomeLDRD\software_stable\SearchSpecs\masterSearchSpec.txt -p 10 -r
+ImsMetabolitesFinderBatchProcessor.exe -i \\protoapps\ims08_UIMFs -s  \\PNL\Projects\ExposomeLDRD\Software\SearchSpecs\masterSearchSpec.txt -p 8 -r

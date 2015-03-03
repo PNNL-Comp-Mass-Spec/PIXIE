@@ -127,6 +127,7 @@
                     result = FuseResults(result, workflowResult);
                 }
             }
+
             return result;
         }
 

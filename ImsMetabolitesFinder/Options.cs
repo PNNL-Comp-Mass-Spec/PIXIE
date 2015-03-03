@@ -21,7 +21,7 @@
         [Option('i', "input", Required = true, HelpText = "Input UIMF files to be read.")]
         public string InputPath { get; set; }
 
-        [Option('t', "target", Required = true, HelpText = "IMS targeted to be identified. Could either be an Mz value(e.g. 192.23), or empirical formula (e.g. C6H10ClN5)")]
+        [Option('t', "target", Required = true, HelpText = "IMS target to be identified. Could either be a Mz value(e.g. 192.23), or an empirical formula (e.g. C6H10ClN5)")]
         public string Target { get; set; }
 
         [Option('m', "method", Required = true, HelpText = "Select the ionization method used for the given experiment(M+H, M-H, M+Na)")]
@@ -30,13 +30,13 @@
         [Option('o', "output", DefaultValue = "", HelpText = "Folder where the search result and the QC file get stored.")]
         public string OutputPath { get; set; }
 
-        [Option("pause", DefaultValue = false, HelpText = "Pause the program when result is generated.")]
+        [Option('p', "pause", DefaultValue = false, HelpText = "Pause the program when result is generated.")]
         public bool PalseWhenDone { get; set; }
 
         [Option("ID", DefaultValue = 0, HelpText = "An unique ID to keep track of search for batch processing")]
         public int ID{ get; set; }
 
-        [Option('p', "ppm", DefaultValue = 10, HelpText = "Specify the PPM error allowed for MZ search.")]
+        [Option("ppm", DefaultValue = 10, HelpText = "Specify the PPM error allowed for MZ search.")]
         public int PpmError { get; set; }
 
         [Option("Tintensity", DefaultValue = 0.5, HelpText = "Specify intensity score threshold for features")]
