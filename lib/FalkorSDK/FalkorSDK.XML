@@ -245,7 +245,7 @@
             Default Channel count based on how many times a Channel has been created.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.SignalEvent.#ctor(System.Int32,System.Double)">
+        <member name="M:FalkorSDK.Data.Events.SignalEvent.#ctor(FalkorSDK.Channel.Channel,System.Double)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.SignalEvent"/> class. 
             </summary>
@@ -292,7 +292,7 @@
             Gets the Channel that this event is tied to.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.PulseEvent`1.#ctor(System.Int32,`0,System.Double)">
+        <member name="M:FalkorSDK.Data.Events.PulseEvent`1.#ctor(FalkorSDK.Channel.Channel,`0,System.Double)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.PulseEvent`1"/> class. 
             Creates a new pulse event with 
@@ -327,7 +327,7 @@
             Gets or sets the intial and ending value of the pulse.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.AnalogPulseEvent.#ctor(System.Int32,System.Double,System.Double)">
+        <member name="M:FalkorSDK.Data.Events.AnalogPulseEvent.#ctor(FalkorSDK.Channel.AOChannel,System.Double,System.Double)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.AnalogPulseEvent"/> class. 
             Creates a digital pulse event
@@ -353,7 +353,7 @@
             <typeparam name="T">
             </typeparam>
         </member>
-        <member name="M:FalkorSDK.Data.Events.StepEvent`1.#ctor(System.Int32)">
+        <member name="M:FalkorSDK.Data.Events.StepEvent`1.#ctor(FalkorSDK.Channel.Channel)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.StepEvent`1"/> class.
             </summary>
@@ -361,7 +361,7 @@
             TODO The Channel.
             </param>
         </member>
-        <member name="M:FalkorSDK.Data.Events.StepEvent`1.#ctor(System.Int32,System.Double)">
+        <member name="M:FalkorSDK.Data.Events.StepEvent`1.#ctor(FalkorSDK.Channel.Channel,System.Double)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.StepEvent`1"/> class.
             </summary>
@@ -390,7 +390,7 @@
             TODO The value.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.AnalogStepEvent.#ctor(System.Int32,System.Double,System.Double)">
+        <member name="M:FalkorSDK.Data.Events.AnalogStepEvent.#ctor(FalkorSDK.Channel.AOChannel,System.Double,System.Double,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.AnalogStepEvent"/> class.
             </summary>
@@ -427,7 +427,7 @@
             TODO The clock event.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.ClockEvent.#ctor(System.Int32,System.Double,System.Double)">
+        <member name="M:FalkorSDK.Data.Events.ClockEvent.#ctor(FalkorSDK.Channel.Channel,System.Double,System.Double)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.ClockEvent"/> class.
             </summary>
@@ -461,7 +461,7 @@
             A step event for digital voltages
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.DigitalStepEvent.#ctor(System.Int32)">
+        <member name="M:FalkorSDK.Data.Events.DigitalStepEvent.#ctor(FalkorSDK.Channel.DOChannel)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.DigitalStepEvent"/> class.
             </summary>
@@ -469,7 +469,7 @@
             TODO The Channel.
             </param>
         </member>
-        <member name="M:FalkorSDK.Data.Events.DigitalStepEvent.#ctor(System.Int32,System.Double,System.Boolean)">
+        <member name="M:FalkorSDK.Data.Events.DigitalStepEvent.#ctor(FalkorSDK.Channel.DOChannel,System.Double,System.Boolean,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.DigitalStepEvent"/> class.
             </summary>
@@ -501,7 +501,7 @@
             A pulse event for digital signals.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.DigitalPulseEvent.#ctor(System.Int32,System.Boolean,System.Double)">
+        <member name="M:FalkorSDK.Data.Events.DigitalPulseEvent.#ctor(FalkorSDK.Channel.DOChannel,System.Boolean,System.Double)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.DigitalPulseEvent"/> class. 
             Creates a digital pulse event
@@ -521,13 +521,18 @@
             A ramp event for analog voltages
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Events.AnalogRampEvent.#ctor(System.Int32)">
+        <member name="M:FalkorSDK.Data.Events.AnalogRampEvent.#ctor(FalkorSDK.Channel.AOChannel,System.Int32,System.Int32,System.Double,System.Double)">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Events.AnalogRampEvent"/> class.
             </summary>
             <param name="channel">
             TODO The Channel.
             </param>
+        </member>
+        <member name="M:FalkorSDK.Data.Events.AnalogRampEvent.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
         </member>
         <member name="P:FalkorSDK.Data.Events.AnalogRampEvent.EndValue">
             <summary>
@@ -536,7 +541,7 @@
         </member>
         <member name="P:FalkorSDK.Data.Events.AnalogRampEvent.Length">
             <summary>
-            Gets or sets the length of the event.
+            Gets the length of the event.
             </summary>
         </member>
         <member name="P:FalkorSDK.Data.Events.AnalogRampEvent.StartValue">
@@ -1337,7 +1342,7 @@
             <typeparam name="T">
             </typeparam>
         </member>
-        <member name="M:FalkorSDK.Data.ITimeUnitConverter`1.ConvertTo(FalkorSDK.Data.TimeTableUnits,FalkorSDK.Data.TimeTableUnits,`0)">
+        <member name="M:FalkorSDK.Data.ITimeUnitConverter`1.ConvertTo(FalkorSDK.Data.TimeUnits,FalkorSDK.Data.TimeUnits,`0)">
             <summary>
             Converts the time specified to the given units
             </summary>
@@ -1459,21 +1464,13 @@
             TODO The name.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Signals.SignalOutputProfile.#ctor(FalkorSDK.Devices.IInputOutputDevice)">
+        <member name="M:FalkorSDK.Data.Signals.SignalOutputProfile.#ctor(FalkorSDK.Devices.IAnalogOutputDevice{FalkorSDK.Channel.AOChannel})">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Signals.SignalOutputProfile"/> class. 
             Constructor
             </summary>
             <param name="device">
             The device.
-            </param>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.SignalOutputProfile.OnChannelRemoved(FalkorSDK.Channel.AOChannel)">
-            <summary>
-            The on channel removed.
-            </summary>
-            <param name="aoChannel">
-            The analog output channel.
             </param>
         </member>
         <member name="M:FalkorSDK.Data.Signals.SignalOutputProfile.#ctor(FalkorSDK.Devices.IFalkorDevice,System.Collections.Generic.IEnumerable{FalkorSDK.Data.Events.AnalogStepEvent})">
@@ -1487,7 +1484,7 @@
             TODO The signals.
             </param>
         </member>
-        <member name="M:FalkorSDK.Data.Signals.SignalOutputProfile.AddSignal(System.Int32,System.Nullable{System.Double})">
+        <member name="M:FalkorSDK.Data.Signals.SignalOutputProfile.AddSignal(FalkorSDK.Channel.AOChannel,System.Nullable{System.Double})">
             <summary>
             Adds a new channel to the profile.
             </summary>
@@ -1580,126 +1577,6 @@
         <member name="F:FalkorSDK.Data.Signals.SignalTypes.TestPulseGenerator">
             <summary>
             TODO The test pulse generator.
-            </summary>
-        </member>
-        <member name="F:FalkorSDK.Data.Signals.Tableau.name">
-            <summary>
-            TODO The name.
-            </summary>
-        </member>
-        <member name="F:FalkorSDK.Data.Signals.Tableau.comment">
-            <summary>
-            TODO The comment.
-            </summary>
-        </member>
-        <member name="F:FalkorSDK.Data.Signals.Tableau.iterations">
-            <summary>
-            The iterations.
-            </summary>
-        </member>
-        <member name="F:FalkorSDK.Data.Signals.Tableau.currentTimeUnits">
-            <summary>
-            The current time units.
-            </summary>
-        </member>
-        <member name="F:FalkorSDK.Data.Signals.Tableau.timeUnits">
-            <summary>
-            Holds the units the time values are stored in
-            </summary>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.OnNextTimeUnit(FalkorSDK.Data.TimeTableUnits)">
-            <summary>
-            TODO The on next time unit.
-            </summary>
-            <param name="timeTableUnits">
-            TODO The time table units.
-            </param>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.GetSignals(System.Double)">
-            <summary>
-            Retrieves the list of signals for a specific time slice.
-            </summary>
-            <param name="time">
-            Time to select signals for.
-            </param>
-            <returns>
-            List of signals
-            </returns>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.GetSignals">
-            <summary>
-            Retrieves a list of all signals.
-            </summary>
-            <returns>List of signals</returns>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.GetTimes">
-            <summary>
-            Returns the list of time AnalogOutputWaveform events.
-            </summary>
-            <returns>List of time AnalogOutputWaveform events in microseconds.</returns>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.Remove(FalkorSDK.Data.Events.SignalEvent)">
-            <summary>
-            TODO The remove.
-            </summary>
-            <param name="signal">
-            TODO The signal.
-            </param>
-            <returns>
-            The <see cref="T:System.Boolean"/>.
-            </returns>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.ChangeTime(FalkorSDK.Data.Events.SignalEvent)">
-            <summary>
-            TODO The change time.
-            </summary>
-            <param name="signalEvent">
-            TODO The signal event.
-            </param>
-            <exception cref="T:System.Exception">
-            </exception>
-            TODO ChangeTime is Private, but should it be?
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.Add(FalkorSDK.Data.Events.SignalEvent)">
-            <summary>
-            Add a signal to the time AnalogOutputWaveform.
-            </summary>
-            <param name="signal">
-            Channel to add
-            </param>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.ConvertTime(FalkorSDK.Data.TimeTableUnits)">
-            <summary>
-            Converts each entry from one time unit to the new time unit
-            </summary>
-            <param name="to">
-            </param>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.Tableau.TimeChanged(ReactiveUI.IObservedChange{FalkorSDK.Data.Events.SignalEvent,System.Double})">
-            <summary>
-            TODO The time changed.
-            </summary>
-            <param name="observedChange">
-            </param>
-        </member>
-        <member name="P:FalkorSDK.Data.Signals.Tableau.Comment">
-            <summary>
-            Gets or sets the Comment for this AnalogOutputWaveform
-            </summary>
-        </member>
-        <member name="P:FalkorSDK.Data.Signals.Tableau.Iterations">
-            <summary>
-            Gets or sets the iterations.
-            </summary>
-        </member>
-        <member name="P:FalkorSDK.Data.Signals.Tableau.TimeUnits">
-            <summary>
-            Gets or sets the units for the time AnalogOutputWaveform.
-            </summary>
-        </member>
-        <member name="P:FalkorSDK.Data.Signals.Tableau.Name">
-            <summary>
-            Gets or sets the name of the Channel AnalogOutputWaveform.
             </summary>
         </member>
         <member name="T:FalkorSDK.Data.SystemInformationReporter">
@@ -1832,7 +1709,7 @@
             TODO The _frame parameters.
             </summary>
         </member>
-        <member name="F:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile._globalParameters">
+        <member name="F:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile._globalParams">
             <summary>
             TODO The _global parameters.
             </summary>
@@ -1851,9 +1728,6 @@
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile"/> class.
             </summary>
-            <param name="logger">
-            The logger.
-            </param>
         </member>
         <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.CreateNewUnifiedIonMobilityFile(System.String,FalkorSDK.Devices.Digitizer.IAcquisitionProperties,FalkorSDK.Devices.Digitizer.IInstrumentCalibrationProperties,FalkorSDK.Devices.Digitizer.IExperimentCalibrationProperties)">
             <summary>
@@ -1870,13 +1744,39 @@
             The experiment Calibration Properties.
             </param>
         </member>
-        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.WriteUnifiedIonMobilityFileFrame(System.Collections.Generic.IDictionary{System.UInt32,System.Collections.Generic.IDictionary{System.Int32,System.Int32}})">
+        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.WriteUnifiedIonMobilityFileFrame(System.Int32,System.Collections.Generic.IDictionary{System.UInt32,System.Collections.Generic.IDictionary{System.Int32,System.Int32}})">
             <summary>
+            Write Frame.
             </summary>
+            <param name="frameNumer">The frame number for the frame to be inserted</param>
             <param name="accumulatedData">
             </param>
         </member>
-        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.CheckFrameParameters(UIMFLibrary.FrameParameters)">
+        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.WriteUnifiedIonMobilityFileFrame(System.Collections.Generic.IEnumerable{System.Int32[]})">
+            <summary>
+            The write unified ion mobility file frame.
+            </summary>
+            <param name="accumulatedData">
+            The accumulated data.
+            </param>
+        </member>
+        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.AddLegacyParameterTablesUsingExistingParamTables">
+            <summary>
+            Add legacy parameter tables using existing param Tables
+            </summary>
+        </member>
+        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.WriteUnifiedIonMobilityFileFrame(System.Int32,System.Collections.Generic.IEnumerable{System.Int32[]})">
+            <summary>
+            The write unified ion mobility file frame.
+            </summary>
+            <param name="frameNumber">
+            The frame number.
+            </param>
+            <param name="accumulatedData">
+            The accumulated data.
+            </param>
+        </member>
+        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.CheckFrameParameters(UIMFLibrary.FrameParams)">
             <summary>
             TODO The check frame parameters.
             </summary>
@@ -1884,7 +1784,7 @@
             TODO The fp.
             </param>
         </member>
-        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.CheckGlobalParameters(UIMFLibrary.GlobalParameters)">
+        <member name="M:FalkorSDK.Data.Uimf.UnifiedIonMobilityFile.CheckGlobalParameters(UIMFLibrary.GlobalParams)">
             <summary>
             Ensure no null properties in the global parameters.
             </summary>
@@ -2159,14 +2059,35 @@
             voltage would not be sampled.
             </summary>
         </member>
-        <member name="T:FalkorSDK.Devices.IDigitalInputOutputDevice">
+        <member name="M:FalkorSDK.Devices.IAlternatingCurrentChannel.WriteRadiofrequencyDriveAsync(System.Int32,System.Int32)">
             <summary>
-            TODO The DigitalInputOutputDevice interface.
+            TODO The write rf drive async.
             </summary>
+            <param name="address"></param>
+            <param name="value">
+            TODO The value.
+            </param>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
         </member>
-        <member name="T:FalkorSDK.Devices.IDigitalOutputDevice">
+        <member name="M:FalkorSDK.Devices.IAlternatingCurrentChannel.WriteSignalRadioFrequencyFrequencyAsync(System.Int32,System.Int32)">
             <summary>
-            Digital output device
+            TODO The write signal rf.
+            </summary>
+            <param name="signal">
+            TODO The signal.
+            </param>
+            <param name="value">
+            TODO The value.
+            </param>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+        <member name="P:FalkorSDK.Devices.IAlternatingCurrentChannel.AnalogOutputChannels">
+            <summary>
+            Gets a list of available signals
             </summary>
         </member>
         <member name="T:FalkorSDK.Devices.IFalkorDevice">
@@ -2218,120 +2139,6 @@
         <member name="P:FalkorSDK.Devices.IFalkorDevice.PluginDirectory">
             <summary>
             Gets the plugin directory.
-            </summary>
-        </member>
-        <member name="M:FalkorSDK.Devices.IDigitalOutputDevice.WriteDigitalOutputAsync(System.Int32,System.Boolean)">
-            <summary>
-            Writes the TTL signal to the device.
-            </summary>
-            <param name="signal">
-            </param>
-            <param name="state"></param>
-            <returns>
-            The <see cref="T:System.Threading.Tasks.Task"/>.
-            </returns>
-        </member>
-        <member name="P:FalkorSDK.Devices.IDigitalOutputDevice.DigitalOutputChannels">
-            <summary>
-            Gets the available digital signals.
-            </summary>
-        </member>
-        <member name="T:FalkorSDK.Devices.IDigitalInputDevice">
-            <summary>
-            Digital input device interface
-            </summary>
-        </member>
-        <member name="M:FalkorSDK.Devices.IDigitalInputDevice.ReadDigitalChannel(System.Int32)">
-            <summary>
-            Reads the state of a particular signal
-            </summary>
-            <param name="signal">
-            </param>
-            <returns>
-            The <see cref="T:System.Boolean"/>.
-            </returns>
-        </member>
-        <member name="T:FalkorSDK.Devices.IInputOutputDevice">
-            <summary>
-            TODO The InputOutputDevice interface.
-            </summary>
-        </member>
-        <member name="T:FalkorSDK.Devices.IAnalogOutputDevice">
-            <summary>
-            Interface for controlling an analog output device
-            </summary>
-        </member>
-        <member name="M:FalkorSDK.Devices.IAnalogOutputDevice.WriteRadiofrequencyDriveAsync(System.Int32,System.Int32)">
-            <summary>
-            TODO The write rf drive async.
-            </summary>
-            <param name="address"></param>
-            <param name="value">
-            TODO The value.
-            </param>
-            <returns>
-            The <see cref="T:System.Threading.Tasks.Task"/>.
-            </returns>
-        </member>
-        <member name="M:FalkorSDK.Devices.IAnalogOutputDevice.WriteSignalAsync(System.Int32,System.Double)">
-            <summary>
-            Writes the value on the signal provided.
-            </summary>
-            <param name="signal">
-            </param>
-            <param name="value">
-            The value.
-            </param>
-            <returns>
-            The <see cref="T:System.Threading.Tasks.Task"/>.
-            </returns>
-        </member>
-        <member name="M:FalkorSDK.Devices.IAnalogOutputDevice.WriteSignalRadioFrequencyFrequencyAsync(System.Int32,System.Int32)">
-            <summary>
-            TODO The write signal rf.
-            </summary>
-            <param name="signal">
-            TODO The signal.
-            </param>
-            <param name="value">
-            TODO The value.
-            </param>
-            <returns>
-            The <see cref="T:System.Threading.Tasks.Task"/>.
-            </returns>
-        </member>
-        <member name="P:FalkorSDK.Devices.IAnalogOutputDevice.AnalogOutputChannels">
-            <summary>
-            Gets a list of available signals
-            </summary>
-        </member>
-        <member name="T:FalkorSDK.Devices.IAnalogInputDevice">
-            <summary>
-            Interface for controlling an analog output device
-            </summary>
-        </member>
-        <member name="M:FalkorSDK.Devices.IAnalogInputDevice.Read(FalkorSDK.Channel.AIChannel)">
-            <summary>
-            </summary>
-            <param name="signal">
-            </param>
-            <returns>
-            The <see cref="T:System.Double"/>.
-            </returns>
-        </member>
-        <member name="M:FalkorSDK.Devices.IAnalogInputDevice.ReadWaveform(FalkorSDK.Channel.AIChannel)">
-            <summary>
-            Placehoolder for reading a waveform (e.g. mass spectrum)
-            </summary>
-            <param name="signal">
-            </param>
-            <returns>
-            The <see cref="!:ICollection"/>.
-            </returns>
-        </member>
-        <member name="P:FalkorSDK.Devices.IAnalogInputDevice.AvailableSignals">
-            <summary>
-            Gets a list of available signals
             </summary>
         </member>
         <member name="T:FalkorSDK.Devices.IFalkorDAC">
@@ -3355,7 +3162,7 @@
         </member>
         <member name="T:FalkorSDK.IO.Signals.SignalTimeTableReaderPlain">
             <summary>
-            Reads a plain text time AnalogOutputWaveform for voltage timing diagrams.
+            Reads a plain text time Table for voltage timing diagrams.
             </summary>
         </member>
         <member name="T:FalkorSDK.IO.Signals.ISignalTableReader`1">
@@ -3375,6 +3182,58 @@
             <returns>
             The <see cref="T:FalkorSDK.Data.Signals.SignalTable"/>.
             </returns>
+        </member>
+        <member name="F:FalkorSDK.IO.Signals.SignalTimeTableReaderPlain.tableCount">
+            <summary>
+            Total tables in file
+            </summary>
+        </member>
+        <member name="M:FalkorSDK.IO.Signals.SignalTimeTableReaderPlain.Read(System.String)">
+            <summary>
+            Reads a time Table from the path.
+            </summary>
+            <param name="path">
+            Path to read Table file from.
+            </param>
+            <exception cref="T:FalkorSDK.Data.Signals.TableNameNotSpecified">
+            Thrown if the file does not include a name
+            </exception>
+            <exception cref="T:FalkorSDK.Data.Signals.TableLengthNotSpecifiedException">
+            Thrown if the file does not include a time length
+            </exception>
+            <returns>
+            The <see cref="T:FalkorSDK.Data.Signals.SignalTable"/>.
+            </returns>
+        </member>
+        <member name="M:FalkorSDK.IO.Signals.SignalTimeTableReaderPlain.ParseAnalogStepEvent(System.Collections.Generic.IList{System.String})">
+            <summary>
+            TODO The add analog step event.
+            </summary>
+            <param name="data">
+            The data.
+            </param>
+        </member>
+        <member name="M:FalkorSDK.IO.Signals.SignalTimeTableReaderPlain.ParseAndSetKeyValuePair(FalkorSDK.Data.Signals.SignalTable,System.String,System.String)">
+            <summary>
+            Parses a key value pair and updates the table info.
+            </summary>
+            <param name="key">
+            The key.
+            </param>
+            <param name="value">
+            The value.
+            </param>
+        </member>
+        <member name="M:FalkorSDK.IO.Signals.SignalTimeTableReaderPlain.ParseAndSetTimeUnits(FalkorSDK.Data.Signals.SignalTable,System.String)">
+            <summary>
+            TODO The parse and set time units.
+            </summary>
+            <param name="unitType">
+            TODO The unit type.
+            </param>
+            <exception cref="T:System.IO.InvalidDataException">
+            The only current acceptable units are Milliseconds, Microseconds, and Seconds.  Any other value with raise this error.
+            </exception>
         </member>
         <member name="T:FalkorSDK.IO.Signals.SignalTimeTableReaderPlainAsync">
             <summary>
@@ -3583,22 +3442,24 @@
             Holds the units the time values are stored in
             </summary>
         </member>
-        <member name="F:FalkorSDK.Data.Signals.SignalTable.currentTimeUnits">
-            <summary>
-            The current time units.
-            </summary>
-        </member>
         <member name="M:FalkorSDK.Data.Signals.SignalTable.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:FalkorSDK.Data.Signals.SignalTable"/> class. 
             Constructor.
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.Signals.SignalTable.OnNextTimeUnit(FalkorSDK.Data.TimeTableUnits)">
+        <member name="M:FalkorSDK.Data.Signals.SignalTable.#ctor(System.Collections.Generic.IEnumerable{FalkorSDK.Data.Events.AnalogStepEvent},System.Collections.Generic.IEnumerable{FalkorSDK.Data.Events.DigitalStepEvent})">
+            <summary>
+            Constructor that takes collections of analog and digital step events and builds up the table.
+            </summary>
+            <param name="analogStepEvents"></param>
+            <param name="digitalStepEvents"></param>
+        </member>
+        <member name="M:FalkorSDK.Data.Signals.SignalTable.OnNextTimeUnit(FalkorSDK.Data.TimeUnits)">
             <summary>
             TODO The on next time unit.
             </summary>
-            <param name="timeTableUnits">
+            <param name="timeUnits">
             TODO The time table units.
             </param>
         </member>
@@ -3648,31 +3509,6 @@
             <returns>
             The <see cref="T:System.Boolean"/>.
             </returns>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.SignalTable.ChangeTime(FalkorSDK.Data.Events.SignalEvent)">
-            <summary>
-            TODO The change time.
-            </summary>
-            <param name="signalEvent">
-            TODO The signal event.
-            </param>
-            <exception cref="T:System.Exception">
-            </exception>
-            TODO ChangeTime is Private, but should it be?
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.SignalTable.ConvertTime(FalkorSDK.Data.TimeTableUnits)">
-            <summary>
-            Converts each entry from one time unit to the new time unit
-            </summary>
-            <param name="to">
-            </param>
-        </member>
-        <member name="M:FalkorSDK.Data.Signals.SignalTable.TimeChanged(ReactiveUI.IObservedChange{FalkorSDK.Data.Events.SignalEvent,System.Double})">
-            <summary>
-            TODO The time changed.
-            </summary>
-            <param name="observedChange">
-            </param>
         </member>
         <member name="P:FalkorSDK.Data.Signals.SignalTable.Comment">
             <summary>
@@ -3760,7 +3596,7 @@
             Converts 
             </summary>
         </member>
-        <member name="M:FalkorSDK.Data.SimpleTimeConverter.ConvertTo(FalkorSDK.Data.TimeTableUnits,FalkorSDK.Data.TimeTableUnits,System.Double)">
+        <member name="M:FalkorSDK.Data.SimpleTimeConverter.ConvertTo(FalkorSDK.Data.TimeUnits,FalkorSDK.Data.TimeUnits,System.Double)">
             <summary>
             Converts the time in microseconds to ticks.
             </summary>
@@ -3777,29 +3613,107 @@
             Ticks
             </returns>
         </member>
-        <member name="T:FalkorSDK.Data.TimeTableUnits">
+        <member name="T:FalkorSDK.Data.TimeUnits">
             <summary>
             TODO The time AnalogOutputWaveform units.
             </summary>
         </member>
-        <member name="F:FalkorSDK.Data.TimeTableUnits.Microseconds">
+        <member name="F:FalkorSDK.Data.TimeUnits.Microseconds">
             <summary>
             TODO The microseconds.
             </summary>
         </member>
-        <member name="F:FalkorSDK.Data.TimeTableUnits.Milliseconds">
+        <member name="F:FalkorSDK.Data.TimeUnits.Milliseconds">
             <summary>
             TODO The milliseconds.
             </summary>
         </member>
-        <member name="F:FalkorSDK.Data.TimeTableUnits.Seconds">
+        <member name="F:FalkorSDK.Data.TimeUnits.Seconds">
             <summary>
             TODO The seconds.
             </summary>
         </member>
-        <member name="F:FalkorSDK.Data.TimeTableUnits.Ticks">
+        <member name="F:FalkorSDK.Data.TimeUnits.Ticks">
             <summary>
             TODO The ticks.
+            </summary>
+        </member>
+        <member name="T:FalkorSDK.Devices.IAnalogInputDevice`1">
+            <summary>
+            Interface for controlling an analog output device
+            </summary>
+        </member>
+        <member name="M:FalkorSDK.Devices.IAnalogInputDevice`1.ReadSingleSample(`0)">
+            <summary>
+            </summary>
+            <param name="signal">
+            </param>
+            <returns>
+            The <see cref="T:System.Double"/>.
+            </returns>
+        </member>
+        <member name="M:FalkorSDK.Devices.IAnalogInputDevice`1.ReadMultisample(`0)">
+            <summary>
+            Placehoolder for reading a waveform (e.g. mass spectrum)
+            </summary>
+            <param name="signal">
+            </param>
+            <returns>
+            The <see cref="!:ICollection"/>.
+            </returns>
+        </member>
+        <member name="P:FalkorSDK.Devices.IAnalogInputDevice`1.AvailableSignals">
+            <summary>
+            Gets a list of available signals
+            </summary>
+        </member>
+        <member name="T:FalkorSDK.Devices.IAnalogOutputDevice`1">
+            <summary>
+            Interface for controlling an analog output device
+            </summary>
+        </member>
+        <member name="M:FalkorSDK.Devices.IAnalogOutputDevice`1.WriteSingleSampleAsync(`0,System.Double)">
+            <summary>
+            Writes the value on the signal provided.
+            </summary>
+            <param name="signal">
+            </param>
+            <param name="value">
+            The value.
+            </param>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+        <member name="P:FalkorSDK.Devices.IAnalogOutputDevice`1.AnalogOutputChannels">
+            <summary>
+            Gets a list of available signals
+            </summary>
+        </member>
+        <member name="T:FalkorSDK.Devices.IDigitalInputDevice`2">
+            <summary>
+            Digital input device interface
+            </summary>
+        </member>
+        <member name="T:FalkorSDK.Devices.IDigitalOutputDevice`1">
+            <summary>
+            Digital output device
+            </summary>
+        </member>
+        <member name="M:FalkorSDK.Devices.IDigitalOutputDevice`1.WriteSingleSampleAsync(`0,System.Boolean)">
+            <summary>
+            Writes the TTL signal to the device.
+            </summary>
+            <param name="channel">
+            </param>
+            <param name="value"></param>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/>.
+            </returns>
+        </member>
+        <member name="P:FalkorSDK.Devices.IDigitalOutputDevice`1.DigitalOutputChannels">
+            <summary>
+            Gets the available digital signals.
             </summary>
         </member>
         <member name="T:FalkorSDK.Devices.IDigitizer">
@@ -4156,6 +4070,11 @@
         <member name="F:FalkorSDK.IO.Signals.StaticSignalTableFormats.Text">
             <summary>
             TODO The text.
+            </summary>
+        </member>
+        <member name="T:FalkorSDK.Numerics.FourierTransformation">
+            <summary>
+            Simple wrapper around the MathNet numerics static Fourier class. This is in order to allow easier access to the built in types. 
             </summary>
         </member>
         <member name="T:FalkorSDK.SignalPlotter.Data.FalkorPlotTypeObject">

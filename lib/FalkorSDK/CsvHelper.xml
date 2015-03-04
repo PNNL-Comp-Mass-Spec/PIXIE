@@ -2322,6 +2322,13 @@
             True to ignore, otherwise false. Default is true.
             </summary>
         </member>
+        <member name="P:CsvHelper.Configuration.CsvConfiguration.UseExcelLeadingZerosFormatForNumerics">
+            <summary>
+            Gets or sets a value indicating if an Excel specific
+            format should be used when writing fields containing
+            numeric values. e.g. 00001 -> ="00001"
+            </summary>
+        </member>
         <member name="P:CsvHelper.Configuration.CsvConfiguration.PrefixReferenceHeaders">
             <summary>
             Gets or sets a value indicating if headers of reference

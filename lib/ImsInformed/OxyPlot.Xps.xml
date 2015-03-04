@@ -59,6 +59,13 @@
             </summary>
             <param name="model">The model.</param>
         </member>
+        <member name="M:OxyPlot.Xps.XpsExporter.Write(OxyPlot.IPlotModel,System.Windows.Xps.XpsDocumentWriter)">
+            <summary>
+            Write the specified <see cref="T:OxyPlot.IPlotModel"/> to the specified <see cref="T:System.Windows.Xps.XpsDocumentWriter"/>.
+            </summary>
+            <param name="model">The model.</param>
+            <param name="writer">The document writer.</param>
+        </member>
         <member name="P:OxyPlot.Xps.XpsExporter.Width">
             <summary>
             Gets or sets the width of the output document.
