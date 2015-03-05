@@ -60,24 +60,33 @@ namespace ImsMetabolitesFinderBatchProcessor
         }
 
         // search for the uimf file in the given directory.
-        private string FindUimfFile(string uimfLocation, string datasetName)
+        private string FindUimfFile(string fileOrFolderPath, string datasetName)
         {
-            if (File.Exists(uimfLocation))
+            string uimfFileName = datasetName + ".uimf";
+
+            if (File.Exists(fileOrFolderPath))
             {
-                if (uimfLocation.Contains(datasetName))
+                if (fileOrFolderPath.EndsWith(uimfFileName))
                 {
-                    return uimfLocation;
+                    return fileOrFolderPath;
                 }
             }
      
-            if (!Directory.Exists(inputPath))
+            if (!Directory.Exists(fileOrFolderPath))
             {
                 throw new FileNotFoundException();
             }
 
-            //string[] files = Directory.GetFiles(uimfLocation, datasetName + ".uimf", SearchOption.AllDirectories);
+            // Search for the immediate directory.
+            string immediateUimfFilePath = Path.Combine(fileOrFolderPath, uimfFileName);
 
-            IEnumerable<string> files = Directory.EnumerateFiles(uimfLocation, datasetName + ".uimf", SearchOption.AllDirectories);
+            if (File.Exists(immediateUimfFilePath))
+            {
+                return immediateUimfFilePath;
+            }
+
+            // Search for subdirectories
+            IEnumerable<string> files = Directory.EnumerateFiles(fileOrFolderPath, datasetName + ".uimf", SearchOption.AllDirectories);
 
             try
             {
@@ -85,7 +94,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             }
             catch (Exception)
             {
-                throw new FileNotFoundException("Dataset " + datasetName + ".uimf was not found in the directory " + uimfLocation + ". Please refine the search spec and try again.");
+                throw new FileNotFoundException("Dataset " + datasetName + ".uimf was not found in the directory " + fileOrFolderPath + ". Please refine the search spec and try again.");
             }
         }
 
