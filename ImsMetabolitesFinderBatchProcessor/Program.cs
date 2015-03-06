@@ -7,9 +7,7 @@ namespace ImsMetabolitesFinderBatchProcessor
     using System.IO;
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
 
-    using FalkorSDK.SignalPlotter;
     using FalkorSDK.SignalPlotter.Data;
     using FalkorSDK.SignalPlotter.PlottableDataModel;
 
@@ -178,8 +176,8 @@ namespace ImsMetabolitesFinderBatchProcessor
                         Trace.AutoFlush = true;
 
                         Trace.WriteLine("Results summary:");
-                        Trace.WriteLine("");
-                        Trace.WriteLine("<Dataset Name> <M+H> <M-H> <M+Na>");
+                        Trace.WriteLine(string.Empty);
+                        Trace.WriteLine("<Dataset Name> <M+H> <M-H> <M+Na> <APCI> <M+HCOO> <M-2H+Na>");
                         
 
                         // Write the summary file.
@@ -191,48 +189,45 @@ namespace ImsMetabolitesFinderBatchProcessor
                             string chemName = chem.Key;
                             bool found = false;
 
-                            // Result for M+H
-                            ChemicalBasedAnalysisResult protonPlusResult = resultAggregator.ChemicalBasedResultCollection[chemName][IonizationMethod.ProtonPlus];
-                            string protonPlusSummary = protonPlusResult.AnalysisStatus.ToString();
-                            if (protonPlusResult.AnalysisStatus == AnalysisStatus.POS)
+                            Trace.Write(String.Format("    {0}: ", chemName));
+
+                            foreach (var ionization in resultAggregator.SupportedIonizationMethods)
                             {
-                                found = true;
+                                string summary;
+                                if (resultAggregator.ChemicalBasedResultCollection[chemName].ContainsKey(ionization))
+                                {
+                                    ChemicalBasedAnalysisResult result = resultAggregator.ChemicalBasedResultCollection[chemName][ionization];
+                                    summary = result.AnalysisStatus.ToString();
+                                    if (result.AnalysisStatus == AnalysisStatus.POS)
+                                    {
+                                        found = true;
+                                    }
+                                }
+                                else
+                                {
+                                    summary = AnalysisStatus.NAH.ToString();
+                                }
+
+                                Trace.Write(String.Format(" " + summary));
                             }
 
-                            // Result for M-H
-                            ChemicalBasedAnalysisResult protonMinusResult = resultAggregator.ChemicalBasedResultCollection[chemName][IonizationMethod.ProtonMinus];
-                            string protonMinusSummary = protonMinusResult.AnalysisStatus.ToString();
-                            if (protonMinusResult.AnalysisStatus == AnalysisStatus.POS)
-                            {
-                                found = true;
-                            }
-
-                            // Result for M+Na
-                            ChemicalBasedAnalysisResult sodiumPlusResult = resultAggregator.ChemicalBasedResultCollection[chemName][IonizationMethod.SodiumPlus];
-                            string sodiumPlusSummary = sodiumPlusResult.AnalysisStatus.ToString();
-                            if (sodiumPlusResult.AnalysisStatus == AnalysisStatus.POS)
-                            {
-                                found = true;
-                            }
-
-                            Trace.WriteLine(String.Format("    {0}: {1}, {2}, {3}", chemName, protonPlusSummary, protonMinusSummary, sodiumPlusSummary));
-                            
                             if (found)
                             {
                                 identifiedChemicalCounter++;
                             }
+
                             totalChemicalCounter++;
                         }
 
-                        Trace.WriteLine("");
+                        Trace.WriteLine(string.Empty);
 
                         Console.WriteLine();
                         Trace.WriteLine("Analysis summary:");
-                        Trace.WriteLine("");
+                        Trace.WriteLine(string.Empty);
                         Trace.WriteLine(String.Format("{0} out of {1} analysis jobs finished without errors.", count - failedAnalyses.Count,     count));
-                        Trace.WriteLine("");
+                        Trace.WriteLine(string.Empty);
                         Trace.WriteLine(String.Format("{0} out of {1} chemicals have at least 1 ionization mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
-                        Trace.WriteLine("");
+                        Trace.WriteLine(string.Empty);
                         Trace.WriteLine("Results and QA data were written where the input UIMF files are.");
                         Trace.WriteLine(String.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.POS]));
                         Trace.WriteLine(String.Format("   Analyses concluded Negative            (NEG) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NEG]));
@@ -240,7 +235,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                         Trace.WriteLine(String.Format("   Analyses concluded Insufficent Points  (NSP) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NSP]));
                         Trace.WriteLine(String.Format("   Analyses concluded Analysis Error      (ERR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
                         Trace.WriteLine(String.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
-                        Trace.WriteLine("");
+                        Trace.WriteLine(string.Empty);
                         if (failedAnalyses.Count > 0)
                         {
                             Trace.WriteLine(String.Format("The following {0} analyses failed, please check result file for details: ", failedAnalyses.Count));
@@ -268,6 +263,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                         "Average Feature Peak Shape Score",
                         "Analysis Score"
                     };
+
                     NumericTable table = new NumericTable(colDef);
                     
                     int plotItemCount = 0;
@@ -292,9 +288,10 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                     foreach (var item in resultAggregator.DatasetBasedResultCollection)
                     {
-                        plotItemCount += AddResultToScoresTable(item.Key, item.Value, IonizationMethod.ProtonPlus, table, colDef);
-                        plotItemCount += AddResultToScoresTable(item.Key, item.Value, IonizationMethod.ProtonMinus, table, colDef);
-                        plotItemCount += AddResultToScoresTable(item.Key, item.Value, IonizationMethod.SodiumPlus, table, colDef);
+                        foreach (var ionizationMethod in resultAggregator.SupportedIonizationMethods)
+                        {
+                            plotItemCount += AddResultToScoresTable(item.Key, item.Value, ionizationMethod, table, colDef);
+                        }
 
                         if (plotItemCount >= numberOfAnalysesPerPlot)
                         {
@@ -344,7 +341,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Console.Write("Line {0}: ", exception.Data["lineNumber"]);
                         }
                         Console.WriteLine(exception.Message);
-                        Console.WriteLine("");
+                        Console.WriteLine(string.Empty);
                     }
                 }
             }
