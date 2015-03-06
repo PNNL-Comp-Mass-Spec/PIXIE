@@ -98,7 +98,30 @@ namespace ImsMetabolitesFinderBatchProcessor
             }
         }
 
-        // process job and return the commandline, if not whitespace, set firstLine to false
+        /// <summary>
+        /// process job and return the commandline, if not whitespace, set firstLine to false
+        /// </summary>
+        /// <param name="utility">
+        /// The utility.
+        /// </param>
+        /// <param name="line">
+        /// The line.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        /// <param name="exceptions">
+        /// The exceptions.
+        /// </param>
+        /// <param name="firstLine">
+        /// The first line.
+        /// </param>
+        /// <param name="ID">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ImsInformedProcess"/>.
+        /// </returns>
         private ImsInformedProcess ProcessJob(string utility, string line, int lineNumber, List<Exception> exceptions , ref bool firstLine, ref int ID)
         {
             string commandline = null;
@@ -117,6 +140,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     firstLine = false;
                     return null;
                 }
+
                 string[] parts = line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                     
                 if (parts.Count() < 2)
@@ -161,15 +185,16 @@ namespace ImsMetabolitesFinderBatchProcessor
         // Infer ionization method from data set name
         public static string InferIonization(string datasetName)
         {
-            // if (datasetName.Contains("pos"))
-            // {
-            //     return "M+H";
-            // }
+            if (datasetName.Contains("pos"))
+            {
+                return "M+H";
+            }
 
             if (datasetName.Contains("neg"))
             {
                 return "M-H";
             }
+
             throw new Exception(datasetName + ": No ionization method is given, and it is not possible to infer the ionization method from the dataset name " + datasetName + ".");
         }
     }

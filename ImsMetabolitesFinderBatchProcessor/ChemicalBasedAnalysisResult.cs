@@ -1,13 +1,29 @@
-﻿namespace ImsMetabolitesFinderBatchProcessor
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChemicalBasedAnalysisResult.cs" company="PNNL">
+//   Written for the Department of Energy (PNNL, Richland, WA)
+//   Copyright 2015, Battelle Memorial Institute.  All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the ChemicalBasedAnalysisResult type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace ImsMetabolitesFinderBatchProcessor
 {
     using System;
 
     using ImsInformed.Domain;
     using ImsInformed.Util;
 
+    /// <summary>
+    /// The chemical based analysis result.
+    /// </summary>
     [Serializable]
     public struct ChemicalBasedAnalysisResult 
     {
+        /// <summary>
+        /// The fusion number.
+        /// </summary>
         public int FusionNumber;
 
         /// <summary>

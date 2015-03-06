@@ -6,8 +6,20 @@
 
     using ImsInformed.Domain;
 
+    /// <summary>
+    /// The viper exporter.
+    /// </summary>
     public class ViperExporter
     {
+        /// <summary>
+        /// The export viper chemical based.
+        /// </summary>
+        /// <param name="resultAggregator">
+        /// The result aggregator.
+        /// </param>
+        /// <param name="viperFileDir">
+        /// The viper file dir.
+        /// </param>
         public static void ExportViperChemicalBased(ResultAggregator resultAggregator, string viperFileDir)
         {
             string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_chemical_based.txt");
@@ -54,6 +66,15 @@
             }
         }
 
+        /// <summary>
+        /// The export viper dataset based.
+        /// </summary>
+        /// <param name="resultAggregator">
+        /// The result aggregator.
+        /// </param>
+        /// <param name="viperFileDir">
+        /// The viper file dir.
+        /// </param>
         public static void ExportViperDatasetBased(ResultAggregator resultAggregator, string viperFileDir)
         {
             string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_dataset_based.txt");
@@ -100,6 +121,18 @@
             }
         }
 
+        /// <summary>
+        /// The summarize result viper.
+        /// </summary>
+        /// <param name="chemicalResult">
+        /// The chemical result.
+        /// </param>
+        /// <param name="ionization">
+        /// The ionization.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
         private static string SummarizeResultViper(IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> chemicalResult, IonizationMethod ionization)
         {
             string result = String.Empty;
@@ -119,6 +152,18 @@
             return result;
         }
 
+        /// <summary>
+        /// The summarize result viper.
+        /// </summary>
+        /// <param name="chemicalResult">
+        /// The chemical result.
+        /// </param>
+        /// <param name="ionization">
+        /// The ionization.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
         private static string SummarizeResultViper(IDictionary<IonizationMethod, ChemicalBasedAnalysisResult> chemicalResult, IonizationMethod ionization)
         {
             string result = String.Empty;

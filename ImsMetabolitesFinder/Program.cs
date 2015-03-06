@@ -1,9 +1,18 @@
-﻿#define DEBUG
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Program.cs" company="PNNL">
+//   Written for the Department of Energy (PNNL, Richland, WA)
+//   Copyright 2015, Battelle Memorial Institute.  All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the Program type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
-using System;
+#define DEBUG
 
 namespace IMSMetabolitesFinder
 {
+    using System;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -15,11 +24,25 @@ namespace IMSMetabolitesFinder
     using ImsMetabolitesFinder;
     using ImsMetabolitesFinder.Preprocess;
 
+    /// <summary>
+    /// The program.
+    /// </summary>
     public class Program
-	{
+    {
+        /// <summary>
+        /// The main.
+        /// </summary>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// </exception>
         [STAThread]
-		public static int Main(string[] args)
-		{
+        public static int Main(string[] args)
+        {
             try
             {
                 var options = new Options();
@@ -63,7 +86,7 @@ namespace IMSMetabolitesFinder
 
                     // Load parameters
                     double Mz = 0;
-                    string formula = "";
+                    string formula = string.Empty;
 
                     // get the target
                     bool isDouble = Double.TryParse(options.Target, out Mz);
@@ -72,7 +95,7 @@ namespace IMSMetabolitesFinder
                         formula = options.Target;
                     }
 
-                    bool pause = options.PalseWhenDone;
+                    bool pause = options.PauseWhenDone;
 
                     int ID = options.ID;
                     
@@ -90,9 +113,21 @@ namespace IMSMetabolitesFinder
                     {
                         method = IonizationMethod.SodiumPlus;
                     }
+                    else if (ionizationMethod == "APCI")
+                    {
+                        method = IonizationMethod.APCI;
+                    }
+                    else if (ionizationMethod == "M+HCOO")
+                    {
+                        method = IonizationMethod.HCOOMinus;
+                    }
+                    else if (ionizationMethod == "M-2H+NA")
+                    {
+                        method = IonizationMethod.Proton2MinusSodiumPlus;
+                    }
                     else 
                     {
-                        throw new ArgumentException("Ionization" + ionizationMethod + "method is not supported", "IonizationMethod");
+                        throw new ArgumentException("Ionization method [" + ionizationMethod + "] is not supported");
                     }
 
                     MoleculeWorkflowParameters searchParameters = new MoleculeWorkflowParameters 
@@ -116,11 +151,11 @@ namespace IMSMetabolitesFinder
                         if (!isDouble)
                         {
                             ImsTarget sample = new ImsTarget(ID, method, formula);
-                            target= new ImsTarget(ID, method, formula);
+                            target = new ImsTarget(ID, method, formula);
                         } 
                         else 
                         {
-                            target= new ImsTarget(ID, method, Mz);
+                            target = new ImsTarget(ID, method, Mz);
                         }
                     }
                     catch (Exception)
@@ -236,7 +271,7 @@ namespace IMSMetabolitesFinder
                         errorFile.Write(e.StackTrace);
                     }
 
-                    if (options.PalseWhenDone)
+                    if (options.PauseWhenDone)
                     {
                         PauseProgram();
                     }
@@ -244,14 +279,14 @@ namespace IMSMetabolitesFinder
                 }
                 return 1;
             }
-		}
+        }
 
         private static void PauseProgram() 
         {
-	        // hault the process from exiting to give the user more time in case of user double clicking this 
+            // hault the process from exiting to give the user more time in case of user double clicking this 
             // file from within Windows Explorer (or starting the program via a shortcut).
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();            
         }
-	}
+    }
 }

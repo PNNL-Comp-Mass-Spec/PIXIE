@@ -7,6 +7,7 @@ namespace ImsMetabolitesFinderBatchProcessor
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using FalkorSDK.SignalPlotter;
     using FalkorSDK.SignalPlotter.Data;
@@ -67,7 +68,17 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                             while (done || running || !resourceFree)
                             {
-                                index = (index + 1 == numberOfCommands) ? 0 : index + 1;
+                                if (index + 1 == numberOfCommands)
+                                {
+                                    ImsInformedProcess doneProcess = WaitUntilAtLeastOneTaskDone(runningTasks);
+                                    ProcessFinishedTask(doneProcess, failedAnalyses);
+                                    index = 0;
+                                }
+                                else
+                                {
+                                    index++;
+                                }
+
                                 done = processor.TaskList[index].Done;
                                 running = runningTasks.Contains(processor.TaskList[index]);
                                 resourceFree = processor.TaskList[index].AreResourcesFree(runningTasks);
@@ -101,45 +112,13 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 // skip the given analysis job
                                 processor.TaskList[index].Done = true;
                             }
+
                             count++;
                         }
-
                         else if (runningTasks.Count == maxNumberOfProcesses)
                         {
-                            // Wait until the at least one task is finsihed.
-                            bool found = false;
-                            while (!found)
-                            {
-                                // Wait for half a second
-                                Thread.Sleep(100);
-                                foreach (var runningTask in runningTasks)
-                                {
-                                    if (runningTask.Done || runningTask.HasExited)
-                                    {
-                                        found = true;
-                                        
-                                        if (runningTask.Done)
-                                        {
-                                            Console.WriteLine("Analysis was completed before and Reanalyze([-r]) was turned off, skipping analysis for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName);
-                                        }
-                                        else if (runningTask.ExitCode == 0)
-                                        {
-                                            Console.WriteLine("Analysis completed successfully for Dataset(ID =" + runningTask.JobID + ") " + runningTask.DataSetName);
-                                            runningTask.Done = true;
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Analysis failed for (ID =" + runningTask.JobID + ") " + runningTask.DataSetName + ". Check the error file for details.");
-                                            failedAnalyses.Add(runningTask);
-                                            runningTask.Done = true;
-                                        }
-                                        
-                                        Console.WriteLine(" ");
-                                        runningTasks.Remove(runningTask);
-                                        break;
-                                    }
-                                }
-                            }
+                            ImsInformedProcess doneProcess = WaitUntilAtLeastOneTaskDone(runningTasks);
+                            ProcessFinishedTask(doneProcess, failedAnalyses);
                         }
                     }
 
@@ -198,7 +177,6 @@ namespace ImsMetabolitesFinderBatchProcessor
                         Trace.Listeners.Add(resultFileTraceListener);
                         Trace.AutoFlush = true;
 
-                        
                         Trace.WriteLine("Results summary:");
                         Trace.WriteLine("");
                         Trace.WriteLine("<Dataset Name> <M+H> <M-H> <M+Na>");
@@ -370,10 +348,32 @@ namespace ImsMetabolitesFinderBatchProcessor
                     }
                 }
             }
+
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();            
         }
 
+        /// <summary>
+        /// The add result to scores table.
+        /// </summary>
+        /// <param name="dataset">
+        /// The dataset.
+        /// </param>
+        /// <param name="chemicalResult">
+        /// The chemical result.
+        /// </param>
+        /// <param name="ionization">
+        /// The ionization.
+        /// </param>
+        /// <param name="table">
+        /// The table.
+        /// </param>
+        /// <param name="colDef">
+        /// The col def.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
         public static int AddResultToScoresTable(string dataset, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> chemicalResult, IonizationMethod ionization, NumericTable table, IList<string> colDef)
         {
             if (chemicalResult.ContainsKey(ionization))
@@ -389,7 +389,56 @@ namespace ImsMetabolitesFinderBatchProcessor
                 table.Add(dict);
                 return 1;
             }
+
             return 0;
+        }
+
+        /// <summary>
+        /// The wait until at least one task done.
+        /// </summary>
+        /// <param name="runningTasks">
+        /// The running tasks.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ImsInformedProcess"/>.
+        /// </returns>
+        private static ImsInformedProcess WaitUntilAtLeastOneTaskDone(HashSet<ImsInformedProcess> runningTasks)
+        {
+            // Wait until the at least one task is finsihed.
+            while (true)
+            {
+                // Wait for half a second
+                Thread.Sleep(100);
+                foreach (var runningTask in runningTasks)
+                {
+                    if (runningTask.Done || runningTask.HasExited)
+                    {
+                        runningTasks.Remove(runningTask);
+                        return runningTask;
+                    }
+                }
+            }
+        }
+
+        private static void ProcessFinishedTask(ImsInformedProcess doneProcess, IList<ImsInformedProcess> failedAnalyses)
+        {
+            if (doneProcess.Done)
+            {
+                Console.WriteLine("Analysis was completed before and Reanalyze([-r]) was turned off, skipping analysis for (ID =" + doneProcess.JobID + ") " +doneProcess.DataSetName);
+            }
+            else if (doneProcess.ExitCode == 0)
+            {
+                Console.WriteLine("Analysis completed successfully for Dataset(ID =" + doneProcess.JobID + ") " + doneProcess.DataSetName);
+                doneProcess.Done = true;
+            }
+            else
+            {
+                Console.WriteLine("Analysis failed for (ID =" + doneProcess.JobID + ") " + doneProcess.DataSetName + ". Check the error file for details.");
+                failedAnalyses.Add(doneProcess);
+                doneProcess.Done = true;
+            }
+            
+            Console.WriteLine(" ");
         }
     }
 }

@@ -72,12 +72,12 @@ namespace ImsMetabolitesFinderTest
         }
 
         // This test is too destructive. Disabled for good.
-        //[Test]
-        //public static void TestMedac2UIMFConvert()
-        //{
-        //    const string filePath = @"\\proto-2\UnitTest_Files\Midac\EXP-PRO_pos2_9Oct14_Columbia_DI\EXP-PRO_pos2_9Oct14_Columbia_DI.d";
-        //    Midac2UIMFConvert.Convert(filePath, "");
-        //}
+        // [Test]
+        // public static void TestMedac2UIMFConvert()
+        // {
+        //     const string filePath = @"\\proto-2\UnitTest_Files\Midac\EXP-PRO_pos2_9Oct14_Columbia_DI\EXP-PRO_pos2_9Oct14_Columbia_DI.d";
+        //     Midac2UIMFConvert.Convert(filePath, "");
+        // }
 
         [Test]  
         public static void InferIonizationTest()
