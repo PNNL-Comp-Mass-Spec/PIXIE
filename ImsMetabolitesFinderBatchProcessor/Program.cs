@@ -38,15 +38,25 @@ namespace ImsMetabolitesFinderBatchProcessor
                 {
                     throw new FileNotFoundException("Search spec file: " + searchSpecPath + " not found");
                 }
+
+                if (!string.IsNullOrEmpty(options.OutputPath))
+                {
+                    if (!Directory.Exists(options.OutputPath))
+                    {
+                        Directory.CreateDirectory(options.OutputPath);
+                    }
+                }
                 
                 int maxNumberOfProcesses = options.NumberOfProcesses;
                 bool reanalyze = options.Reanalyze;
                 int numberOfAnalysesPerPlot = options.NumberOfAnalysesPerPlot;
+                string workspaceDir = string.IsNullOrEmpty(options.OutputPath) ? options.InputPath : options.OutputPath;
 
                 // Process the search spec file
                 try 
                 {
-                    SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.ShowWindow);
+                    SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.ShowWindow, options.OutputPath);
+                    
                     // Run the program in a single process.
                     int numberOfCommands = processor.TaskList.Count;
                     int count = 0;
@@ -151,12 +161,12 @@ namespace ImsMetabolitesFinderBatchProcessor
                     IEnumerable<ImsInformedProcess> sortedTasks = processor.TaskList;
                     
                     ResultAggregator resultAggregator = new ResultAggregator(sortedTasks);
-                    resultAggregator.ProcessResultFiles(options.InputPath);
+                    resultAggregator.ProcessResultFiles(workspaceDir);
                     Console.WriteLine("Aggregating Analyses Done");
                     Console.WriteLine();
 
                     // Print analysis result to console and summary file.
-                    string summaryFilePath = Path.Combine(options.InputPath, "analysis_summary.txt");
+                    string summaryFilePath = Path.Combine(workspaceDir, "analysis_summary.txt");
                     
                     // Setup result file.
                     Trace.Listeners.Clear();
@@ -189,7 +199,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             string chemName = chem.Key;
                             bool found = false;
 
-                            Trace.Write(String.Format("    {0}: ", chemName));
+                            Trace.Write(string.Format("    {0}: ", chemName));
 
                             foreach (var ionization in resultAggregator.SupportedIonizationMethods)
                             {
@@ -208,7 +218,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                     summary = AnalysisStatus.NAH.ToString();
                                 }
 
-                                Trace.Write(String.Format(" " + summary));
+                                Trace.Write(string.Format(" " + summary));
                             }
 
                             if (found)
@@ -224,32 +234,37 @@ namespace ImsMetabolitesFinderBatchProcessor
                         Console.WriteLine();
                         Trace.WriteLine("Analysis summary:");
                         Trace.WriteLine(string.Empty);
-                        Trace.WriteLine(String.Format("{0} out of {1} analysis jobs finished without errors.", count - failedAnalyses.Count,     count));
+                        Trace.WriteLine(string.Format("{0} out of {1} analysis jobs finished without errors.", count - failedAnalyses.Count,     count));
                         Trace.WriteLine(string.Empty);
-                        Trace.WriteLine(String.Format("{0} out of {1} chemicals have at least 1 ionization mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
+                        Trace.WriteLine(string.Format("{0} out of {1} chemicals have at least 1 ionization mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
                         Trace.WriteLine(string.Empty);
                         Trace.WriteLine("Results and QA data were written where the input UIMF files are.");
-                        Trace.WriteLine(String.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.POS]));
-                        Trace.WriteLine(String.Format("   Analyses concluded Negative            (NEG) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NEG]));
-                        Trace.WriteLine(String.Format("   Analyses concluded Rejected            (REJ) : {0}", resultAggregator.ResultCounter[AnalysisStatus.REJ]));
-                        Trace.WriteLine(String.Format("   Analyses concluded Insufficent Points  (NSP) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NSP]));
-                        Trace.WriteLine(String.Format("   Analyses concluded Analysis Error      (ERR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
-                        Trace.WriteLine(String.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
+                        Trace.WriteLine(string.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.POS]));
+                        Trace.WriteLine(string.Format("   Analyses concluded Negative            (NEG) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NEG]));
+                        Trace.WriteLine(string.Format("   Analyses concluded Rejected            (REJ) : {0}", resultAggregator.ResultCounter[AnalysisStatus.REJ]));
+                        Trace.WriteLine(string.Format("   Analyses concluded Insufficent Points  (NSP) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NSP]));
+                        Trace.WriteLine(string.Format("   Analyses concluded Analysis Error      (ERR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
+                        Trace.WriteLine(string.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
                         Trace.WriteLine(string.Empty);
                         if (failedAnalyses.Count > 0)
                         {
-                            Trace.WriteLine(String.Format("The following {0} analyses failed, please check result file for details: ", failedAnalyses.Count));
+                            Trace.WriteLine(string.Format("The following {0} analyses failed, please check result file for details: ", failedAnalyses.Count));
                             foreach (ImsInformedProcess dataset in failedAnalyses)
                             {
-                                Trace.WriteLine(String.Format("Line {0} : {1} [ID = {2}]", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
+                                Trace.WriteLine(string.Format("Line {0} : {1} [ID = {2}]", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
                             }
                             Console.WriteLine();
                         }
                     }
 
                     Console.WriteLine("Exporting results to viper input...");
-                    ViperExporter.ExportViperChemicalBased(resultAggregator, options.InputPath);
-                    ViperExporter.ExportViperDatasetBased(resultAggregator, options.InputPath);
+                    ViperExporter.ExportViperChemicalBased(resultAggregator, workspaceDir);
+                    ViperExporter.ExportViperDatasetBased(resultAggregator, workspaceDir);
+                    Console.WriteLine("Done.");
+                    Console.WriteLine();
+
+                    CsLibraryExporter.ExportCrossSectionChemicalBased(resultAggregator, workspaceDir);
+                    Console.WriteLine("Exporting results to cross section library...");
                     Console.WriteLine("Done.");
                     Console.WriteLine();
 
@@ -304,7 +319,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 Subtitle = "Page " + plotPageCount
                             });
                             
-                            string plotFilePath = Path.Combine(options.InputPath, "ScoresPlotPage" + plotPageCount + ".png");
+                            string plotFilePath = Path.Combine(workspaceDir, "ScoresPlotPage" + plotPageCount + ".png");
                             PlotterUtil.ExportPlotModel(plotFilePath, model, DPI, width, height);
 
                             // Renew the table
@@ -321,7 +336,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                     Subtitle = "Page " + plotPageCount + 1
                         });
 
-                        string plotFilePath = Path.Combine(options.InputPath, "ScoresPlotPage" + (plotPageCount + 1) + ".png");
+                        string plotFilePath = Path.Combine(workspaceDir, "ScoresPlotPage" + (plotPageCount + 1) + ".png");
                         double lastHeightDouble = (plotItemCount > (numberOfAnalysesPerPlot / 2)) ? (height / numberOfAnalysesPerPlot * plotItemCount) : height / 2;
                         int lastHeight = (int)Math.Round(lastHeightDouble);
                         PlotterUtil.ExportPlotModel(plotFilePath, remainder, DPI, width, lastHeight);

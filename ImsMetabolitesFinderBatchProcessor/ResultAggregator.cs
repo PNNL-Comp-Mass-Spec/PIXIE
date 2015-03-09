@@ -12,6 +12,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Management.Instrumentation;
 
     using ImsInformed.Domain;
@@ -32,6 +33,11 @@ namespace ImsMetabolitesFinderBatchProcessor
         private const double NormalizedDriftTimeTolerance = 0.75;
 
         /// <summary>
+        /// The normalized drift time tolerance.
+        /// </summary>
+        private bool empty;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ResultAggregator"/> class.
         /// </summary>
         /// <param name="processes">
@@ -49,6 +55,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             this.SupportedIonizationMethods = method;
 
             this.Tasks = processes;
+            this.empty = true;
             this.ResultCounter = new Dictionary<AnalysisStatus, int>
                                      {
                                          { AnalysisStatus.POS, 0 },
@@ -75,7 +82,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         public IEnumerable<ImsInformedProcess> Tasks { get; private set; }
 
         /// <summary>
-        /// Gets the chemical datasets map.
+        /// Map chemical name to dataset names, e.g. EXP-ABC_pos_Sept-15 and EXP-ABC_pos_Oct-16 both maps to EXP-ABC
         /// </summary>
         public IDictionary<string, ICollection<string>> ChemicalDatasetsMap { get; private set; }
 
@@ -145,6 +152,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     {
                         this.ChemicalDatasetsMap[chemName].Add(datasetName);
                     }
+
                     task.Dispose();
                 }
                 catch (Exception e)
@@ -154,6 +162,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     Console.WriteLine(string.Empty);
                 }
             }
+
             foreach (var chem in this.ChemicalDatasetsMap)
             {
                 string chemName = chem.Key;
@@ -162,6 +171,55 @@ namespace ImsMetabolitesFinderBatchProcessor
                 dict.Add(IonizationMethod.ProtonMinus, this.SummarizeResult(chemName, IonizationMethod.ProtonMinus));
                 dict.Add(IonizationMethod.SodiumPlus, this.SummarizeResult(chemName, IonizationMethod.SodiumPlus));
                 this.ChemicalBasedResultCollection.Add(chemName, dict);
+            }
+
+            this.empty = false;
+        }
+
+        /// <summary>
+        /// Export the analyses result on a per chemical basis for all ionization method.
+        /// </summary>
+        /// <param name="outputPath">
+        /// The output path.
+        /// </param>
+        /// <param name="summaryFuntion">
+        /// The summary funtion.
+        /// </param>
+        /// <param name="description">
+        /// The description.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
+        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description)
+        {
+            if (this.empty)
+            {
+                throw new InvalidOperationException("Please call ProcessResultFiles(string analysisDirectory) first to aggregate the result before exporting");
+            }
+
+            string resultFilePath = outputPath;
+            using (FileStream resultFile = new FileStream(resultFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                using (StreamWriter writer = new StreamWriter(resultFile))
+                {
+                    writer.WriteLine(description);
+                    foreach (var item in this.ChemicalBasedResultCollection)
+                    {
+                        writer.WriteLine(item.Key + ":");
+                        foreach (var ionization in this.SupportedIonizationMethods)
+                        {
+                            if (item.Value.ContainsKey(ionization))
+                            {
+                                string result = summaryFuntion(item.Value[ionization]);
+                                
+                                if (!String.IsNullOrEmpty(result))
+                                {
+                                    writer.WriteLine("    " + result);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -220,7 +278,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="ChemicalBasedAnalysisResult"/>.
         /// </returns>
-        private static ChemicalBasedAnalysisResult InitiateChemicalBasedAnalysisResult(MoleculeInformedWorkflowResult result, string chemName)
+        private static ChemicalBasedAnalysisResult InitializeChemicalBasedAnalysisResult(MoleculeInformedWorkflowResult result, string chemName)
         {
             ChemicalBasedAnalysisResult chemicalBasedAnalysisResult;
             chemicalBasedAnalysisResult.AnalysisStatus = result.AnalysisStatus;
@@ -269,7 +327,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             // previous results inconclusive
             if (!IsConclusive(result.AnalysisStatus))
             {
-                result = InitiateChemicalBasedAnalysisResult(newWorkflowResult, result.ChemicalName);
+                result = InitializeChemicalBasedAnalysisResult(newWorkflowResult, result.ChemicalName);
                 return result;
             }
 

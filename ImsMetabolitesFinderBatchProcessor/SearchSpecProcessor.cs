@@ -1,22 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SearchSpecProcessor.cs" company="PNNL">
+//   Written for the Department of Energy (PNNL, Richland, WA)
+//   Copyright 2015, Battelle Memorial Institute.  All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the SearchSpecProcessor type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace ImsMetabolitesFinderBatchProcessor
 {
-    using System.Data;
+    using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
 
+    /// <summary>
+    /// The search spec processor.
+    /// </summary>
     public class SearchSpecProcessor
     {
-        public List<ImsInformedProcess> TaskList { get; private set; }
-        public string Arguments { get; private set; }
-        private string inputPath;
-        private bool showWindow;
+        /// <summary>
+        /// The show window.
+        /// </summary>
+        private readonly bool showWindow;
 
-        public SearchSpecProcessor(string utilityPath, string searchSpecFilePath, string inputPath, bool showWindow)
+        /// <summary>
+        /// The input path.
+        /// </summary>
+        private readonly string inputPath;
+
+        /// <summary>
+        /// The output path.
+        /// </summary>
+        private readonly string outputPath;
+
+        /// <summary>
+        /// Gets the task list.
+        /// </summary>
+        public List<ImsInformedProcess> TaskList { get; private set; }
+
+        /// <summary>
+        /// Gets the arguments.
+        /// </summary>
+        public string Arguments { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SearchSpecProcessor"/> class.
+        /// </summary>
+        /// <param name="utilityPath">
+        /// The utility path.
+        /// </param>
+        /// <param name="searchSpecFilePath">
+        /// The search spec file path.
+        /// </param>
+        /// <param name="inputPath">
+        /// The input path.
+        /// </param>
+        /// <param name="showWindow">
+        /// The show window.
+        /// </param>
+        /// <param name="outputPath">
+        /// The output path.
+        /// </param>
+        /// <exception cref="FileNotFoundException">
+        /// </exception>
+        /// <exception cref="AggregateException">
+        /// </exception>
+        public SearchSpecProcessor(string utilityPath, string searchSpecFilePath, string inputPath, bool showWindow, string outputPath)
         {
             this.showWindow = showWindow;
+            this.outputPath = outputPath;
             this.inputPath = inputPath;
 
             Console.WriteLine("Processing search spec file at" + searchSpecFilePath);
@@ -147,6 +201,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                 {
                     exceptions.Add(new FormatException("Line " + lineNumber + " \"" + line + "\" is not an valid ImsMetabolitesFinder batch processing Job"));
                 }
+
                 // Find the UIMF files.
                 string datasetName = parts[0];
                 string uimfPath = this.FindUimfFile(this.inputPath, datasetName);
@@ -158,7 +213,10 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                 ionization = parts.Count() > 2 ? parts[2] : InferIonization(datasetName);
 
-                string outputDirectory = UIMFFileDir + "\\" + datasetName + "_ImsMetabolitesFinderResult" + "_" + ionization;
+                bool outputWhereInputsAre = string.IsNullOrEmpty(this.outputPath);
+
+                string workspaceDir = outputWhereInputsAre ? UIMFFileDir : this.outputPath;
+                string outputDirectory = Path.Combine(workspaceDir, datasetName + "_ImsMetabolitesFinderResult" + "_" + ionization);
 
                 commandline += "-i " + uimfPath + " "; 
                 commandline += "-t " + target + " ";

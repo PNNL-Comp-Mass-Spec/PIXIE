@@ -100,35 +100,7 @@ namespace IMSMetabolitesFinder
                     int ID = options.ID;
                     
                     // get the ionization method.
-                    IonizationMethod method;
-                    if (ionizationMethod == "M+H")
-                    {
-                        method = IonizationMethod.ProtonPlus;
-                    }
-                    else if (ionizationMethod == "M-H")
-                    {
-                        method = IonizationMethod.ProtonMinus;
-                    }
-                    else if (ionizationMethod == "M+NA")
-                    {
-                        method = IonizationMethod.SodiumPlus;
-                    }
-                    else if (ionizationMethod == "APCI")
-                    {
-                        method = IonizationMethod.APCI;
-                    }
-                    else if (ionizationMethod == "M+HCOO")
-                    {
-                        method = IonizationMethod.HCOOMinus;
-                    }
-                    else if (ionizationMethod == "M-2H+NA")
-                    {
-                        method = IonizationMethod.Proton2MinusSodiumPlus;
-                    }
-                    else 
-                    {
-                        throw new ArgumentException("Ionization method [" + ionizationMethod + "] is not supported");
-                    }
+                    IonizationMethod method = IonizationMethodExtensions.ParseIonizationMethod(options.IonizationMethod);
 
                     MoleculeWorkflowParameters searchParameters = new MoleculeWorkflowParameters 
                     {
