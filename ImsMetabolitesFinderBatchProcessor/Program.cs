@@ -340,6 +340,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                         {
                             Console.Write("Line {0}: ", exception.Data["lineNumber"]);
                         }
+
                         Console.WriteLine(exception.Message);
                         Console.WriteLine(string.Empty);
                     }

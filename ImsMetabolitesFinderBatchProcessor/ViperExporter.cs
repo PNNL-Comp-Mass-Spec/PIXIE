@@ -112,9 +112,28 @@
                     foreach (var item in resultAggregator.DatasetBasedResultCollection)
                     {
                         string negResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonMinus);
+                        string hcooResult = SummarizeResultViper(item.Value, IonizationMethod.HCOOMinus);
+                        string proton2MinusSodiumPlusResult = SummarizeResultViper(item.Value, IonizationMethod.Proton2MinusSodiumPlus);
+                        string apci = SummarizeResultViper(item.Value, IonizationMethod.APCI);
+                        
                         if (!String.IsNullOrEmpty(negResult))
                         {
                             writer.WriteLine(negResult);
+                        }
+
+                        if (!String.IsNullOrEmpty(negResult))
+                        {
+                            writer.WriteLine(hcooResult);
+                        }
+
+                        if (!String.IsNullOrEmpty(negResult))
+                        {
+                            writer.WriteLine(proton2MinusSodiumPlusResult);
+                        }
+
+                        if (!String.IsNullOrEmpty(negResult))
+                        {
+                            writer.WriteLine(apci);
                         }
                     }
                 }
