@@ -29,7 +29,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <summary>
         /// Gets or sets the input path.
         /// </summary>
-        [Option('i', "input", Required = true, HelpText = "specify the directory containing the uimf files, could be recursive")]
+        [Option('i', "input", Required = true, HelpText = "specify the directory containing the datasets, the datasets could be in a subdirectory of the input folder")]
         public string InputPath { get; set; }
 
         /// <summary>
@@ -62,6 +62,12 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </summary>
         [Option('r', "reanalyze", DefaultValue = false, HelpText = "If reanalyze is specified, the batch processor would overwrite results from the previous runs if present, instead of using existing results")]
         public bool Reanalyze { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ignore missing files.
+        /// </summary>
+        [Option('f', "--force", DefaultValue = false, HelpText = "If force is set, the batch processor would start the batch regardless of missing files. Analyses will only be performed on datasets that were found")]
+        public bool IgnoreMissingFiles { get; set; }
 
         /// <summary>
         /// The get usage.

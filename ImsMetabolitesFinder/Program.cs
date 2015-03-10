@@ -154,6 +154,7 @@ namespace IMSMetabolitesFinder
                         {
                             formatter.Serialize(stream, targetErrorResult);
                         }
+
                         throw;
                     }
 
@@ -247,8 +248,10 @@ namespace IMSMetabolitesFinder
                     {
                         PauseProgram();
                     }
+
                     return 1;
                 }
+
                 return 1;
             }
         }

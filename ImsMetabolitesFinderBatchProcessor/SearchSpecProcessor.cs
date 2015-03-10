@@ -46,6 +46,11 @@ namespace ImsMetabolitesFinderBatchProcessor
         public string Arguments { get; private set; }
 
         /// <summary>
+        /// Gets the arguments.
+        /// </summary>
+        public string Message { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SearchSpecProcessor"/> class.
         /// </summary>
         /// <param name="utilityPath">
@@ -67,7 +72,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </exception>
         /// <exception cref="AggregateException">
         /// </exception>
-        public SearchSpecProcessor(string utilityPath, string searchSpecFilePath, string inputPath, bool showWindow, string outputPath)
+        public SearchSpecProcessor(string utilityPath, string searchSpecFilePath, string inputPath, string outputPath, bool showWindow, bool force)
         {
             this.showWindow = showWindow;
             this.outputPath = outputPath;
@@ -85,10 +90,10 @@ namespace ImsMetabolitesFinderBatchProcessor
             TaskList = new List<ImsInformedProcess>();
 
             var exceptions = new List<Exception>();
+            int ID = 0;
             using (var reader = new StreamReader(searchSpecFilePath))
             {
                 int lineNumber = 0;
-                int ID = 0;
                 string line;
                 bool firstLine = true;
                 while ((line = reader.ReadLine()) != null)
@@ -98,7 +103,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     Console.WriteLine("Number of lines processed: {0}", lineNumber);
                     Console.SetCursorPosition(0, Console.CursorTop - 1);
                     
-                    ImsInformedProcess process = ProcessJob(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID);
+                    ImsInformedProcess process = this.ProcessJob(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID);
                     if (process != null)
                     {
                         
@@ -107,9 +112,13 @@ namespace ImsMetabolitesFinderBatchProcessor
                 }
             }
             
-            if (exceptions.Count > 0)
+            if (exceptions.Count > 0 && !force)
             {
                 throw new AggregateException("Failed to process search spec file, abort batch processor", exceptions);
+            }
+            else if (exceptions.Count > 0 && force)
+            {
+                this.Message = String.Format("{0} datasets were not found out of {1} datasets\r\n", exceptions.Count, exceptions.Count + ID);
             }
         }
 
@@ -128,7 +137,7 @@ namespace ImsMetabolitesFinderBatchProcessor
      
             if (!Directory.Exists(fileOrFolderPath))
             {
-                throw new FileNotFoundException();
+                throw new FileNotFoundException("Input path does not exist", fileOrFolderPath);
             }
 
             // Search for the immediate directory.
