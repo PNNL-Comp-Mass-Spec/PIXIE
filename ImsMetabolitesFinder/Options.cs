@@ -89,7 +89,7 @@ namespace ImsMetabolitesFinder
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("Tintensity", DefaultValue = 0.5, HelpText = "Specify intensity score threshold for features")]
+        [Option("Tintensity", DefaultValue = 0.0, HelpText = "Specify intensity score threshold for features")]
         public double IntensityThreshold
         {
             get

@@ -225,7 +225,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                         summary = AnalysisStatus.NAH.ToString();
                                     }
 
-                                    Trace.Write(string.Format(" " + summary));
+                                    Trace.WriteLine(string.Format(" " + summary));
                                 }
 
                                 if (found)
@@ -251,7 +251,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Trace.WriteLine(string.Format("   Analyses concluded Rejected            (REJ) : {0}", resultAggregator.ResultCounter[AnalysisStatus.REJ]));
                             Trace.WriteLine(string.Format("   Analyses concluded Insufficent Points  (NSP) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NSP]));
                             Trace.WriteLine(string.Format("   Analyses concluded Analysis Error      (ERR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
-                            Trace.WriteLine(string.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
+                            Trace.WriteLine(string.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.TAR]));
                             Trace.WriteLine(string.Empty);
                             if (failedAnalyses.Count > 0)
                             {
