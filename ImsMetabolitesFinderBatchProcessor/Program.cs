@@ -225,7 +225,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                         summary = AnalysisStatus.NAH.ToString();
                                     }
 
-                                    Trace.WriteLine(string.Format(" " + summary));
+                                    Trace.Write(string.Format(" " + summary));
                                 }
 
                                 if (found)
