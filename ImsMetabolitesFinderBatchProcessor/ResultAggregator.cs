@@ -14,6 +14,7 @@ namespace ImsMetabolitesFinderBatchProcessor
     using System.Collections.Generic;
     using System.IO;
     using System.Management.Instrumentation;
+    using System.Runtime.InteropServices;
 
     using ImsInformed.Domain;
 
@@ -167,9 +168,11 @@ namespace ImsMetabolitesFinderBatchProcessor
             {
                 string chemName = chem.Key;
                 Dictionary<IonizationMethod, ChemicalBasedAnalysisResult> dict = new Dictionary<IonizationMethod, ChemicalBasedAnalysisResult>();
-                dict.Add(IonizationMethod.ProtonPlus, this.SummarizeResult(chemName, IonizationMethod.ProtonPlus));
-                dict.Add(IonizationMethod.ProtonMinus, this.SummarizeResult(chemName, IonizationMethod.ProtonMinus));
-                dict.Add(IonizationMethod.SodiumPlus, this.SummarizeResult(chemName, IonizationMethod.SodiumPlus));
+                foreach (var item in this.SupportedIonizationMethods)
+                {
+                    dict.Add(item, this.SummarizeResult(chemName, item));
+                }
+
                 this.ChemicalBasedResultCollection.Add(chemName, dict);
             }
 
@@ -205,7 +208,8 @@ namespace ImsMetabolitesFinderBatchProcessor
                     writer.WriteLine(description);
                     foreach (var item in this.ChemicalBasedResultCollection)
                     {
-                        writer.WriteLine(item.Key + ":");
+                        IList<string> results = new List<string>();
+                        
                         foreach (var ionization in this.SupportedIonizationMethods)
                         {
                             if (item.Value.ContainsKey(ionization))
@@ -214,8 +218,17 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 
                                 if (!String.IsNullOrEmpty(result))
                                 {
-                                    writer.WriteLine("    " + result);
+                                    results.Add("    " + result);
                                 }
+                            }
+                        }
+
+                        if (results.Count > 0)
+                        {
+                            writer.WriteLine(item.Key + ":");
+                            foreach (string result in results)
+                            {
+                                writer.WriteLine(result);
                             }
                         }
                     }

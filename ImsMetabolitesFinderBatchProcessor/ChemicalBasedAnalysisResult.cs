@@ -13,7 +13,6 @@ namespace ImsMetabolitesFinderBatchProcessor
     using System;
 
     using ImsInformed.Domain;
-    using ImsInformed.Util;
 
     /// <summary>
     /// The chemical based analysis result.

@@ -52,12 +52,12 @@
                         string sodiumResult = SummarizeResultViper(item.Value, IonizationMethod.SodiumPlus);
                         if (!String.IsNullOrEmpty(posResult))
                         {
-                            writer.WriteLine(posResult);
+                            writer.Write(posResult);
                         }
 
                         if (!String.IsNullOrEmpty(sodiumResult))
                         {
-                            writer.WriteLine(sodiumResult);
+                            writer.Write(sodiumResult);
                         }
                     }
                 }
@@ -78,22 +78,22 @@
                         
                         if (!String.IsNullOrEmpty(negResult))
                         {
-                            writer.WriteLine(negResult);
+                            writer.Write(negResult);
                         }
 
                         if (!String.IsNullOrEmpty(negResult))
                         {
-                            writer.WriteLine(hcooResult);
+                            writer.Write(hcooResult);
                         }
 
                         if (!String.IsNullOrEmpty(negResult))
                         {
-                            writer.WriteLine(proton2MinusSodiumPlusResult);
+                            writer.Write(proton2MinusSodiumPlusResult);
                         }
 
                         if (!String.IsNullOrEmpty(negResult))
                         {
-                            writer.WriteLine(apci);
+                            writer.Write(apci);
                         }
                     }
                 }
@@ -125,7 +125,7 @@
                     const double Net = 0.5;
                     double driftTime = workflowResult.LastVoltageGroupDriftTimeInMs;
                     const int ChargeState = 1;
-                    result = String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}", name, mass, Net, driftTime, ChargeState);
+                    result = String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}\r\n", name, mass, Net, driftTime, ChargeState);
                 }
             }
             return result;

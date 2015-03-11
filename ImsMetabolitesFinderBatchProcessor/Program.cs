@@ -194,8 +194,13 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                             Trace.WriteLine("Results summary:");
                             Trace.WriteLine(string.Empty);
-                            Trace.WriteLine("<Dataset Name> <M+H> <M-H> <M+Na> <APCI> <M+HCOO> <M-2H+Na>");
-                            
+                            Trace.Write("Dataset Name");
+                            foreach (var item in resultAggregator.SupportedIonizationMethods)
+                            {
+                                Trace.Write(" " + item.ToFriendlyString());
+                            }
+
+                            Trace.Write("");
 
                             // Write the summary file.
                             int identifiedChemicalCounter = 0;
@@ -227,6 +232,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                                     Trace.Write(string.Format(" " + summary));
                                 }
+                                Trace.WriteLine("");
 
                                 if (found)
                                 {
