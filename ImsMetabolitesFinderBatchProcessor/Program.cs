@@ -126,6 +126,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 {
                                     // skip the given analysis job
                                     processor.TaskList[index].Done = true;
+                                    ProcessFinishedTask(processor.TaskList[index], failedAnalyses);
                                 }
 
                                 count++;
@@ -156,6 +157,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             }
                             else
                             {
+                                ProcessFinishedTask(item, failedAnalyses);
                                 Console.WriteLine("Analysis was completed before and Reanalyze setting is on, skipping analysis for (ID =" + item.JobID + ") " + item.DataSetName);
                             }
                             
@@ -194,13 +196,13 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                             Trace.WriteLine("Results summary:");
                             Trace.WriteLine(string.Empty);
-                            Trace.Write("Dataset Name");
+                            Trace.Write("[Dataset Name]");
                             foreach (var item in resultAggregator.SupportedIonizationMethods)
                             {
                                 Trace.Write(" " + item.ToFriendlyString());
                             }
 
-                            Trace.Write("");
+                            Trace.WriteLine("");
 
                             // Write the summary file.
                             int identifiedChemicalCounter = 0;
@@ -232,6 +234,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                                     Trace.Write(string.Format(" " + summary));
                                 }
+
                                 Trace.WriteLine("");
 
                                 if (found)
@@ -264,7 +267,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 Trace.WriteLine(string.Format("The following {0} analyses failed, please check result file for details: ", failedAnalyses.Count));
                                 foreach (ImsInformedProcess dataset in failedAnalyses)
                                 {
-                                    Trace.WriteLine(string.Format("Line {0} : {1} [ID = {2}]", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
+                                    Trace.WriteLine(string.Format("Line {0} : {1}[ID = {2}][{3}]{4}", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
                                 }
                                 Console.WriteLine();
                             }
