@@ -28,10 +28,10 @@
             posMode.Add(IonizationMethod.SodiumPlus);
 
             IList<IonizationMethod> negMode = new List<IonizationMethod>();
-            posMode.Add(IonizationMethod.ProtonMinus);
-            posMode.Add(IonizationMethod.APCI);
-            posMode.Add(IonizationMethod.HCOOMinus);
-            posMode.Add(IonizationMethod.Proton2MinusSodiumPlus);
+            negMode.Add(IonizationMethod.ProtonMinus);
+            negMode.Add(IonizationMethod.APCI);
+            negMode.Add(IonizationMethod.HCOOMinus);
+            negMode.Add(IonizationMethod.Proton2MinusSodiumPlus);
 
             string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_chemical_based.txt");
             resultAggregator.SummarizeResultChemicalBased(viperPosFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]", posMode);        
