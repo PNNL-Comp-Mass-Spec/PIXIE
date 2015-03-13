@@ -1,18 +1,17 @@
 ﻿
 namespace ImsMetabolitesFinderTest
 {
-    using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
 
     using ImsInformed.Domain;
 
-    using ImsMetabolitesFinder.Preprocess;
-
     using NUnit.Framework;
 
+    /// <summary>
+    /// The run test.
+    /// </summary>
     public class RunTest
     {
         //default values
@@ -57,7 +56,7 @@ namespace ImsMetabolitesFinderTest
             MoleculeInformedWorkflowResult result2;
             using (Stream stream = new FileStream("serialized_result.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                result2 = (MoleculeInformedWorkflowResult) formatter.Deserialize(stream);
+                result2 = (MoleculeInformedWorkflowResult)formatter.Deserialize(stream);
             }
 
             // Compare it

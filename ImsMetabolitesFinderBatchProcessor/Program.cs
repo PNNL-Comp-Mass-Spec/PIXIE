@@ -267,7 +267,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 Trace.WriteLine(string.Format("The following {0} analyses failed, please check result file for details: ", failedAnalyses.Count));
                                 foreach (ImsInformedProcess dataset in failedAnalyses)
                                 {
-                                    Trace.WriteLine(string.Format("Line {0} : {1}[ID = {2}][{3}]{4}", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
+                                    Trace.WriteLine(string.Format("Line {0} : {1}[ID = {2}]", dataset.LineNumber, dataset.DataSetName, dataset.JobID));
                                 }
                                 Console.WriteLine();
                             }
@@ -446,7 +446,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             while (true)
             {
                 // Wait for half a second
-                Thread.Sleep(100);
+                Thread.Sleep(25);
                 foreach (var runningTask in runningTasks)
                 {
                     if (runningTask.Done || runningTask.HasExited)

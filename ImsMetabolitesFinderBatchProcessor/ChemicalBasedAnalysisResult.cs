@@ -31,6 +31,11 @@ namespace ImsMetabolitesFinderBatchProcessor
         public string ChemicalName;
 
         /// <summary>
+        /// The dataset name.
+        /// </summary>
+        public string TargetDescriptor;
+
+        /// <summary>
         /// The ionization method.
         /// </summary>
         public IonizationMethod IonizationMethod;

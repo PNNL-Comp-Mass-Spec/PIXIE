@@ -122,7 +122,20 @@ namespace ImsMetabolitesFinderBatchProcessor
             }
         }
 
-        // search for the uimf file in the given directory.
+        /// <summary>
+        /// search for the uimf file in the given directory.
+        /// </summary>
+        /// <param name="fileOrFolderPath">
+        /// The file or folder path.
+        /// </param>
+        /// <param name="datasetName">
+        /// The dataset name.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        /// <exception cref="FileNotFoundException">
+        /// </exception>
         private string FindUimfFile(string fileOrFolderPath, string datasetName)
         {
             string uimfFileName = datasetName + ".uimf";

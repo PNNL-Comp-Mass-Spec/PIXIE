@@ -100,7 +100,7 @@ namespace IMSMetabolitesFinder
                     int ID = options.ID;
                     
                     // get the ionization method.
-                    IonizationMethod method = IonizationMethodExtensions.ParseIonizationMethod(options.IonizationMethod);
+                    IonizationMethod method = IonizationMethodUtilities.ParseIonizationMethod(options.IonizationMethod);
 
                     MoleculeWorkflowParameters searchParameters = new MoleculeWorkflowParameters 
                     {

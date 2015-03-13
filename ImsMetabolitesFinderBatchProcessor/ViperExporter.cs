@@ -1,6 +1,7 @@
 ﻿namespace ImsMetabolitesFinderBatchProcessor
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
 
@@ -22,8 +23,24 @@
         /// </param>
         public static void ExportViperChemicalBased(ResultAggregator resultAggregator, string viperFileDir)
         {
-            string viperPosFilePath = Path.Combine(viperFileDir, "viper_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(viperPosFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");            
+            IList<IonizationMethod> posMode = new List<IonizationMethod>();
+            posMode.Add(IonizationMethod.ProtonPlus);
+            posMode.Add(IonizationMethod.SodiumPlus);
+
+            IList<IonizationMethod> negMode = new List<IonizationMethod>();
+            posMode.Add(IonizationMethod.ProtonMinus);
+            posMode.Add(IonizationMethod.APCI);
+            posMode.Add(IonizationMethod.HCOOMinus);
+            posMode.Add(IonizationMethod.Proton2MinusSodiumPlus);
+
+            string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_chemical_based.txt");
+            resultAggregator.SummarizeResultChemicalBased(viperPosFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]", posMode);        
+    
+            string viperNegFilePath = Path.Combine(viperFileDir, "viper_neg_chemical_based.txt");
+            resultAggregator.SummarizeResultChemicalBased(viperNegFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]", negMode);      
+
+            string viperAllFilePath = Path.Combine(viperFileDir, "viper_chemical_based.txt");
+            resultAggregator.SummarizeResultChemicalBased(viperAllFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");      
         }
 
         /// <summary>
@@ -103,7 +120,7 @@
         /// <summary>
         /// The summarize result viper.
         /// </summary>
-        /// <param name="chemicalResult">
+        /// <param name="analysesResults">
         /// The chemical result.
         /// </param>
         /// <param name="ionization">
@@ -112,15 +129,15 @@
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string SummarizeResultViper(IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> chemicalResult, IonizationMethod ionization)
+        private static string SummarizeResultViper(IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> analysesResults, IonizationMethod ionization)
         {
             string result = String.Empty;
-            if (chemicalResult.ContainsKey((ionization)))
+            if (analysesResults.ContainsKey((ionization)))
             {
-                MoleculeInformedWorkflowResult workflowResult = chemicalResult[ionization];
+                MoleculeInformedWorkflowResult workflowResult = analysesResults[ionization];
                 if (workflowResult.AnalysisStatus == AnalysisStatus.POS && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
                 {
-                    string name = workflowResult.DatasetName + "_" + workflowResult.IonizationMethod.ToFriendlyString();
+                    string name = workflowResult.DatasetName + "_" + workflowResult.TargetDescriptor + "_" + workflowResult.IonizationMethod.ToFriendlyString();
                     double mass = workflowResult.MonoisotopicMass;
                     const double Net = 0.5;
                     double driftTime = workflowResult.LastVoltageGroupDriftTimeInMs;
@@ -128,6 +145,7 @@
                     result = String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}\r\n", name, mass, Net, driftTime, ChargeState);
                 }
             }
+
             return result;
         }
 
@@ -148,7 +166,7 @@
             string result = String.Empty;
             if (workflowResult.AnalysisStatus == AnalysisStatus.POS && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
             {
-                string name = workflowResult.ChemicalName + "_" + workflowResult.IonizationMethod.ToFriendlyString();
+                string name = workflowResult.TargetDescriptor + workflowResult.IonizationMethod.ToFriendlyString();
                 double mass = workflowResult.MonoisotopicMass;
                 const double Net = 0.5;
                 double driftTime = workflowResult.LastVoltageGroupDriftTimeInMs;

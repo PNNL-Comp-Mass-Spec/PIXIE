@@ -100,7 +100,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <summary>
         /// Gets the dataset based result collection.
         /// </summary>
-        public IEnumerable<IonizationMethod> SupportedIonizationMethods{ get; private set; }
+        public IEnumerable<IonizationMethod> SupportedIonizationMethods { get; private set; }
 
         /// <summary>
         /// process result files collected and generate a final report.
@@ -180,6 +180,23 @@ namespace ImsMetabolitesFinderBatchProcessor
         }
 
         /// <summary>
+        /// The summarize result chemical based. Summarize all ionization modes.
+        /// </summary>
+        /// <param name="outputPath">
+        /// The output path.
+        /// </param>
+        /// <param name="summaryFuntion">
+        /// The summary funtion.
+        /// </param>
+        /// <param name="description">
+        /// The description.
+        /// </param>
+        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description)
+        {
+            this.SummarizeResultChemicalBased(outputPath, summaryFuntion, description, this.SupportedIonizationMethods);
+        }
+
+        /// <summary>
         /// Export the analyses result on a per chemical basis for all ionization method.
         /// </summary>
         /// <param name="outputPath">
@@ -191,9 +208,12 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <param name="description">
         /// The description.
         /// </param>
+        /// <param name="ionizationsOfInterest">
+        /// The ionizations Of Interest.
+        /// </param>
         /// <exception cref="InvalidOperationException">
         /// </exception>
-        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description)
+        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description, IEnumerable<IonizationMethod> ionizationsOfInterest)
         {
             if (this.empty)
             {
@@ -210,7 +230,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     {
                         IList<string> results = new List<string>();
                         
-                        foreach (var ionization in this.SupportedIonizationMethods)
+                        foreach (var ionization in ionizationsOfInterest)
                         {
                             if (item.Value.ContainsKey(ionization))
                             {
@@ -260,6 +280,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             result.IonizationMethod = ionization;
             result.LastVoltageGroupDriftTimeInMs = 0;
             result.MonoisotopicMass = 0;
+            result.TargetDescriptor = String.Empty;
 
             if (!this.ChemicalDatasetsMap.Keys.Contains(chemicalName))
             {
@@ -301,6 +322,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             chemicalBasedAnalysisResult.LastVoltageGroupDriftTimeInMs = result.LastVoltageGroupDriftTimeInMs;
             chemicalBasedAnalysisResult.MonoisotopicMass = result.MonoisotopicMass;
             chemicalBasedAnalysisResult.CrossSectionalArea = result.CrossSectionalArea;
+            chemicalBasedAnalysisResult.TargetDescriptor = result.TargetDescriptor;
             return chemicalBasedAnalysisResult;
         }
 
