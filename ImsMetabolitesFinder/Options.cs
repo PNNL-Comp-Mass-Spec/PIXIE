@@ -11,6 +11,7 @@
 namespace ImsMetabolitesFinder
 {
     using System;
+    using System.Collections.Generic;
 
     using CommandLine;
     using CommandLine.Text;
@@ -49,12 +50,6 @@ namespace ImsMetabolitesFinder
         public string InputPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the target.
-        /// </summary>
-        [Option('t', "target", Required = true, HelpText = "IMS target to be identified. Could either be a Mz value(e.g. 192.23), or an empirical formula (e.g. C6H10ClN5)")]
-        public string Target { get; set; }
-
-        /// <summary>
         /// Gets or sets the ionization method.
         /// </summary>
         [Option('m', "method", Required = true, HelpText = "Select the ionization method used for the given experiment(Choose one: M+H, M-H, M+Na, APCI, M+HCOO, M-2H+Na)")]
@@ -71,6 +66,12 @@ namespace ImsMetabolitesFinder
         /// </summary>
         [Option('p', "pause", DefaultValue = false, HelpText = "Pause the program when result is generated.")]
         public bool PauseWhenDone { get; set; }
+
+        /// <summary>
+        /// "IMS target to be identified. Could either be a Mz value(e.g. 192.23), or an empirical formula (e.g. C6H10ClN5)"
+        /// </summary>
+        [ValueList(typeof(List<string>))]
+        public IList<string> TargetList { get; set; }
 
         /// <summary>
         /// Gets or sets the id.

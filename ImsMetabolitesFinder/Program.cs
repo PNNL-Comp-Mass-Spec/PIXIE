@@ -13,6 +13,8 @@
 namespace IMSMetabolitesFinder
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -54,6 +56,7 @@ namespace IMSMetabolitesFinder
                     string resultName = datasetName + "_" + ionizationMethod + "_Result.txt";
                     string resultPath = Path.Combine(options.OutputPath, resultName);
                     string outputDirectory = options.OutputPath;
+                    IList<string> targetList = options.TargetList;
 
                     if (outputDirectory == string.Empty)
                     {
@@ -84,18 +87,6 @@ namespace IMSMetabolitesFinder
                         File.Delete(resultPath);
                     }
 
-                    // Load parameters
-                    double Mz = 0;
-                    string formula = string.Empty;
-                    
-                    // get the target
-                    bool isDouble = Double.TryParse(options.Target, out Mz);
-                    if (!isDouble)
-                    {
-                        formula = options.Target;
-                        formula = formula.Replace("?", string.Empty);
-                    }
-
                     bool pause = options.PauseWhenDone;
 
                     int ID = options.ID;
@@ -118,17 +109,31 @@ namespace IMSMetabolitesFinder
                     IFormatter formatter = new BinaryFormatter();
 
                     // If target cannot be constructed. Create a result 
-                    ImsTarget target = null;
+                    IList<ImsTarget> targets = new List<ImsTarget>(); 
                     try
                     {
-                        if (!isDouble)
-                        {
-                            ImsTarget sample = new ImsTarget(ID, method, formula);
-                            target = new ImsTarget(ID, method, formula);
-                        } 
-                        else 
-                        {
-                            target = new ImsTarget(ID, method, Mz);
+                        foreach (var item in targetList)
+                        {   
+                            string formula = item;
+                            double Mz = 0;
+
+                            // get the target
+                            bool isDouble = Double.TryParse(item, out Mz);
+                            
+                            if (!isDouble)
+                            {
+                                formula = formula.Replace("?", string.Empty);
+                            }
+                            
+                            // Load parameters
+                            if (!isDouble)
+                            {
+                                targets.Add(new ImsTarget(ID, method, formula));
+                            } 
+                            else 
+                            {
+                                targets.Add(new ImsTarget(ID, method, Mz));
+                            }
                         }
                     }
                     catch (Exception)
@@ -165,14 +170,14 @@ namespace IMSMetabolitesFinder
 
                     // Run algorithms in IMSInformed
                     MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory, resultName, searchParameters);
-                    MoleculeInformedWorkflowResult result = workflow.RunMoleculeInformedWorkFlow(target);
+                    IDictionary<ImsTarget, MoleculeInformedWorkflowResult> results = workflow.RunMoleculeInformedWorkFlow(targets);
 
                     // Serialize the result
                     string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
 
                     using (Stream stream = new FileStream(binPath, FileMode.Create, FileAccess.Write, FileShare.None))
                     {
-                        formatter.Serialize(stream, result);
+                        formatter.Serialize(stream, results);
                     }
                     
                     if (pause)
@@ -181,20 +186,19 @@ namespace IMSMetabolitesFinder
                     }
 
                     // Define success
-                    if (result.AnalysisStatus == AnalysisStatus.POS || result.AnalysisStatus == AnalysisStatus.NEG || result.AnalysisStatus == AnalysisStatus.NSP || result.AnalysisStatus == AnalysisStatus.REJ)
+                    bool success = false;
+                    foreach (var resultKey in results.Keys)
                     {
-                        return 0;
+                        if (!(results[resultKey].AnalysisStatus == AnalysisStatus.POS || results[resultKey].AnalysisStatus == AnalysisStatus.NEG || results[resultKey].AnalysisStatus == AnalysisStatus.NSP | results[resultKey].AnalysisStatus == AnalysisStatus.REJ))
+                        {
+                            return 1;
+                        }
                     }
-                    else
-                    {
-                        return 1;
-                    }
-                    
+
+                    return 0;
                 }
-                else
-                {
-                    return 1;
-                }
+
+                return 1;
             }
             catch (Exception e)
             {
