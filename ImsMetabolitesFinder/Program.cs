@@ -16,6 +16,7 @@ namespace IMSMetabolitesFinder
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
+    using System.Text.RegularExpressions;
 
     using ImsInformed.Domain;
     using ImsInformed.Parameters;
@@ -93,7 +94,8 @@ namespace IMSMetabolitesFinder
                     if (!isDouble)
                     {
                         formula = options.Target;
-                        formula = formula.Replace("?", string.Empty);
+                        Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                        formula = rgx.Replace(formula, "");
                     }
 
                     bool pause = options.PauseWhenDone;
