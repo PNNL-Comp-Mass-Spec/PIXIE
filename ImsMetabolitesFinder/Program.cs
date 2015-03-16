@@ -164,7 +164,7 @@ namespace IMSMetabolitesFinder
                     BincCentricIndexing.IndexUimfFile(uimfFile);
 
                     // Run algorithms in IMSInformed
-                    MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory , resultName, searchParameters);
+                    MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory, resultName, searchParameters);
                     MoleculeInformedWorkflowResult result = workflow.RunMoleculeInformedWorkFlow(target);
 
                     // Serialize the result
