@@ -18,6 +18,7 @@ namespace IMSMetabolitesFinder
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
+    using System.Text.RegularExpressions;
 
     using ImsInformed.Domain;
     using ImsInformed.Parameters;
@@ -87,6 +88,19 @@ namespace IMSMetabolitesFinder
                         File.Delete(resultPath);
                     }
 
+                    // Load parameters
+                    double Mz = 0;
+                    string formula = string.Empty;
+                    
+                    // get the target
+                    bool isDouble = Double.TryParse(options.Target, out Mz);
+                    if (!isDouble)
+                    {
+                        formula = options.Target;
+                        Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                        formula = rgx.Replace(formula, "");
+                    }
+
                     bool pause = options.PauseWhenDone;
 
                     int ID = options.ID;
@@ -112,28 +126,14 @@ namespace IMSMetabolitesFinder
                     IList<ImsTarget> targets = new List<ImsTarget>(); 
                     try
                     {
-                        foreach (var item in targetList)
-                        {   
-                            string formula = item;
-                            double Mz = 0;
-
-                            // get the target
-                            bool isDouble = Double.TryParse(item, out Mz);
-                            
-                            if (!isDouble)
-                            {
-                                formula = formula.Replace("?", string.Empty);
-                            }
-                            
-                            // Load parameters
-                            if (!isDouble)
-                            {
-                                targets.Add(new ImsTarget(ID, method, formula));
-                            } 
-                            else 
-                            {
-                                targets.Add(new ImsTarget(ID, method, Mz));
-                            }
+                        if (!isDouble)
+                        {
+                            ImsTarget sample = new ImsTarget(ID, method, formula);
+                            target = new ImsTarget(ID, method, formula);
+                        } 
+                        else 
+                        {
+                            target = new ImsTarget(ID, method, Mz);
                         }
                     }
                     catch (Exception)
