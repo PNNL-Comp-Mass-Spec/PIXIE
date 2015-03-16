@@ -87,12 +87,13 @@ namespace IMSMetabolitesFinder
                     // Load parameters
                     double Mz = 0;
                     string formula = string.Empty;
-
+                    
                     // get the target
                     bool isDouble = Double.TryParse(options.Target, out Mz);
                     if (!isDouble)
                     {
                         formula = options.Target;
+                        formula = formula.Replace("?", string.Empty);
                     }
 
                     bool pause = options.PauseWhenDone;
