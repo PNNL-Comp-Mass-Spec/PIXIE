@@ -86,6 +86,12 @@ namespace ImsMetabolitesFinder
         public int PpmError { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option('v', "verbose", DefaultValue = true, HelpText = "Detailed verbose and log of each step of the finder algorithm")]
+        public bool DetailedVerbose{ get; set; }
+
+        /// <summary>
         /// Gets or sets the intensity threshold.
         /// </summary>
         /// <exception cref="ArgumentException">

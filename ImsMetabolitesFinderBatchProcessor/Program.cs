@@ -16,6 +16,9 @@ namespace ImsMetabolitesFinderBatchProcessor
 
     using ImsInformed.Domain;
 
+    using ImsMetabolitesFinderBatchProcessor.Export;
+    using ImsMetabolitesFinderBatchProcessor.SearchSpec;
+
     public class Program
     {
         [STAThread]
@@ -62,7 +65,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     // Process the search spec file
                     try 
                     {
-                        SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.OutputPath, options.ShowWindow, options.IgnoreMissingFiles);
+                        TextSearchSpecProcessor processor = new TextSearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.OutputPath, options.ShowWindow, options.IgnoreMissingFiles);
                         
                         // Run the program in a single process.
                         int numberOfCommands = processor.TaskList.Count;

@@ -22,6 +22,7 @@ namespace IMSMetabolitesFinder
 
     using ImsInformed.Domain;
     using ImsInformed.Parameters;
+    using ImsInformed.Scoring;
     using ImsInformed.Util;
 
     using ImsMetabolitesFinder;
@@ -58,6 +59,7 @@ namespace IMSMetabolitesFinder
                     string resultPath = Path.Combine(options.OutputPath, resultName);
                     string outputDirectory = options.OutputPath;
                     IList<string> targetList = options.TargetList;
+                    bool verbose = options.DetailedVerbose;
 
                     if (outputDirectory == string.Empty)
                     {
@@ -90,16 +92,6 @@ namespace IMSMetabolitesFinder
 
                     // Load parameters
                     double Mz = 0;
-                    string formula = string.Empty;
-                    
-                    // get the target
-                    bool isDouble = Double.TryParse(options.Target, out Mz);
-                    if (!isDouble)
-                    {
-                        formula = options.Target;
-                        Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-                        formula = rgx.Replace(formula, "");
-                    }
 
                     bool pause = options.PauseWhenDone;
 
@@ -122,55 +114,63 @@ namespace IMSMetabolitesFinder
 
                     IFormatter formatter = new BinaryFormatter();
 
-                    // If target cannot be constructed. Create a result 
+                    // If target cannot be constructed. Create a result.
                     IList<ImsTarget> targets = new List<ImsTarget>(); 
-                    try
+                    IDictionary<string, MoleculeInformedWorkflowResult> errorTargets = new Dictionary<string, MoleculeInformedWorkflowResult>(); 
+                    foreach (var item in targetList)
                     {
-                        if (!isDouble)
+                        string formula = item;
+                        try
                         {
-                            ImsTarget sample = new ImsTarget(ID, method, formula);
-                            target = new ImsTarget(ID, method, formula);
-                        } 
-                        else 
-                        {
-                            target = new ImsTarget(ID, method, Mz);
+                            bool isDouble = Double.TryParse(formula, out Mz);
+                            if (!isDouble)
+                            {
+                                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                                formula = rgx.Replace(formula, "");
+                            }
+                            if (!isDouble)
+                            {
+                                targets.Add(new ImsTarget(ID, method, formula));
+                            }
+                            else 
+                            {
+                                targets.Add(new ImsTarget(ID, method, Mz));
+                            }
                         }
-                    }
-                    catch (Exception)
-                    {
-                        MoleculeInformedWorkflowResult targetErrorResult;
-                        targetErrorResult.DatasetName = datasetName;
-                        targetErrorResult.TargetDescriptor = null;
-                        targetErrorResult.IonizationMethod = method;
-                        targetErrorResult.AnalysisStatus = AnalysisStatus.TAR;
-                        targetErrorResult.Mobility = -1;
-                        targetErrorResult.LastVoltageGroupDriftTimeInMs = -1;
-                        targetErrorResult.CrossSectionalArea = -1;
-                        targetErrorResult.AnalysisScoresHolder.RSquared = 0;
-                        targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore = 0;
-                        targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore = 0;
-                        targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore = 0;
-                        targetErrorResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore = 0;
-                        targetErrorResult.MonoisotopicMass = 0;
-
-
-                        string errorBinPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
-
-                        using (Stream stream = new FileStream(errorBinPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                        catch (Exception e)
                         {
-                            formatter.Serialize(stream, targetErrorResult);
+                             // create the error result
+                            AnalysisScoresHolder analysisScores;
+                            analysisScores.RSquared = 0;
+                            analysisScores.AverageCandidateTargetScores.IntensityScore = 0;
+                            analysisScores.AverageCandidateTargetScores.IsotopicScore = 0;
+                            analysisScores.AverageCandidateTargetScores.PeakShapeScore = 0;
+                            analysisScores.AverageVoltageGroupStabilityScore = 0;
+
+                            MoleculeInformedWorkflowResult targetErrorResult = new MoleculeInformedWorkflowResult(
+                                datasetName,
+                                formula,
+                                method,
+                                AnalysisStatus.TAR,
+                                analysisScores,
+                                null);
+                            errorTargets.Add(formula, targetErrorResult);
                         }
-
-                        throw;
-                    }
-
+                    } 
+                        
                     // Preprocessing
                     Console.WriteLine("Start Preprocessing:");
                     BincCentricIndexing.IndexUimfFile(uimfFile);
 
                     // Run algorithms in IMSInformed
                     MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory, resultName, searchParameters);
-                    IDictionary<ImsTarget, MoleculeInformedWorkflowResult> results = workflow.RunMoleculeInformedWorkFlow(targets);
+                    IDictionary<string, MoleculeInformedWorkflowResult> results = workflow.RunMoleculeInformedWorkFlow(targets, verbose);
+
+                    // Merge the target error result dictionary and other results
+                    foreach (var pair in errorTargets)
+                    {
+                        results.Add(pair);
+                    }
 
                     // Serialize the result
                     string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
@@ -186,7 +186,6 @@ namespace IMSMetabolitesFinder
                     }
 
                     // Define success
-                    bool success = false;
                     foreach (var resultKey in results.Keys)
                     {
                         if (!(results[resultKey].AnalysisStatus == AnalysisStatus.POS || results[resultKey].AnalysisStatus == AnalysisStatus.NEG || results[resultKey].AnalysisStatus == AnalysisStatus.NSP | results[resultKey].AnalysisStatus == AnalysisStatus.REJ))
