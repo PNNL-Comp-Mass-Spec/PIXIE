@@ -213,7 +213,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </param>
         /// <exception cref="InvalidOperationException">
         /// </exception>
-        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description, IEnumerable<IonizationMethod> ionizationsOfInterest)
+        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description, IEnumerable<IonizationMethod> ionizationsOfInterest, bool hiearchicalFormat = true)
         {
             if (this.empty)
             {
@@ -243,11 +243,29 @@ namespace ImsMetabolitesFinderBatchProcessor
                             }
                         }
 
-                        if (results.Count > 0)
+                        // Format like
+                        // LIP-DHA:
+                        //     C26H53NO3[M-H] 427.4025 0.5000 30.68 1
+                        //     C26H53NO3[M+HCOO] 473.4080 0.5000 32.15 1
+                        // LIP-EICO20-1:
+                        //     C20H38O2[M-H] 310.2872 0.5000 26.44 1
+                        if (results.Count > 0 && hiearchicalFormat)
                         {
                             writer.WriteLine(item.Key + ":");
                             foreach (string result in results)
                             {
+                                writer.WriteLine(result);
+                            }
+                        }
+                        // Format like
+                        //    LIP-DHA C26H53NO3[M-H], 427.4025, 0.5000, 30.68, 1
+                        //    LIP-DHA C26H53NO3[M+HCOO], 473.4080, 0.5000, 32.15, 1
+                        //    LIP-EICO20-1 C20H38O2[M-H], 310.2872, 0.5000, 26.44, 1
+                        else if (results.Count > 0)
+                        {
+                            foreach (string result in results)
+                            {
+                                writer.Write(item.Key + "\t");
                                 writer.WriteLine(result);
                             }
                         }

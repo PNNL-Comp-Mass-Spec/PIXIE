@@ -1,6 +1,17 @@
-﻿namespace ImsMetabolitesFinderBatchProcessor.Export
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ViperExporter.cs" company="PNNL">
+//   Written for the Department of Energy (PNNL, Richland, WA)
+//   Copyright 2015, Battelle Memorial Institute.  All Rights Reserved.
+// </copyright>
+// <summary>
+//   The viper exporter.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace ImsMetabolitesFinderBatchProcessor
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
 
@@ -33,13 +44,13 @@
             negMode.Add(IonizationMethod.Proton2MinusSodiumPlus);
 
             string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(viperPosFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]", posMode);        
+            resultAggregator.SummarizeResultChemicalBased(viperPosFilePath, SummarizeResultViper, "[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]", posMode, false);        
     
             string viperNegFilePath = Path.Combine(viperFileDir, "viper_neg_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(viperNegFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]", negMode);      
+            resultAggregator.SummarizeResultChemicalBased(viperNegFilePath, SummarizeResultViper, "[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]", negMode, false);      
 
             string viperAllFilePath = Path.Combine(viperFileDir, "viper_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(viperAllFilePath, SummarizeResultViper, "[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");      
+            resultAggregator.SummarizeResultChemicalBased(viperAllFilePath, SummarizeResultViper, "[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]");      
         }
 
         /// <summary>
@@ -165,12 +176,12 @@
             string result = String.Empty;
             if (workflowResult.AnalysisStatus == AnalysisStatus.POS && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
             {
-                string name = workflowResult.TargetDescriptor + workflowResult.IonizationMethod.ToFriendlyString();
+                string target = workflowResult.TargetDescriptor + workflowResult.IonizationMethod.ToFriendlyString();
                 double mass = workflowResult.MonoisotopicMass;
                 const double Net = 0.5;
                 double driftTime = workflowResult.LastVoltageGroupDriftTimeInMs;
                 const int ChargeState = 1;
-                result = String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}", name, mass, Net, driftTime, ChargeState);
+                result = String.Format("{0}\t{1:F4}\t{2:F4}\t{3:F2}\t{4}", target, mass, Net, driftTime, ChargeState);
             }
 
             return result;
