@@ -265,22 +265,17 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <param name="ionization">
         /// The ionization.
         /// </param>
+        /// <param name="targetDescriptor">
+        /// The target descriptor
+        /// </param>
         /// <returns>
         /// The <see cref="ChemicalBasedAnalysisResult"/>.
         /// </returns>
         /// <exception cref="InstanceNotFoundException">
         /// </exception>
-        private ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization)
+        public ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization, string targetDescriptor)
         {
-            ChemicalBasedAnalysisResult result;
-            result.AnalysisStatus = AnalysisStatus.NAH;
-            result.ChemicalName = chemicalName;
-            result.CrossSectionalArea = 0;
-            result.FusionNumber = 0;
-            result.IonizationMethod = ionization;
-            result.LastVoltageGroupDriftTimeInMs = 0;
-            result.MonoisotopicMass = 0;
-            result.TargetDescriptor = String.Empty;
+            ChemicalBasedAnalysisResult result = new ChemicalBasedAnalysisResult(chemicalName, ionization, targetDescriptor);
 
             if (!this.ChemicalDatasetsMap.Keys.Contains(chemicalName))
             {
@@ -298,32 +293,6 @@ namespace ImsMetabolitesFinderBatchProcessor
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// The initiate chemical based analysis result.
-        /// </summary>
-        /// <param name="result">
-        /// The result.
-        /// </param>
-        /// <param name="chemName">
-        /// The chem name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ChemicalBasedAnalysisResult"/>.
-        /// </returns>
-        private static ChemicalBasedAnalysisResult InitializeChemicalBasedAnalysisResult(MoleculeInformedWorkflowResult result, string chemName)
-        {
-            ChemicalBasedAnalysisResult chemicalBasedAnalysisResult;
-            chemicalBasedAnalysisResult.AnalysisStatus = result.AnalysisStatus;
-            chemicalBasedAnalysisResult.ChemicalName = chemName;
-            chemicalBasedAnalysisResult.FusionNumber = 1;
-            chemicalBasedAnalysisResult.IonizationMethod = result.IonizationMethod;
-            chemicalBasedAnalysisResult.LastVoltageGroupDriftTimeInMs = result.LastVoltageGroupDriftTimeInMs;
-            chemicalBasedAnalysisResult.MonoisotopicMass = result.MonoisotopicMass;
-            chemicalBasedAnalysisResult.CrossSectionalArea = result.CrossSectionalArea;
-            chemicalBasedAnalysisResult.TargetDescriptor = result.TargetDescriptor;
-            return chemicalBasedAnalysisResult;
         }
 
         /// <summary>

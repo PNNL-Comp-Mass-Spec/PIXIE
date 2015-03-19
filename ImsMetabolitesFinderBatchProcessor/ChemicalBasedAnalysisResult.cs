@@ -11,55 +11,104 @@
 namespace ImsMetabolitesFinderBatchProcessor
 {
     using System;
+    using System.Collections.Generic;
 
     using ImsInformed.Domain;
+    using ImsInformed.Scoring;
 
     /// <summary>
     /// The chemical based analysis result.
     /// </summary>
     [Serializable]
-    public struct ChemicalBasedAnalysisResult 
+    public class ChemicalBasedAnalysisResult 
     {
         /// <summary>
         /// The fusion number.
         /// </summary>
-        public int FusionNumber;
+        public readonly int FusionNumber;
 
         /// <summary>
         /// The dataset name.
         /// </summary>
-        public string ChemicalName;
+        public readonly string ChemicalName;
 
         /// <summary>
         /// The dataset name.
         /// </summary>
-        public string TargetDescriptor;
+        public readonly string TargetDescriptor;
 
         /// <summary>
         /// The ionization method.
         /// </summary>
-        public IonizationMethod IonizationMethod;
+        public readonly IonizationMethod IonizationMethod;
+
+        private readonly string targetDescriptor;
 
         /// <summary>
         /// The analysis status.
         /// </summary>
-        public AnalysisStatus AnalysisStatus;
+        public readonly AnalysisStatus AnalysisStatus;
 
         /// <summary>
-        /// The cross sectional area.
+        /// The isomer results.
         /// </summary>
-        public double CrossSectionalArea;
-
-        #region data needed by viper
-        /// <summary>
-        /// The cross sectional area.
-        /// </summary>
-        public double LastVoltageGroupDriftTimeInMs;
+        private readonly IEnumerable<TargetIsomerReport> isomerResults;
 
         /// <summary>
-        /// The monoisotopic mass.
+        /// Initializes a new instance of the <see cref="ChemicalBasedAnalysisResult"/> class. 
+        /// The initiate chemical based analysis result.
         /// </summary>
-        public double MonoisotopicMass;
-        #endregion
+        /// <param name="result">
+        /// The result ionization result to initiate from.
+        /// </param>
+        /// <param name="chemName">
+        /// The chemical name.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChemicalBasedAnalysisResult"/>.
+        /// </returns>
+        public ChemicalBasedAnalysisResult(MoleculeInformedWorkflowResult result, string chemName)
+        {
+            this.AnalysisStatus = result.AnalysisStatus;
+            this.ChemicalName = chemName;
+            this.FusionNumber = 1;
+            this.IonizationMethod = result.IonizationMethod;
+            this.TargetDescriptor = result.TargetDescriptor;
+            this.isomerResults = result.MatchingIsomers;
+            this.TargetDescriptor = result.TargetDescriptor;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChemicalBasedAnalysisResult"/> class.
+        /// </summary>
+        /// <param name="chemName">
+        /// The chem name.
+        /// </param>
+        /// <param name="ionization">
+        /// The ionization.
+        /// </param>
+        /// <param name="targetDescriptor">
+        /// The target descriptor.
+        /// </param>
+        public ChemicalBasedAnalysisResult(string chemName, IonizationMethod ionization, string targetDescriptor)
+        {
+            this.AnalysisStatus = AnalysisStatus.NAH;
+            this.ChemicalName = chemName;
+            this.FusionNumber = 0;
+            this.isomerResults = new List<TargetIsomerReport>();
+            this.IonizationMethod = ionization;
+            this.targetDescriptor = targetDescriptor;
+        }
+
+        /// <summary>
+        /// The isomers observed for that given analyses
+        /// </summary>
+        public IEnumerable<TargetIsomerReport> IsomerResults
+        {
+            get
+            {
+                return this.isomerResults;
+            }
+        }
     }
 }
