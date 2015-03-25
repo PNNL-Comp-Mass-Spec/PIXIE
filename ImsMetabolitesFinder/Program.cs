@@ -21,6 +21,7 @@ namespace IMSMetabolitesFinder
     using ImsInformed.Domain;
     using ImsInformed.Parameters;
     using ImsInformed.Util;
+    using ImsInformed.Workflows;
 
     using ImsMetabolitesFinder;
     using ImsMetabolitesFinder.Preprocess;
@@ -105,17 +106,15 @@ namespace IMSMetabolitesFinder
                     // get the ionization method.
                     IonizationMethod method = IonizationMethodUtilities.ParseIonizationMethod(options.IonizationMethod);
 
-                    MoleculeWorkflowParameters searchParameters = new MoleculeWorkflowParameters 
-                    {
-                        MassToleranceInPpm = options.PpmError,
-                        NumPointForSmoothing = 9,
-                        FeatureFilterLevel = 0.25,
-                        ScanWindowWidth = 4,
-                        IsotopicFitScoreThreshold = options.IsotopicScoreThreshold,
-                        IntensityThreshold = options.IntensityThreshold,
-                        PeakShapeThreshold = options.PeakShapeScoreThreshold,
-                        MinFitPoints = options.MinFitPoints
-                    };
+                    CrossSectionSearchParameters searchParameters = new CrossSectionSearchParameters(
+                        4,
+                        options.PpmError,
+                        9,
+                        0.25,
+                        options.IntensityThreshold,
+                        options.PeakShapeScoreThreshold,
+                        options.IsotopicScoreThreshold,
+                        options.MinFitPoints); 
 
                     IFormatter formatter = new BinaryFormatter();
 
@@ -135,11 +134,11 @@ namespace IMSMetabolitesFinder
                     }
                     catch (Exception)
                     {
-                        MoleculeInformedWorkflowResult targetErrorResult;
+                        CrossSectionWorkflowResult targetErrorResult;
                         targetErrorResult.DatasetName = datasetName;
                         targetErrorResult.TargetDescriptor = null;
                         targetErrorResult.IonizationMethod = method;
-                        targetErrorResult.AnalysisStatus = AnalysisStatus.TAR;
+                        targetErrorResult.AnalysisStatus = AnalysisStatus.TargetError;
                         targetErrorResult.Mobility = -1;
                         targetErrorResult.LastVoltageGroupDriftTimeInMs = -1;
                         targetErrorResult.CrossSectionalArea = -1;
@@ -166,8 +165,8 @@ namespace IMSMetabolitesFinder
                     BincCentricIndexing.IndexUimfFile(uimfFile);
 
                     // Run algorithms in IMSInformed
-                    MoleculeInformedWorkflow workflow = new MoleculeInformedWorkflow(uimfFile, outputDirectory, resultName, searchParameters);
-                    MoleculeInformedWorkflowResult result = workflow.RunMoleculeInformedWorkFlow(target);
+                    CrossSectionWorkfow workflow = new CrossSectionWorkfow(uimfFile, outputDirectory, resultName, searchParameters);
+                    CrossSectionWorkflowResult result = workflow.RunCrossSectionInformedWorkFlow(target);
 
                     // Serialize the result
                     string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
@@ -183,7 +182,10 @@ namespace IMSMetabolitesFinder
                     }
 
                     // Define success
-                    if (result.AnalysisStatus == AnalysisStatus.POS || result.AnalysisStatus == AnalysisStatus.NEG || result.AnalysisStatus == AnalysisStatus.NSP || result.AnalysisStatus == AnalysisStatus.REJ)
+                    if (result.AnalysisStatus == AnalysisStatus.Positive ||
+                        result.AnalysisStatus == AnalysisStatus.Negative || 
+                        result.AnalysisStatus == AnalysisStatus.NotSufficientPoints || 
+                        result.AnalysisStatus == AnalysisStatus.Rejected)
                     {
                         return 0;
                     }

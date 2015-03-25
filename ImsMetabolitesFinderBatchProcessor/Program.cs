@@ -221,15 +221,15 @@ namespace ImsMetabolitesFinderBatchProcessor
                                     if (resultAggregator.ChemicalBasedResultCollection[chemName].ContainsKey(ionization))
                                     {
                                         ChemicalBasedAnalysisResult result = resultAggregator.ChemicalBasedResultCollection[chemName][ionization];
-                                        summary = result.AnalysisStatus.ToString();
-                                        if (result.AnalysisStatus == AnalysisStatus.POS)
+                                        summary = result.AnalysisStatus.ToConclusionCode();
+                                        if (result.AnalysisStatus == AnalysisStatus.Positive)
                                         {
                                             found = true;
                                         }
                                     }
                                     else
                                     {
-                                        summary = AnalysisStatus.NAH.ToString();
+                                        summary = AnalysisStatus.NoAnalysis.ToConclusionCode();
                                     }
 
                                     Trace.Write(string.Format(" " + summary));
@@ -255,12 +255,12 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Trace.WriteLine(string.Format("{0} out of {1} chemicals have at least 1 ionization mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
                             Trace.WriteLine(string.Empty);
                             Trace.WriteLine("Results and QA data were written where the input UIMF files are.");
-                            Trace.WriteLine(string.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.POS]));
-                            Trace.WriteLine(string.Format("   Analyses concluded Negative            (NEG) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NEG]));
-                            Trace.WriteLine(string.Format("   Analyses concluded Rejected            (REJ) : {0}", resultAggregator.ResultCounter[AnalysisStatus.REJ]));
-                            Trace.WriteLine(string.Format("   Analyses concluded Insufficent Points  (NSP) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NSP]));
-                            Trace.WriteLine(string.Format("   Analyses concluded Analysis Error      (ERR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.ERR]));
-                            Trace.WriteLine(string.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.TAR]));
+                            Trace.WriteLine(string.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.Positive]));
+                            Trace.WriteLine(string.Format("   Analyses concluded Negative            (NEG) : {0}", resultAggregator.ResultCounter[AnalysisStatus.Negative]));
+                            Trace.WriteLine(string.Format("   Analyses concluded Rejected            (REJ) : {0}", resultAggregator.ResultCounter[AnalysisStatus.Rejected]));
+                            Trace.WriteLine(string.Format("   Analyses concluded Insufficent Points  (NSP) : {0}", resultAggregator.ResultCounter[AnalysisStatus.NotSufficientPoints]));
+                            Trace.WriteLine(string.Format("   Analyses concluded Analysis Error      (ERR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.UknownError]));
+                            Trace.WriteLine(string.Format("   Analyses concluded Target Error        (TAR) : {0}", resultAggregator.ResultCounter[AnalysisStatus.TargetError]));
                             Trace.WriteLine(string.Empty);
                             if (failedAnalyses.Count > 0)
                             {
@@ -303,19 +303,6 @@ namespace ImsMetabolitesFinderBatchProcessor
                         int DPI = 96;
                         int width = 1500;
                         int height = 700;
-
-                        // TODO implement sorting analysis conclusion on a chemical by chemical basis.
-                        var orderMap = new Dictionary<AnalysisStatus, int>() {
-                            { AnalysisStatus.POS, 0 },
-                            { AnalysisStatus.REJ, 1 },
-                            { AnalysisStatus.NSP, 2 },
-                            { AnalysisStatus.NEG, 3 },
-                            { AnalysisStatus.TAR, 4 },
-                            { AnalysisStatus.ERR, 5 },
-                            { AnalysisStatus.PeakToLeft, 6 },
-                            { AnalysisStatus.MassError, 7 },
-                            { AnalysisStatus.XicNotFound, 8 },
-                        };
 
                         foreach (var item in resultAggregator.DatasetBasedResultCollection)
                         {
@@ -412,12 +399,12 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public static int AddResultToScoresTable(string dataset, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> chemicalResult, IonizationMethod ionization, NumericTable table, IList<string> colDef)
+        public static int AddResultToScoresTable(string dataset, IDictionary<IonizationMethod, CrossSectionWorkflowResult> chemicalResult, IonizationMethod ionization, NumericTable table, IList<string> colDef)
         {
             if (chemicalResult.ContainsKey(ionization))
             {
                 TableRow dict = new TableRow(dataset + ionization);
-                MoleculeInformedWorkflowResult workflowResult = chemicalResult[ionization];
+                CrossSectionWorkflowResult workflowResult = chemicalResult[ionization];
                 dict.Name += "(" + workflowResult.AnalysisStatus + ")";
                 dict.Add(colDef[1], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore);
                 dict.Add(colDef[2], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore);

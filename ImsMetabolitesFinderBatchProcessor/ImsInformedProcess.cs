@@ -51,13 +51,13 @@
             return free;
         }
 
-        public MoleculeInformedWorkflowResult DeserializeResultBinFile()
+        public CrossSectionWorkflowResult DeserializeResultBinFile()
         {
-            MoleculeInformedWorkflowResult result;
+            CrossSectionWorkflowResult result;
             IFormatter formatter = new BinaryFormatter();
             using (Stream stream = new FileStream(this.ResultBinFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                result = (MoleculeInformedWorkflowResult) formatter.Deserialize(stream);
+                result = (CrossSectionWorkflowResult)formatter.Deserialize(stream);
             }
             return result;
         }

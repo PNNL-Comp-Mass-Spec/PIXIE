@@ -51,7 +51,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         private static string SummarizeResultCrossSection(ChemicalBasedAnalysisResult workflowResult)
         {
             string result = String.Empty;
-            if (workflowResult.AnalysisStatus == AnalysisStatus.POS && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
+            if (workflowResult.AnalysisStatus == AnalysisStatus.Positive && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
             {
                 string name = workflowResult.IonizationMethod.ToFriendlyString();
                 double cs = workflowResult.CrossSectionalArea;

@@ -59,16 +59,16 @@ namespace ImsMetabolitesFinderBatchProcessor
             this.empty = true;
             this.ResultCounter = new Dictionary<AnalysisStatus, int>
                                      {
-                                         { AnalysisStatus.POS, 0 },
-                                         { AnalysisStatus.ERR, 0 },
-                                         { AnalysisStatus.NSP, 0 },
-                                         { AnalysisStatus.TAR, 0 },
-                                         { AnalysisStatus.NEG, 0 },
-                                         { AnalysisStatus.REJ, 0 },
+                                         { AnalysisStatus.Positive, 0 },
+                                         { AnalysisStatus.UknownError, 0 },
+                                         { AnalysisStatus.NotSufficientPoints, 0 },
+                                         { AnalysisStatus.TargetError, 0 },
+                                         { AnalysisStatus.Negative, 0 },
+                                         { AnalysisStatus.Rejected, 0 },
                                          { AnalysisStatus.MassError, 0 }
                                      };
             this.ChemicalDatasetsMap = new Dictionary<string, ICollection<string>>();
-            this.DatasetBasedResultCollection = new Dictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>>();
+            this.DatasetBasedResultCollection = new Dictionary<string, IDictionary<IonizationMethod, CrossSectionWorkflowResult>>();
             this.ChemicalBasedResultCollection = new Dictionary<string, IDictionary<IonizationMethod, ChemicalBasedAnalysisResult>>();
         }
 
@@ -95,7 +95,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <summary>
         /// Gets the dataset based result collection.
         /// </summary>
-        public IDictionary<string, IDictionary<IonizationMethod, MoleculeInformedWorkflowResult>> DatasetBasedResultCollection { get; private set; }
+        public IDictionary<string, IDictionary<IonizationMethod, CrossSectionWorkflowResult>> DatasetBasedResultCollection { get; private set; }
 
         /// <summary>
         /// Gets the dataset based result collection.
@@ -117,7 +117,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                 try
                 {
                     // Dispose the task as it is no longer used.
-                    MoleculeInformedWorkflowResult result = task.DeserializeResultBinFile();
+                    CrossSectionWorkflowResult result = task.DeserializeResultBinFile();
                     var analysisResult = result.AnalysisStatus;
                     if (!this.ResultCounter.Keys.Contains(analysisResult))
                     {
@@ -133,7 +133,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                     if (!this.DatasetBasedResultCollection.ContainsKey(datasetName))
                     {
-                        IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> ionizationResult = new Dictionary<IonizationMethod, MoleculeInformedWorkflowResult>();
+                        IDictionary<IonizationMethod, CrossSectionWorkflowResult> ionizationResult = new Dictionary<IonizationMethod, CrossSectionWorkflowResult>();
                         ionizationResult.Add(result.IonizationMethod, result);
                         this.DatasetBasedResultCollection.Add(datasetName, ionizationResult);
                     } 
@@ -291,7 +291,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         private ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization)
         {
             ChemicalBasedAnalysisResult result;
-            result.AnalysisStatus = AnalysisStatus.NAH;
+            result.AnalysisStatus = AnalysisStatus.NoAnalysis;
             result.ChemicalName = chemicalName;
             result.CrossSectionalArea = 0;
             result.FusionNumber = 0;
@@ -310,7 +310,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             {
                 if (this.DatasetBasedResultCollection[dataset].ContainsKey(ionization))
                 {
-                    MoleculeInformedWorkflowResult workflowResult = this.DatasetBasedResultCollection[dataset][ionization];
+                    CrossSectionWorkflowResult workflowResult = this.DatasetBasedResultCollection[dataset][ionization];
                     result = FuseResults(result, workflowResult);
                 }
             }
@@ -330,7 +330,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="ChemicalBasedAnalysisResult"/>.
         /// </returns>
-        private static ChemicalBasedAnalysisResult InitializeChemicalBasedAnalysisResult(MoleculeInformedWorkflowResult result, string chemName)
+        private static ChemicalBasedAnalysisResult InitializeChemicalBasedAnalysisResult(CrossSectionWorkflowResult result, string chemName)
         {
             ChemicalBasedAnalysisResult chemicalBasedAnalysisResult;
             chemicalBasedAnalysisResult.AnalysisStatus = result.AnalysisStatus;
@@ -355,7 +355,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </returns>
         private static bool IsConclusive(AnalysisStatus status)
         {
-            if (status == AnalysisStatus.POS || status == AnalysisStatus.NEG)
+            if (status == AnalysisStatus.Positive || status == AnalysisStatus.Negative)
             {
                 return true;
             }
@@ -375,7 +375,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="ChemicalBasedAnalysisResult"/>.
         /// </returns>
-        private static ChemicalBasedAnalysisResult FuseResults(ChemicalBasedAnalysisResult result, MoleculeInformedWorkflowResult newWorkflowResult)
+        private static ChemicalBasedAnalysisResult FuseResults(ChemicalBasedAnalysisResult result, CrossSectionWorkflowResult newWorkflowResult)
         {
             // previous results inconclusive
             if (!IsConclusive(result.AnalysisStatus))
@@ -393,7 +393,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             // both result conclusive
             if (CheckConflict(result, newWorkflowResult))
             {
-                result.AnalysisStatus = AnalysisStatus.CON;
+                result.AnalysisStatus = AnalysisStatus.ConflictRuns;
             }
 
             result.CrossSectionalArea = result.CrossSectionalArea * result.FusionNumber + newWorkflowResult.CrossSectionalArea;
@@ -423,7 +423,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </returns>
         /// <exception cref="InvalidOperationException">
         /// </exception>
-        private static bool CheckConflict(ChemicalBasedAnalysisResult result, MoleculeInformedWorkflowResult newWorkflowResult)
+        private static bool CheckConflict(ChemicalBasedAnalysisResult result, CrossSectionWorkflowResult newWorkflowResult)
         {
             if (newWorkflowResult.IonizationMethod != result.IonizationMethod)
             {
@@ -442,7 +442,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
             if (Math.Abs(result.LastVoltageGroupDriftTimeInMs - newWorkflowResult.LastVoltageGroupDriftTimeInMs) > NormalizedDriftTimeTolerance)
             {
-                result.AnalysisStatus = AnalysisStatus.CON;
+                result.AnalysisStatus = AnalysisStatus.ConflictRuns;
             }
 
             return false;

@@ -139,13 +139,13 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string SummarizeResultViper(IDictionary<IonizationMethod, MoleculeInformedWorkflowResult> analysesResults, IonizationMethod ionization)
+        private static string SummarizeResultViper(IDictionary<IonizationMethod, CrossSectionWorkflowResult> analysesResults, IonizationMethod ionization)
         {
             string result = String.Empty;
             if (analysesResults.ContainsKey((ionization)))
             {
-                MoleculeInformedWorkflowResult workflowResult = analysesResults[ionization];
-                if (workflowResult.AnalysisStatus == AnalysisStatus.POS && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
+                CrossSectionWorkflowResult workflowResult = analysesResults[ionization];
+                if (workflowResult.AnalysisStatus == AnalysisStatus.Positive && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
                 {
                     string name = workflowResult.DatasetName + "_" + workflowResult.TargetDescriptor + "_" + workflowResult.IonizationMethod.ToFriendlyString();
                     double mass = workflowResult.MonoisotopicMass;
@@ -174,7 +174,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         private static string SummarizeResultViper(ChemicalBasedAnalysisResult workflowResult)
         {
             string result = String.Empty;
-            if (workflowResult.AnalysisStatus == AnalysisStatus.POS && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
+            if (workflowResult.AnalysisStatus == AnalysisStatus.Positive && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
             {
                 string target = workflowResult.TargetDescriptor + workflowResult.IonizationMethod.ToFriendlyString();
                 double mass = workflowResult.MonoisotopicMass;

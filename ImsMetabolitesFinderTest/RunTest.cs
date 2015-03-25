@@ -30,7 +30,7 @@ namespace ImsMetabolitesFinderTest
         public static void SerializerDeserializerTest()
         {
             // create fake result struct
-            MoleculeInformedWorkflowResult result;
+            CrossSectionWorkflowResult result;
             result.AnalysisStatus = AnalysisStatus.ChargeStateCorrelation;
             result.CrossSectionalArea = 22;
             result.DatasetName = "Nothing";
@@ -53,10 +53,10 @@ namespace ImsMetabolitesFinderTest
             }
 
             // deserialize fake result struct
-            MoleculeInformedWorkflowResult result2;
+            CrossSectionWorkflowResult result2;
             using (Stream stream = new FileStream("serialized_result.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                result2 = (MoleculeInformedWorkflowResult)formatter.Deserialize(stream);
+                result2 = (CrossSectionWorkflowResult)formatter.Deserialize(stream);
             }
 
             // Compare it
