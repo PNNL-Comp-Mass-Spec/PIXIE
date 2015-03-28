@@ -95,13 +95,14 @@
     <Reference Include="System.Xml" />
     <Reference Include="UIMFLibrary, Version=3.0.5561.28490, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\UimfLibrary\UIMFLibrary.dll</HintPath>
+      <HintPath>..\lib\ImsInformed\UIMFLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMSMzFinder.cs" />
     <Compile Include="Options\ConverterOptions.cs" />
     <Compile Include="Options\FinderOptions.cs" />
+    <Compile Include="Options\IndexerOptions.cs" />
     <Compile Include="Options\Options.cs" />
     <Compile Include="Preprocess\BincCentricIndexing.cs" />
     <Compile Include="Preprocess\Midac2UIMFConvert.cs" />

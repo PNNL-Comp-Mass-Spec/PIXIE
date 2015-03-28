@@ -14,6 +14,7 @@ namespace IMSMetabolitesFinder
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Net.Configuration;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -49,9 +50,11 @@ namespace IMSMetabolitesFinder
             string invokedVerb = "Nothing";
             object invokedVerbInstance = null;
             var options = new Options();
-            if (!CommandLine.Parser.Default.ParseArguments(args, options, 
-                (verb, subOptions) => 
-                {
+            if (!CommandLine.Parser.Default.ParseArguments(
+                args,
+                options,
+                (verb, subOptions) =>
+                    {
                     invokedVerb = verb;
                     invokedVerbInstance = subOptions;
                 }))
@@ -67,9 +70,59 @@ namespace IMSMetabolitesFinder
             {
                 return ExecuteConverter((ConverterOptions)invokedVerbInstance);
             }
+            else if (invokedVerb == "index")
+            {
+                return ExecuteIndexer((IndexerOptions)invokedVerbInstance);
+            }
             else 
             {
                 return 0;
+            }
+        }
+
+        /// <summary>
+        /// The execute indexer.
+        /// </summary>
+        /// <param name="options">
+        /// The options.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        private static int ExecuteIndexer(IndexerOptions options)
+        {
+            var inputFiles = options.UimfFileLocation;
+            if (inputFiles.Count < 1) 
+            {
+                Console.Error.Write(options.GetUsage());
+                return 1;
+            }
+
+            // verify that all files exist
+            bool allFound = true;
+            foreach (var file in inputFiles)
+            {
+                if (!File.Exists(file))
+                {
+                    Console.WriteLine("File {0} is not found", file);
+                    allFound = false;
+                }
+            }
+
+            if (allFound)
+            {
+                Console.WriteLine("Start Preprocessing:");
+                foreach (var file in inputFiles)
+                {
+                    BincCentricIndexing.IndexUimfFile(file);
+                }
+
+                return 0;
+            }
+            else 
+            {
+                Console.WriteLine("Not all files found, abort ImsMetabolitesFinder");
+                return 1;
             }
         }
 
@@ -98,7 +151,6 @@ namespace IMSMetabolitesFinder
                     VoltageAccumulationWorkflow workflow = new VoltageAccumulationWorkflow(false, inputPath, outputPath);
                     return Convert.ToInt32(workflow.RunVoltageAccumulationWorkflow(FileFormatEnum.UIMF));
                 }
-
                 else if (conversionType == "mzml")
                 {
                     VoltageAccumulationWorkflow workflow = new VoltageAccumulationWorkflow(false, inputPath, outputPath);

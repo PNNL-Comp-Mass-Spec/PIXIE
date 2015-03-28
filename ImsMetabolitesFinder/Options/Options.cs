@@ -26,6 +26,9 @@ namespace ImsMetabolitesFinder.Options
         [VerbOption("convert", HelpText = "Convert IMS result to different formats")]
         public ConverterOptions ConvertVerb { get; set; }
 
+        [VerbOption("index", HelpText = "Add bin centric table to UIMF file")]
+        public IndexerOptions IndexerVerb { get; set; }
+
         [HelpVerbOption]
         public string GetUsage(string verb)
         {
