@@ -783,7 +783,7 @@
 	//	}
     //
     //
-    //    // Convert the UIMF file to iso.csv file and match features with the target m/z list.
+    //    // AgilentToUIMFConvert the UIMF file to iso.csv file and match features with the target m/z list.
 	//	private bool SearchUIMFForMzList(FileInfo fiInputFile)
 	//	{
 	//		Console.WriteLine("Processing file:" + fiInputFile.Name + " using ImsInformed");

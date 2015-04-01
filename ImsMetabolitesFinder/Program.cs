@@ -13,16 +13,19 @@
 namespace IMSMetabolitesFinder
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Net.Configuration;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
 
     using ImsInformed.Domain;
     using ImsInformed.IO;
     using ImsInformed.Parameters;
+    using ImsInformed.Scoring;
     using ImsInformed.Workflows;
 
     using ImsMetabolitesFinder.Options;
@@ -161,11 +164,19 @@ namespace IMSMetabolitesFinder
                     throw new Exception("Output type " + inputExtension.ToLower() + " not supported");
                 }
             }
-            else if (inputExtension == "d")
+            else if (inputExtension == ".d")
             {
                 if (outputExtension == "uimf" || conversionType == "uimf")
                 {
-                    //MIDAC
+                    if (outputExtension != "uimf")
+                    {
+                        DirectoryInfo info = new DirectoryInfo(inputPath);
+                        string fileName = info.Name.Replace(".d", "");
+                        outputPath = Path.Combine(outputPath, fileName + ".uimf");
+                    }
+                    
+                    Task conversion = AgilentToUimfConversion.ConvertToUimf(inputPath, outputPath);
+                    conversion.Wait();
                 }
                 else
                 {
@@ -268,27 +279,26 @@ namespace IMSMetabolitesFinder
                 }
                 catch (Exception)
                 {
-                    CrossSectionWorkflowResult targetErrorResult;
-                    targetErrorResult.DatasetName = datasetName;
-                    targetErrorResult.TargetDescriptor = null;
-                    targetErrorResult.IonizationMethod = method;
-                    targetErrorResult.AnalysisStatus = AnalysisStatus.TargetError;
-                    targetErrorResult.Mobility = -1;
-                    targetErrorResult.LastVoltageGroupDriftTimeInMs = -1;
-                    targetErrorResult.CrossSectionalArea = -1;
-                    targetErrorResult.AnalysisScoresHolder.RSquared = 0;
-                    targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore = 0;
-                    targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore = 0;
-                    targetErrorResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore = 0;
-                    targetErrorResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore = 0;
-                    targetErrorResult.MonoisotopicMass = 0;
+                    AnalysisScoresHolder analysisScores;
+                    analysisScores.RSquared = 0;
+                    analysisScores.AverageCandidateTargetScores.IntensityScore = 0;
+                    analysisScores.AverageCandidateTargetScores.IsotopicScore = 0;
+                    analysisScores.AverageCandidateTargetScores.PeakShapeScore = 0;
+                    analysisScores.AverageVoltageGroupStabilityScore = 0;
 
+                    var informedResult = new CrossSectionWorkflowResult(
+                        datasetName,
+                        "Target Error",
+                        target.IonizationType,
+                        AnalysisStatus.UknownError,
+                        analysisScores,
+                        null);
 
                     string errorBinPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
 
                     using (Stream stream = new FileStream(errorBinPath, FileMode.Create, FileAccess.Write, FileShare.None))
                     {
-                        formatter.Serialize(stream, targetErrorResult);
+                        formatter.Serialize(stream, informedResult);
                     }
 
                     throw;
@@ -300,7 +310,7 @@ namespace IMSMetabolitesFinder
 
                 // Run algorithms in IMSInformed
                 CrossSectionWorkfow workflow = new CrossSectionWorkfow(uimfFile, outputDirectory, resultName, searchParameters);
-                CrossSectionWorkflowResult result = workflow.RunCrossSectionInformedWorkFlow(target);
+                CrossSectionWorkflowResult result = workflow.RunCrossSectionWorkFlow(target);
 
                 // Serialize the result
                 string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");

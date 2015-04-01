@@ -1,4 +1,14 @@
-﻿namespace ImsMetabolitesFinderBatchProcessor
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ImsInformedProcess.cs" company="PNNL">
+//   Written for the Department of Energy (PNNL, Richland, WA)
+//   Copyright 2015, Battelle Memorial Institute.  All Rights Reserved.
+// </copyright>
+// <summary>
+//   The ims informed process.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace ImsMetabolitesFinderBatchProcessor
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -8,6 +18,9 @@
 
     using ImsInformed.Domain;
 
+    /// <summary>
+    /// The ims informed process.
+    /// </summary>
     [System.ComponentModel.DesignerCategory("Code")]
     public class ImsInformedProcess : Process
     {
@@ -18,6 +31,30 @@
         public int LineNumber { get; private set; }
         public string ResultBinFile { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImsInformedProcess"/> class.
+        /// </summary>
+        /// <param name="ID">
+        /// The id.
+        /// </param>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="exe">
+        /// The exe.
+        /// </param>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        /// <param name="shell">
+        /// The shell.
+        /// </param>
+        /// <param name="resultBinFile">
+        /// The result bin file.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
         public ImsInformedProcess(int ID, string name, string exe, string arguments, bool shell, string resultBinFile, int lineNumber)
         {
             this.JobID = ID;
@@ -32,6 +69,15 @@
             this.LineNumber = lineNumber;
         }
 
+        /// <summary>
+        /// The are resources free.
+        /// </summary>
+        /// <param name="tasks">
+        /// The tasks.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         public bool AreResourcesFree(IEnumerable<ImsInformedProcess> tasks)
         {
             bool free = true;
@@ -51,6 +97,12 @@
             return free;
         }
 
+        /// <summary>
+        /// The deserialize result from the bin file.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CrossSectionWorkflowResult"/>.
+        /// </returns>
         public CrossSectionWorkflowResult DeserializeResultBinFile()
         {
             CrossSectionWorkflowResult result;

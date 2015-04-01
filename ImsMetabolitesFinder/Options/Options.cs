@@ -23,7 +23,7 @@ namespace ImsMetabolitesFinder.Options
         [VerbOption("find", HelpText = "Drift time and cross section analyses")]
         public FinderOptions FindVerb { get; set; }
 
-        [VerbOption("convert", HelpText = "Convert IMS result to different formats")]
+        [VerbOption("convert", HelpText = "AgilentToUIMFConvert IMS result to different formats")]
         public ConverterOptions ConvertVerb { get; set; }
 
         [VerbOption("index", HelpText = "Add bin centric table to UIMF file")]

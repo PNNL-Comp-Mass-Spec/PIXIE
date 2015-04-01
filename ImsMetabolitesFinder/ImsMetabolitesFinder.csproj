@@ -57,9 +57,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BaseCommon">
-      <HintPath>..\lib\Midac\BaseCommon.dll</HintPath>
-    </Reference>
     <Reference Include="BaseDataAccess, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Midac\BaseDataAccess.dll</HintPath>
@@ -83,9 +80,6 @@
     <Reference Include="MathNet.Numerics">
       <HintPath>..\lib\Numerics\MathNet.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="MIDAC-PNNL">
-      <HintPath>..\lib\Midac\MIDAC-PNNL.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -104,8 +98,8 @@
     <Compile Include="Options\FinderOptions.cs" />
     <Compile Include="Options\IndexerOptions.cs" />
     <Compile Include="Options\Options.cs" />
+    <Compile Include="Preprocess\AgilentToUimfConversion.cs" />
     <Compile Include="Preprocess\BincCentricIndexing.cs" />
-    <Compile Include="Preprocess\Midac2UIMFConvert.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -119,8 +113,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S /E /C  "$(SolutionDir)lib\UIMFLibrary" "$(TargetDir)"
+xcopy /Y /S /E /C  "$(SolutionDir)lib\Midac"  "$(TargetDir)*"
 xcopy /Y /S /E /C  "$(SolutionDir)lib\ImsInformed\PNNLOmicsElementData.xml" "$(TargetDir)"
-xcopy /Y /S /E  /C "$(TargetDir)*" "$(SolutionDir)exe\$(ProjectName)\"</PostBuildEvent>
+xcopy /Y /S /E  /C "$(TargetDir)*" "$(SolutionDir)exe\$(ProjectName)\"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
