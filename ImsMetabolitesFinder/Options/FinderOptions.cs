@@ -11,6 +11,7 @@
 namespace ImsMetabolitesFinder.Options
 {
     using System;
+    using System.Collections.Generic;
 
     using CommandLine;
     using CommandLine.Text;
@@ -49,16 +50,16 @@ namespace ImsMetabolitesFinder.Options
         public string InputPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the target.
-        /// </summary>
-        [Option('t', "target", Required = true, HelpText = "IMS target to be identified. Could either be a Mz value(e.g. 192.23), or an empirical formula (e.g. C6H10ClN5)")]
-        public string Target { get; set; }
-
-        /// <summary>
         /// Gets or sets the ionization method.
         /// </summary>
-        [Option('m', "method", Required = true, HelpText = "Select the ionization method used for the given experiment(Choose one: M+H, M-H, M+Na, APCI, M+HCOO, M-2H+Na)")]
-        public string IonizationMethod { get; set; }
+        [OptionList('m', "method", Required = true, Separator = ',', HelpText = "Select the ionization method used for the given experiment(Choose one or many: M+H, M-H, M+Na, APCI, M+HCOO, M-2H+Na), separated by a comma.")]
+        public IList<string> IonizationList { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the target list.
+        /// </summary>
+        [OptionList('t', "targetlist", Required = true, Separator = ',', HelpText = "Select the target to be searched, e.g., C2H5OH, 220.55, separated by a comma.")]
+        public IList<string> TargetList { get; set; }
 
         /// <summary>
         /// Gets or sets the output path.
@@ -73,16 +74,22 @@ namespace ImsMetabolitesFinder.Options
         public bool PauseWhenDone { get; set; }
 
         /// <summary>
-        /// Gets or sets the id.
+        /// Gets or sets a value indicating pause when done.
         /// </summary>
-        [Option("ID", DefaultValue = 0, HelpText = "An unique ID to keep track of search for batch processing")]
-        public int ID{ get; set; }
+        [Option('c', "chemical", DefaultValue = "", HelpText = "Googleable, adduct independent information of what the chemical is at the target M/Z. This is used to form the primary key for the AMT library. Not necessary for anonymous searches ")]
+        public string ChemicalIdentifier { get; set; }
 
         /// <summary>
         /// Gets or sets the ppm error.
         /// </summary>
         [Option("ppm", DefaultValue = 10, HelpText = "Specify the PPM error allowed for MZ search.")]
         public int PpmError { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option('v', "verbose", DefaultValue = true, HelpText = "Detailed verbose and log of each step of the finder algorithm")]
+        public bool DetailedVerbose{ get; set; }
 
         /// <summary>
         /// Gets or sets the intensity threshold.
@@ -197,7 +204,7 @@ namespace ImsMetabolitesFinder.Options
         {
             var help = new HelpText {
                 Heading = new HeadingInfo("ImsMetabolitesFinder", typeof(Program).Assembly.GetName().Version.ToString()),
-                Copyright = new CopyrightInfo("PNNL", 2014),
+                Copyright = new CopyrightInfo("PNNL", 2015),
                 AdditionalNewLineAfterOption = true,
                 AddDashesToOption = true
             };

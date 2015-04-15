@@ -23,7 +23,7 @@
         {
             var help = new HelpText {
                 Heading = new HeadingInfo("ImsMetabolitesFinder", typeof(Program).Assembly.GetName().Version.ToString()),
-                Copyright = new CopyrightInfo("PNNL", 2014),
+                Copyright = new CopyrightInfo("PNNL", 2015),
                 AdditionalNewLineAfterOption = true,
                 AddDashesToOption = true
             };

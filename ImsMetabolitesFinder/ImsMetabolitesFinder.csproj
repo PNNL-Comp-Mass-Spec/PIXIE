@@ -97,9 +97,11 @@
     <Compile Include="Options\ConverterOptions.cs" />
     <Compile Include="Options\FinderOptions.cs" />
     <Compile Include="Options\IndexerOptions.cs" />
+    <Compile Include="Options\MatchOptions.cs" />
     <Compile Include="Options\Options.cs" />
     <Compile Include="Preprocess\AgilentToUimfConversion.cs" />
     <Compile Include="Preprocess\BincCentricIndexing.cs" />
+    <Compile Include="Preprocess\MetadataFromDatasetName.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -117,6 +119,10 @@ xcopy /Y /S /E /C  "$(SolutionDir)lib\Midac"  "$(TargetDir)*"
 xcopy /Y /S /E /C  "$(SolutionDir)lib\ImsInformed\PNNLOmicsElementData.xml" "$(TargetDir)"
 xcopy /Y /S /E  /C "$(TargetDir)*" "$(SolutionDir)exe\$(ProjectName)\"
 </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

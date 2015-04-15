@@ -15,6 +15,10 @@ namespace ImsMetabolitesFinderBatchProcessor
     using FalkorSignalPlotter.Util;
 
     using ImsInformed.Domain;
+    using ImsInformed.Workflows.CrossSectionExtraction;
+
+    using ImsMetabolitesFinderBatchProcessor.Export;
+    using ImsMetabolitesFinderBatchProcessor.SearchSpec;
 
     public class Program
     {
@@ -62,7 +66,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                     // Process the search spec file
                     try 
                     {
-                        SearchSpecProcessor processor = new SearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.OutputPath, options.ShowWindow, options.IgnoreMissingFiles);
+                        TextSearchSpecProcessor processor = new TextSearchSpecProcessor(exe, searchSpecPath, options.InputPath, options.OutputPath, options.ShowWindow, options.IgnoreMissingFiles);
                         
                         // Run the program in a single process.
                         int numberOfCommands = processor.TaskList.Count;
@@ -218,9 +222,10 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 foreach (var ionization in resultAggregator.SupportedIonizationMethods)
                                 {
                                     string summary;
-                                    if (resultAggregator.ChemicalBasedResultCollection[chemName].ContainsKey(ionization))
+                                    var ionizationMethod = ionization.ToAdduct();
+                                    if (resultAggregator.ChemicalBasedResultCollection[chemName].ContainsKey(ionizationMethod))
                                     {
-                                        ChemicalBasedAnalysisResult result = resultAggregator.ChemicalBasedResultCollection[chemName][ionization];
+                                        ChemicalBasedAnalysisResult result = resultAggregator.ChemicalBasedResultCollection[chemName][ionizationMethod];
                                         summary = result.AnalysisStatus.ToConclusionCode();
                                         if (result.AnalysisStatus == AnalysisStatus.Positive)
                                         {
@@ -308,7 +313,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                         {
                             foreach (var ionizationMethod in resultAggregator.SupportedIonizationMethods)
                             {
-                                plotItemCount += AddResultToScoresTable(item.Key, item.Value, ionizationMethod, table, colDef);
+                                plotItemCount += AddResultToScoresTable(item.Key, item.Value, ionizationMethod.ToAdduct(), table, colDef);
                             }
 
                             if (plotItemCount >= numberOfAnalysesPerPlot)
@@ -399,7 +404,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public static int AddResultToScoresTable(string dataset, IDictionary<IonizationMethod, CrossSectionWorkflowResult> chemicalResult, IonizationMethod ionization, NumericTable table, IList<string> colDef)
+        public static int AddResultToScoresTable(string dataset, IDictionary<IonizationAdduct, CrossSectionWorkflowResult> chemicalResult, IonizationAdduct ionization, NumericTable table, IList<string> colDef)
         {
             if (chemicalResult.ContainsKey(ionization))
             {

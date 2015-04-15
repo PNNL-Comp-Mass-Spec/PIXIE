@@ -11,28 +11,20 @@
 namespace ImsMetabolitesFinderBatchProcessor
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Management.Instrumentation;
-    using System.Runtime.InteropServices;
 
     using ImsInformed.Domain;
+    using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>
     /// The result aggregator.
     /// </summary>
     public class ResultAggregator
     {
-        /// <summary>
-        /// The collision cross section tolerance.
-        /// </summary>
-        private const double CollisionCrossSectionTolerance = 5;
-
-        /// <summary>
-        /// The normalized drift time tolerance.
-        /// </summary>
-        private const double NormalizedDriftTimeTolerance = 0.75;
-
         /// <summary>
         /// The normalized drift time tolerance.
         /// </summary>
@@ -68,8 +60,8 @@ namespace ImsMetabolitesFinderBatchProcessor
                                          { AnalysisStatus.MassError, 0 }
                                      };
             this.ChemicalDatasetsMap = new Dictionary<string, ICollection<string>>();
-            this.DatasetBasedResultCollection = new Dictionary<string, IDictionary<IonizationMethod, CrossSectionWorkflowResult>>();
-            this.ChemicalBasedResultCollection = new Dictionary<string, IDictionary<IonizationMethod, ChemicalBasedAnalysisResult>>();
+            this.DatasetBasedResultCollection = new Dictionary<string, IDictionary<IonizationAdduct, CrossSectionWorkflowResult>>();
+            this.ChemicalBasedResultCollection = new Dictionary<string, IDictionary<IonizationAdduct, ChemicalBasedAnalysisResult>>();
         }
 
         /// <summary>
@@ -88,14 +80,14 @@ namespace ImsMetabolitesFinderBatchProcessor
         public IDictionary<string, ICollection<string>> ChemicalDatasetsMap { get; private set; }
 
         /// <summary>
-        /// Gets the chemical based result collection.
+        /// Gets the chemical based result collection. where the string is the chemical identifier.
         /// </summary>
-        public IDictionary<string, IDictionary<IonizationMethod, ChemicalBasedAnalysisResult>> ChemicalBasedResultCollection { get; private set; }
+        public IDictionary<string, IDictionary<IonizationAdduct, ChemicalBasedAnalysisResult>> ChemicalBasedResultCollection { get; private set; }
 
         /// <summary>
-        /// Gets the dataset based result collection.
+        /// Gets the dataset based result collection, where the string is the dataset name.
         /// </summary>
-        public IDictionary<string, IDictionary<IonizationMethod, CrossSectionWorkflowResult>> DatasetBasedResultCollection { get; private set; }
+        public IDictionary<string, IDictionary<IonizationAdduct, CrossSectionWorkflowResult>> DatasetBasedResultCollection { get; private set; }
 
         /// <summary>
         /// Gets the dataset based result collection.
@@ -117,41 +109,43 @@ namespace ImsMetabolitesFinderBatchProcessor
                 try
                 {
                     // Dispose the task as it is no longer used.
-                    CrossSectionWorkflowResult result = task.DeserializeResultBinFile();
-                    var analysisResult = result.AnalysisStatus;
-                    if (!this.ResultCounter.Keys.Contains(analysisResult))
+                    IList<CrossSectionWorkflowResult> results = task.DeserializeResultBinFile();
+                    foreach (var result in results)
                     {
-                        throw new Exception("analysis result \"" + analysisResult + "\" not recognized.");
-                    }
+                        var analysisResult = result.AnalysisStatus;
+                        if (!this.ResultCounter.Keys.Contains(analysisResult))
+                        {
+                            throw new Exception("analysis result \"" + analysisResult + "\" not recognized.");
+                        }
 
-                    this.ResultCounter[result.AnalysisStatus]++;
+                        this.ResultCounter[result.AnalysisStatus]++;
 
-                    // Remove the pos, neg signatures from dataset name.
-                    // string chemicalName = result.DatasetName.Replace("pos", "");
-                    // chemicalName = chemicalName.Replace("neg", "");
-                    string datasetName = result.DatasetName;
+                        // Remove the pos, neg signatures from dataset name.
+                        // string chemicalIdentifier = result.DatasetName.Replace("pos", "");
+                        // chemicalIdentifier = chemicalIdentifier.Replace("neg", "");
+                        string datasetName = result.DatasetName;
 
-                    if (!this.DatasetBasedResultCollection.ContainsKey(datasetName))
-                    {
-                        IDictionary<IonizationMethod, CrossSectionWorkflowResult> ionizationResult = new Dictionary<IonizationMethod, CrossSectionWorkflowResult>();
-                        ionizationResult.Add(result.IonizationMethod, result);
-                        this.DatasetBasedResultCollection.Add(datasetName, ionizationResult);
-                    } 
-                    else 
-                    {
-                        this.DatasetBasedResultCollection[datasetName].Add(result.IonizationMethod, result);
-                    }
+                        if (!this.DatasetBasedResultCollection.ContainsKey(datasetName))
+                        {
+                            IDictionary<IonizationAdduct, CrossSectionWorkflowResult> ionizationResult = new Dictionary<IonizationAdduct, CrossSectionWorkflowResult>();
+                            ionizationResult.Add(result.Target.Adduct, result);
+                            this.DatasetBasedResultCollection.Add(datasetName, ionizationResult);
+                        } 
+                        else 
+                        {
+                            this.DatasetBasedResultCollection[datasetName].Add(result.Target.Adduct, result);
+                        }
 
-                    var meta = new DatasetMetadata(datasetName);
-                    string chemName = meta.SampleIdentifier;
-                    if (!this.ChemicalDatasetsMap.Keys.Contains(chemName))
-                    {
-                        this.ChemicalDatasetsMap.Add(chemName, new List<string>());
-                        this.ChemicalDatasetsMap[chemName].Add(datasetName);
-                    }
-                    else
-                    {
-                        this.ChemicalDatasetsMap[chemName].Add(datasetName);
+                        string chemName = result.Target.ChemicalIdentifier;
+                        if (!this.ChemicalDatasetsMap.Keys.Contains(chemName))
+                        {
+                            this.ChemicalDatasetsMap.Add(chemName, new List<string>());
+                            this.ChemicalDatasetsMap[chemName].Add(datasetName);
+                        }
+                        else
+                        {
+                            this.ChemicalDatasetsMap[chemName].Add(datasetName);
+                        }
                     }
 
                     task.Dispose();
@@ -164,36 +158,28 @@ namespace ImsMetabolitesFinderBatchProcessor
                 }
             }
 
-            foreach (var chem in this.ChemicalDatasetsMap)
+            foreach (string chemIdentifier in this.ChemicalDatasetsMap.Keys)
             {
-                string chemName = chem.Key;
-                Dictionary<IonizationMethod, ChemicalBasedAnalysisResult> dict = new Dictionary<IonizationMethod, ChemicalBasedAnalysisResult>();
-                foreach (var item in this.SupportedIonizationMethods)
+                Dictionary<IonizationAdduct, ChemicalBasedAnalysisResult> ionizatonDictionary = new Dictionary<IonizationAdduct, ChemicalBasedAnalysisResult>();
+                ICollection<string> datasets = this.ChemicalDatasetsMap[chemIdentifier];
+
+                HashSet<IonizationAdduct> adductSet = new HashSet<IonizationAdduct>();
+
+                foreach (string dataset in datasets)
                 {
-                    dict.Add(item, this.SummarizeResult(chemName, item));
+                    foreach (IonizationAdduct adduct in this.DatasetBasedResultCollection[dataset].Keys)
+                    {
+                        if (!adductSet.Contains(adduct))
+                        {
+                            ionizatonDictionary.Add(adduct, this.SummarizeResult(chemIdentifier, adduct));
+                        }
+                    }
                 }
 
-                this.ChemicalBasedResultCollection.Add(chemName, dict);
+                this.ChemicalBasedResultCollection.Add(chemIdentifier, ionizatonDictionary);
             }
 
             this.empty = false;
-        }
-
-        /// <summary>
-        /// The summarize result chemical based. Summarize all ionization modes.
-        /// </summary>
-        /// <param name="outputPath">
-        /// The output path.
-        /// </param>
-        /// <param name="summaryFuntion">
-        /// The summary funtion.
-        /// </param>
-        /// <param name="description">
-        /// The description.
-        /// </param>
-        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description)
-        {
-            this.SummarizeResultChemicalBased(outputPath, summaryFuntion, description, this.SupportedIonizationMethods);
         }
 
         /// <summary>
@@ -202,8 +188,8 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <param name="outputPath">
         /// The output path.
         /// </param>
-        /// <param name="summaryFuntion">
-        /// The summary funtion.
+        /// <param name="summaryFunction">
+        /// The summary function.
         /// </param>
         /// <param name="description">
         /// The description.
@@ -211,9 +197,12 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <param name="ionizationsOfInterest">
         /// The ionizations Of Interest.
         /// </param>
+        /// <param name="hiearchicalFormat">
+        /// The hiearchical Format.
+        /// </param>
         /// <exception cref="InvalidOperationException">
         /// </exception>
-        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFuntion, string description, IEnumerable<IonizationMethod> ionizationsOfInterest, bool hiearchicalFormat = true)
+        public void SummarizeResultChemicalBased(string outputPath, Func<ChemicalBasedAnalysisResult, string> summaryFunction, string description, IEnumerable<IonizationAdduct> ionizationsOfInterest, bool hierarchical = true)
         {
             if (this.empty)
             {
@@ -234,9 +223,9 @@ namespace ImsMetabolitesFinderBatchProcessor
                         {
                             if (item.Value.ContainsKey(ionization))
                             {
-                                string result = summaryFuntion(item.Value[ionization]);
+                                string result = summaryFunction(item.Value[ionization]);
                                 
-                                if (!String.IsNullOrEmpty(result))
+                                if (!string.IsNullOrEmpty(result))
                                 {
                                     results.Add("    " + result);
                                 }
@@ -249,7 +238,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                         //     C26H53NO3[M+HCOO] 473.4080 0.5000 32.15 1
                         // LIP-EICO20-1:
                         //     C20H38O2[M-H] 310.2872 0.5000 26.44 1
-                        if (results.Count > 0 && hiearchicalFormat)
+                        if (results.Count > 0 && hierarchical)
                         {
                             writer.WriteLine(item.Key + ":");
                             foreach (string result in results)
@@ -257,10 +246,11 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 writer.WriteLine(result);
                             }
                         }
+
                         // Format like
-                        //    LIP-DHA C26H53NO3[M-H], 427.4025, 0.5000, 30.68, 1
-                        //    LIP-DHA C26H53NO3[M+HCOO], 473.4080, 0.5000, 32.15, 1
-                        //    LIP-EICO20-1 C20H38O2[M-H], 310.2872, 0.5000, 26.44, 1
+                        // LIP-DHA C26H53NO3[M-H], 427.4025, 0.5000, 30.68, 1
+                        // LIP-DHA C26H53NO3[M+HCOO], 473.4080, 0.5000, 32.15, 1
+                        // LIP-EICO20-1 C20H38O2[M-H], 310.2872, 0.5000, 26.44, 1
                         else if (results.Count > 0)
                         {
                             foreach (string result in results)
@@ -275,9 +265,10 @@ namespace ImsMetabolitesFinderBatchProcessor
         }
 
         /// <summary>
-        /// The summarize result.
+        /// Summarize datasets with the same chemical identifier and adduct into chemical based result. Require the dataset-based 
+        /// result to be already created.
         /// </summary>
-        /// <param name="chemicalName">
+        /// <param name="chemicalIdentifier">
         /// The chemical name.
         /// </param>
         /// <param name="ionization">
@@ -288,164 +279,26 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </returns>
         /// <exception cref="InstanceNotFoundException">
         /// </exception>
-        private ChemicalBasedAnalysisResult SummarizeResult(string chemicalName, IonizationMethod ionization)
+        public ChemicalBasedAnalysisResult SummarizeResult(string chemicalIdentifier, IonizationAdduct ionization)
         {
-            ChemicalBasedAnalysisResult result;
-            result.AnalysisStatus = AnalysisStatus.NoAnalysis;
-            result.ChemicalName = chemicalName;
-            result.CrossSectionalArea = 0;
-            result.FusionNumber = 0;
-            result.IonizationMethod = ionization;
-            result.LastVoltageGroupDriftTimeInMs = 0;
-            result.MonoisotopicMass = 0;
-            result.TargetDescriptor = String.Empty;
+            ChemicalBasedAnalysisResult result = new ChemicalBasedAnalysisResult(chemicalIdentifier, ionization);
 
-            if (!this.ChemicalDatasetsMap.Keys.Contains(chemicalName))
+            if (!this.ChemicalDatasetsMap.Keys.Contains(chemicalIdentifier))
             {
-                throw new InstanceNotFoundException(chemicalName + " not found in ChemicalDatasetsMap");
+                throw new InstanceNotFoundException(chemicalIdentifier + " not found in ChemicalDatasetsMap");
             }
 
-            IEnumerable<string> datasets = this.ChemicalDatasetsMap[chemicalName];
+            IEnumerable<string> datasets = this.ChemicalDatasetsMap[chemicalIdentifier];
             foreach (string dataset in datasets)
             {
                 if (this.DatasetBasedResultCollection[dataset].ContainsKey(ionization))
                 {
                     CrossSectionWorkflowResult workflowResult = this.DatasetBasedResultCollection[dataset][ionization];
-                    result = FuseResults(result, workflowResult);
+                    result = new ChemicalBasedAnalysisResult(result, workflowResult);
                 }
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// The initiate chemical based analysis result.
-        /// </summary>
-        /// <param name="result">
-        /// The result.
-        /// </param>
-        /// <param name="chemName">
-        /// The chem name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ChemicalBasedAnalysisResult"/>.
-        /// </returns>
-        private static ChemicalBasedAnalysisResult InitializeChemicalBasedAnalysisResult(CrossSectionWorkflowResult result, string chemName)
-        {
-            ChemicalBasedAnalysisResult chemicalBasedAnalysisResult;
-            chemicalBasedAnalysisResult.AnalysisStatus = result.AnalysisStatus;
-            chemicalBasedAnalysisResult.ChemicalName = chemName;
-            chemicalBasedAnalysisResult.FusionNumber = 1;
-            chemicalBasedAnalysisResult.IonizationMethod = result.IonizationMethod;
-            chemicalBasedAnalysisResult.LastVoltageGroupDriftTimeInMs = result.LastVoltageGroupDriftTimeInMs;
-            chemicalBasedAnalysisResult.MonoisotopicMass = result.MonoisotopicMass;
-            chemicalBasedAnalysisResult.CrossSectionalArea = result.CrossSectionalArea;
-            chemicalBasedAnalysisResult.TargetDescriptor = result.TargetDescriptor;
-            return chemicalBasedAnalysisResult;
-        }
-
-        /// <summary>
-        /// The is conclusive.
-        /// </summary>
-        /// <param name="status">
-        /// The status.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        private static bool IsConclusive(AnalysisStatus status)
-        {
-            if (status == AnalysisStatus.Positive || status == AnalysisStatus.Negative)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// The fuse results.
-        /// </summary>
-        /// <param name="result">
-        /// The result.
-        /// </param>
-        /// <param name="newWorkflowResult">
-        /// The new workflow result.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ChemicalBasedAnalysisResult"/>.
-        /// </returns>
-        private static ChemicalBasedAnalysisResult FuseResults(ChemicalBasedAnalysisResult result, CrossSectionWorkflowResult newWorkflowResult)
-        {
-            // previous results inconclusive
-            if (!IsConclusive(result.AnalysisStatus))
-            {
-                result = InitializeChemicalBasedAnalysisResult(newWorkflowResult, result.ChemicalName);
-                return result;
-            }
-
-            if (!IsConclusive(newWorkflowResult.AnalysisStatus)) 
-            {
-                // previous results conclusive, new result not conclusive
-                return result;
-            }
-
-            // both result conclusive
-            if (CheckConflict(result, newWorkflowResult))
-            {
-                result.AnalysisStatus = AnalysisStatus.ConflictRuns;
-            }
-
-            result.CrossSectionalArea = result.CrossSectionalArea * result.FusionNumber + newWorkflowResult.CrossSectionalArea;
-            result.CrossSectionalArea /= (result.FusionNumber + 1);
-
-            if (newWorkflowResult.LastVoltageGroupDriftTimeInMs > 0)
-            {
-                result.LastVoltageGroupDriftTimeInMs = result.LastVoltageGroupDriftTimeInMs * result.FusionNumber + newWorkflowResult.LastVoltageGroupDriftTimeInMs;
-                result.LastVoltageGroupDriftTimeInMs /= (result.FusionNumber + 1);
-            }
-
-            result.FusionNumber++;
-            return result;
-        }
-
-        /// <summary>
-        /// Check if there are conflicts in 
-        /// </summary>
-        /// <param name="result">
-        /// The result.
-        /// </param>
-        /// <param name="newWorkflowResult">
-        /// The new workflow result.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
-        private static bool CheckConflict(ChemicalBasedAnalysisResult result, CrossSectionWorkflowResult newWorkflowResult)
-        {
-            if (newWorkflowResult.IonizationMethod != result.IonizationMethod)
-            {
-                throw new InvalidOperationException("Cannot check conflict for results from different chemicals or with different ionization methods");
-            }
-
-            if (result.AnalysisStatus != newWorkflowResult.AnalysisStatus)
-            {
-                return true;
-            }
-
-            if (Math.Abs(result.CrossSectionalArea - newWorkflowResult.CrossSectionalArea) > CollisionCrossSectionTolerance)
-            {
-                return true;
-            }
-
-            if (Math.Abs(result.LastVoltageGroupDriftTimeInMs - newWorkflowResult.LastVoltageGroupDriftTimeInMs) > NormalizedDriftTimeTolerance)
-            {
-                result.AnalysisStatus = AnalysisStatus.ConflictRuns;
-            }
-
-            return false;
         }
     }
 }

@@ -8,14 +8,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor
+namespace ImsMetabolitesFinderBatchProcessor.Export
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.IO;
+    using System.Linq;
 
     using ImsInformed.Domain;
+    using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>
     /// The viper exporter.
@@ -33,24 +35,24 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </param>
         public static void ExportViperChemicalBased(ResultAggregator resultAggregator, string viperFileDir)
         {
-            IList<IonizationMethod> posMode = new List<IonizationMethod>();
-            posMode.Add(IonizationMethod.ProtonPlus);
-            posMode.Add(IonizationMethod.SodiumPlus);
+            IList<IonizationAdduct> posMode = new List<IonizationAdduct>();
+            posMode.Add(IonizationMethod.ProtonPlus.ToAdduct());
+            posMode.Add(IonizationMethod.SodiumPlus.ToAdduct());
 
-            IList<IonizationMethod> negMode = new List<IonizationMethod>();
-            negMode.Add(IonizationMethod.ProtonMinus);
-            negMode.Add(IonizationMethod.APCI);
-            negMode.Add(IonizationMethod.HCOOMinus);
-            negMode.Add(IonizationMethod.Proton2MinusSodiumPlus);
+            IList<IonizationAdduct> negMode = new List<IonizationAdduct>();
+            negMode.Add(IonizationMethod.ProtonMinus.ToAdduct());
+            negMode.Add(IonizationMethod.APCI.ToAdduct());
+            negMode.Add(IonizationMethod.HCOOMinus.ToAdduct());
+            negMode.Add(IonizationMethod.Proton2MinusSodiumPlus.ToAdduct());
 
             string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(viperPosFilePath, SummarizeResultViper, "[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]", posMode, false);        
+            resultAggregator.SummarizeResultChemicalBased(viperPosFilePath, SummarizeResultViper, "#[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]", posMode, false);        
     
             string viperNegFilePath = Path.Combine(viperFileDir, "viper_neg_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(viperNegFilePath, SummarizeResultViper, "[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]", negMode, false);      
+            resultAggregator.SummarizeResultChemicalBased(viperNegFilePath, SummarizeResultViper, "#[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]", negMode, false);      
 
             string viperAllFilePath = Path.Combine(viperFileDir, "viper_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(viperAllFilePath, SummarizeResultViper, "[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]");      
+            resultAggregator.SummarizeResultChemicalBased(viperAllFilePath, SummarizeResultViper, "#[Chemical Name]\t[target]\t[Monoisotopic mass]\t[NET]\t[Normalized Drift Time]\t[Charge State]", IonizationMethodUtilities.GetAll().Select(ionization => ionization.ToAdduct()));      
         }
 
         /// <summary>
@@ -72,11 +74,11 @@ namespace ImsMetabolitesFinderBatchProcessor
             {
                 using (StreamWriter writer = new StreamWriter(resultFile))
                 {
-                    writer.WriteLine("[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
+                    writer.WriteLine("#[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
                     foreach (var item in resultAggregator.DatasetBasedResultCollection)
                     {
-                        string posResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonPlus);
-                        string sodiumResult = SummarizeResultViper(item.Value, IonizationMethod.SodiumPlus);
+                        string posResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonPlus.ToAdduct());
+                        string sodiumResult = SummarizeResultViper(item.Value, IonizationMethod.SodiumPlus.ToAdduct());
                         if (!String.IsNullOrEmpty(posResult))
                         {
                             writer.Write(posResult);
@@ -95,13 +97,13 @@ namespace ImsMetabolitesFinderBatchProcessor
             {
                 using (StreamWriter writer = new StreamWriter(resultFile))
                 {
-                    writer.WriteLine("[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
+                    writer.WriteLine("#[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
                     foreach (var item in resultAggregator.DatasetBasedResultCollection)
                     {
-                        string negResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonMinus);
-                        string hcooResult = SummarizeResultViper(item.Value, IonizationMethod.HCOOMinus);
-                        string proton2MinusSodiumPlusResult = SummarizeResultViper(item.Value, IonizationMethod.Proton2MinusSodiumPlus);
-                        string apci = SummarizeResultViper(item.Value, IonizationMethod.APCI);
+                        string negResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonMinus.ToAdduct());
+                        string hcooResult = SummarizeResultViper(item.Value, IonizationMethod.HCOOMinus.ToAdduct());
+                        string proton2MinusSodiumPlusResult = SummarizeResultViper(item.Value, IonizationMethod.Proton2MinusSodiumPlus.ToAdduct());
+                        string apci = SummarizeResultViper(item.Value, IonizationMethod.APCI.ToAdduct());
                         
                         if (!String.IsNullOrEmpty(negResult))
                         {
@@ -139,20 +141,26 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string SummarizeResultViper(IDictionary<IonizationMethod, CrossSectionWorkflowResult> analysesResults, IonizationMethod ionization)
+        private static string SummarizeResultViper(IDictionary<IonizationAdduct, CrossSectionWorkflowResult> analysesResults, IonizationAdduct ionization)
         {
-            string result = String.Empty;
-            if (analysesResults.ContainsKey((ionization)))
+            string result = string.Empty;
+            if (analysesResults.ContainsKey(ionization))
             {
                 CrossSectionWorkflowResult workflowResult = analysesResults[ionization];
-                if (workflowResult.AnalysisStatus == AnalysisStatus.Positive && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
+                if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
                 {
-                    string name = workflowResult.DatasetName + "_" + workflowResult.TargetDescriptor + "_" + workflowResult.IonizationMethod.ToFriendlyString();
-                    double mass = workflowResult.MonoisotopicMass;
-                    const double Net = 0.5;
-                    double driftTime = workflowResult.LastVoltageGroupDriftTimeInMs;
-                    const int ChargeState = 1;
-                    result = String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}\r\n", name, mass, Net, driftTime, ChargeState);
+                    foreach (var isomer in analysesResults[ionization].MatchingIsomers)
+                    {
+                        if (isomer.LastVoltageGroupDriftTimeInMs > 0)
+                        {
+                            string name = workflowResult.DatasetName + "_" + workflowResult.Target.TargetDescriptor;
+                            double mass = workflowResult.Target.MonoisotopicMass;
+                            const double Net = 0.5;
+                            double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
+                            const int ChargeState = 1;
+                            result += String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}\r\n", name, mass, Net, driftTime, ChargeState);
+                        }
+                    }
                 }
             }
 
@@ -174,14 +182,18 @@ namespace ImsMetabolitesFinderBatchProcessor
         private static string SummarizeResultViper(ChemicalBasedAnalysisResult workflowResult)
         {
             string result = String.Empty;
-            if (workflowResult.AnalysisStatus == AnalysisStatus.Positive && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
+            if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
             {
-                string target = workflowResult.TargetDescriptor + workflowResult.IonizationMethod.ToFriendlyString();
-                double mass = workflowResult.MonoisotopicMass;
-                const double Net = 0.5;
-                double driftTime = workflowResult.LastVoltageGroupDriftTimeInMs;
-                const int ChargeState = 1;
-                result = String.Format("{0}\t{1:F4}\t{2:F4}\t{3:F2}\t{4}", target, mass, Net, driftTime, ChargeState);
+                string target = workflowResult.Target.ChemicalIdentifier;
+                double mass = workflowResult.Target.MonoisotopicMass;
+
+                foreach (var isomer in workflowResult.DetectedIsomers)
+                {
+                    const double Net = 0.5;
+                    double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
+                    const int ChargeState = 1;
+                    result += String.Format("{0}\t{1:F4}\t{2:F4}\t{3:F2}\t{4}", target, mass, Net, driftTime, ChargeState);
+                }
             }
 
             return result;

@@ -8,11 +8,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor
+namespace ImsMetabolitesFinderBatchProcessor.Export
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.IO;
+    using System.Linq;
 
     using ImsInformed.Domain;
 
@@ -33,29 +35,28 @@ namespace ImsMetabolitesFinderBatchProcessor
         public static void ExportCrossSectionChemicalBased(ResultAggregator resultAggregator, string OutputDir)
         {
             string outputPath = Path.Combine(OutputDir, "cross_section_chemical_based.txt");
-            resultAggregator.SummarizeResultChemicalBased(outputPath, SummarizeResultCrossSection, "[Chemical Name] [Ionization Mode] [CrossSection(Å^2)] ");            
+            resultAggregator.SummarizeResultChemicalBased(outputPath, SummarizeResultCrossSection, "#[Chemical Name] [Ionization Mode] [CrossSection(Å^2)] ", IonizationMethodUtilities.GetAll().Select(ionizationAdduct => ionizationAdduct.ToAdduct()));            
         }    
 
         /// <summary>
         /// The summarize result viper.
         /// </summary>
-        /// <param name="chemicalResult">
-        /// The chemical result.
-        /// </param>
-        /// <param name="ionization">
-        /// The ionization.
+        /// <param name="workflowResult">
+        /// The workflow Result.
         /// </param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
         private static string SummarizeResultCrossSection(ChemicalBasedAnalysisResult workflowResult)
         {
-            string result = String.Empty;
-            if (workflowResult.AnalysisStatus == AnalysisStatus.Positive && workflowResult.LastVoltageGroupDriftTimeInMs > 0)
+            string result = string.Empty;
+            if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
             {
-                string name = workflowResult.IonizationMethod.ToFriendlyString();
-                double cs = workflowResult.CrossSectionalArea;
-                result = String.Format("{0}: {1:F4}, ", name, cs);
+                string name = workflowResult.Target.ChemicalIdentifier;
+                string[] crossSections = workflowResult.DetectedIsomers.Select((x) => string.Format("{0:F4}", x.CrossSectionalArea)).ToArray();
+                
+
+                result = string.Format("{0}: {1:F4} ", name, string.Join(", ", crossSections));
             }
 
             return result;

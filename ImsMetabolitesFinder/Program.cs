@@ -13,20 +13,22 @@
 namespace IMSMetabolitesFinder
 {
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Net.Configuration;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     using ImsInformed.Domain;
+    using ImsInformed.Interfaces;
     using ImsInformed.IO;
-    using ImsInformed.Parameters;
     using ImsInformed.Scoring;
-    using ImsInformed.Workflows;
+    using ImsInformed.Targets;
+    using ImsInformed.Util;
+    using ImsInformed.Workflows.CrossSectionExtraction;
+    using ImsInformed.Workflows.DriftTimeLibraryMatch;
+    using ImsInformed.Workflows.VoltageAccumulation;
 
     using ImsMetabolitesFinder.Options;
     using ImsMetabolitesFinder.Preprocess;
@@ -76,6 +78,10 @@ namespace IMSMetabolitesFinder
             else if (invokedVerb == "index")
             {
                 return ExecuteIndexer((IndexerOptions)invokedVerbInstance);
+            }
+            else if (invokedVerb == "match")
+            {
+                return ExecuteMatch((MatchOptions)invokedVerbInstance);
             }
             else 
             {
@@ -191,16 +197,26 @@ namespace IMSMetabolitesFinder
             return 0;
         }
 
+        /// <summary>
+        /// The execute finder.
+        /// </summary>
+        /// <param name="options">
+        /// The options.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
         private static int ExecuteFinder(FinderOptions options)
         {
             try
             {
                 string uimfFile = options.InputPath; // get the UIMF file
-                string ionizationMethod = options.IonizationMethod.ToUpper(); 
                 string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
-                string resultName = datasetName + "_" + ionizationMethod + "_Result.txt";
+                string resultName = datasetName + "_"  + "_Result.txt";
                 string resultPath = Path.Combine(options.OutputPath, resultName);
                 string outputDirectory = options.OutputPath;
+                IList<string> targetList = options.TargetList;
+                bool verbose = options.DetailedVerbose;
 
                 if (outputDirectory == string.Empty)
                 {
@@ -233,91 +249,96 @@ namespace IMSMetabolitesFinder
 
                 // Load parameters
                 double Mz = 0;
-                string formula = string.Empty;
-                
-                // get the target
-                bool isDouble = Double.TryParse(options.Target, out Mz);
-                if (!isDouble)
-                {
-                    formula = options.Target;
-                    Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-                    formula = rgx.Replace(formula, "");
-                }
 
                 bool pause = options.PauseWhenDone;
 
-                int ID = options.ID;
-                
-                // get the ionization method.
-                IonizationMethod method = IonizationMethodUtilities.ParseIonizationMethod(options.IonizationMethod);
-
                 CrossSectionSearchParameters searchParameters = new CrossSectionSearchParameters(
-                    4,
+                    1,
                     options.PpmError,
                     9,
                     0.25,
                     options.IntensityThreshold,
                     options.PeakShapeScoreThreshold,
                     options.IsotopicScoreThreshold,
-                    options.MinFitPoints); 
+                    options.MinFitPoints,
+                    true,
+                    PeakDetectorEnum.WaterShed); 
 
                 IFormatter formatter = new BinaryFormatter();
 
-                // If target cannot be constructed. Create a result 
-                ImsTarget target = null;
-                try
+                // If target cannot be constructed. Create a result.
+                IList<IImsTarget> targets = new List<IImsTarget>(); 
+                IList<CrossSectionWorkflowResult> errorTargets = new List<CrossSectionWorkflowResult>();
+                foreach (string item in targetList)
                 {
-                    if (!isDouble)
+                    foreach (string ionization in options.IonizationList)
                     {
-                        ImsTarget sample = new ImsTarget(ID, method, formula);
-                        target = new ImsTarget(ID, method, formula);
-                    } 
-                    else 
-                    {
-                        target = new ImsTarget(ID, method, Mz);
+                        string formula = item;
+                        try
+                        {
+                            // get the ionization method.
+                            IonizationMethod method = IonizationMethodUtilities.ParseIonizationMethod(ionization.Trim());
+
+                            bool isDouble = Double.TryParse(formula, out Mz);
+                            if (!isDouble)
+                            {
+                                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                                formula = rgx.Replace(formula, "");
+                            }
+
+                            if (!isDouble)
+                            {
+                                targets.Add(new MolecularTarget(formula, method, options.ChemicalIdentifier));
+                            }
+
+                            else 
+                            {
+                                targets.Add(new MolecularTarget(Mz, method, options.ChemicalIdentifier));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            // In case of error creating targets, create the target error result
+                            AnalysisScoresHolder analysisScores;
+                            analysisScores.RSquared = 0;
+                            analysisScores.AverageCandidateTargetScores.IntensityScore = 0;
+                            analysisScores.AverageCandidateTargetScores.IsotopicScore = 0;
+                            analysisScores.AverageCandidateTargetScores.PeakShapeScore = 0;
+                            analysisScores.AverageVoltageGroupStabilityScore = 0;
+                            var informedResult = new CrossSectionWorkflowResult(
+                                datasetName,
+                                null,
+                                AnalysisStatus.TargetError,
+                                analysisScores);
+                            
+                            using (Stream stream = new FileStream("serialized_result.bin", FileMode.Create, FileAccess.Write, FileShare.None))
+                            {
+                                formatter.Serialize(stream, informedResult);
+                            }
+                        }
                     }
-                }
-                catch (Exception)
-                {
-                    AnalysisScoresHolder analysisScores;
-                    analysisScores.RSquared = 0;
-                    analysisScores.AverageCandidateTargetScores.IntensityScore = 0;
-                    analysisScores.AverageCandidateTargetScores.IsotopicScore = 0;
-                    analysisScores.AverageCandidateTargetScores.PeakShapeScore = 0;
-                    analysisScores.AverageVoltageGroupStabilityScore = 0;
-
-                    var informedResult = new CrossSectionWorkflowResult(
-                        datasetName,
-                        "Target Error",
-                        target.IonizationType,
-                        AnalysisStatus.UknownError,
-                        analysisScores,
-                        null);
-
-                    string errorBinPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
-
-                    using (Stream stream = new FileStream(errorBinPath, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        formatter.Serialize(stream, informedResult);
-                    }
-
-                    throw;
-                }
-
+                } 
+                        
                 // Preprocessing
                 Console.WriteLine("Start Preprocessing:");
                 BincCentricIndexing.IndexUimfFile(uimfFile);
 
                 // Run algorithms in IMSInformed
                 CrossSectionWorkfow workflow = new CrossSectionWorkfow(uimfFile, outputDirectory, resultName, searchParameters);
-                CrossSectionWorkflowResult result = workflow.RunCrossSectionWorkFlow(target);
+                IList<CrossSectionWorkflowResult> results = workflow.RunCrossSectionWorkFlow(targets, verbose);
+
+                // Merge the target error result dictionary and other results
+                foreach (var pair in errorTargets)
+                {
+                    results.Add(pair);
+                }
 
                 // Serialize the result
-                string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionizationMethod + "_Result.bin");
+                string binPath = Path.Combine(outputDirectory, resultName);
 
                 using (Stream stream = new FileStream(binPath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-                    formatter.Serialize(stream, result);
+                        formatter.Serialize(stream, results);
                 }
                 
                 if (pause)
@@ -326,24 +347,21 @@ namespace IMSMetabolitesFinder
                 }
 
                 // Define success
-                if (result.AnalysisStatus == AnalysisStatus.Positive ||
-                    result.AnalysisStatus == AnalysisStatus.Negative || 
-                    result.AnalysisStatus == AnalysisStatus.NotSufficientPoints || 
-                    result.AnalysisStatus == AnalysisStatus.Rejected)
+                foreach (CrossSectionWorkflowResult result in results)
                 {
-                    return 0;
+                    if (!(result.AnalysisStatus == AnalysisStatus.Positive || result.AnalysisStatus == AnalysisStatus.Negative || result.AnalysisStatus == AnalysisStatus.NotSufficientPoints | result.AnalysisStatus == AnalysisStatus.Rejected))
+                    {
+                        return 1;
+                    }
                 }
-                else
-                {
-                    return 1;
-                }
+
+                return 0;
             }
             catch (Exception e)
             {
                 string uimfFile = options.InputPath; // get the UIMF file
-                string ionizationMethod = options.IonizationMethod.ToUpper(); 
                 string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
-                string resultName = datasetName + "_" + ionizationMethod + "_Result.txt";
+                string resultName = datasetName + "_" + "_Result.txt";
                 string resultPath = Path.Combine(options.OutputPath, resultName);
                 string outputDirectory = options.OutputPath;
 
@@ -392,12 +410,75 @@ namespace IMSMetabolitesFinder
             }
         }
 
+        /// <summary>
+        /// The execute match.
+        /// </summary>
+        /// <param name="options">
+        /// The options.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        private static int ExecuteMatch(MatchOptions options)
+        {
+            string inputPath = options.InputPath;  // get the UIMF file
+            string libraryPath = options.LibraryPath; 
+            string datasetName = Path.GetFileNameWithoutExtension(inputPath);
+            string libraryFlieName = Path.GetFileNameWithoutExtension(libraryPath);
+            string resultName = datasetName + "_" + libraryFlieName + "_MatchResult.txt";
+            string resultPath = Path.Combine(options.OutputPath, resultName);
+            string outputDirectory = options.OutputPath;
+
+            if (outputDirectory == string.Empty)
+            {
+                outputDirectory = Directory.GetCurrentDirectory();
+            } 
+            
+            if (!Directory.Exists(outputDirectory))
+            {
+                try
+                {
+                    Directory.CreateDirectory(outputDirectory);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine(string.Format("Failed to create directory {0}", outputDirectory));
+                    throw;
+                }
+            }
+
+            // Delete the result file if it already exists
+            if (File.Exists(resultPath))
+            {
+                File.Delete(resultPath);
+            }
+
+            IList<DriftTimeTarget> importDriftTimeLibrary = DriftTimeLibraryImporter.ImportDriftTimeLibrary(libraryPath);
+            var parameters = new LibraryMatchParameters(options.DriftTimeError, options.MassError, 9, options.PeakShapeScoreThreshold, options.IsotopicScoreThreshold, 0.25);
+            LibraryMatchWorkflow workflow = new LibraryMatchWorkflow(inputPath, outputDirectory, resultName, parameters);
+            IDictionary<DriftTimeTarget, LibraryMatchResult> results = workflow.RunLibraryMatchWorkflow(importDriftTimeLibrary);
+
+            // Write out the target / result pairs as serialized objects
+
+            if (options.PauseWhenDone)
+            {
+                PauseProgram();
+            }
+
+            return 1;
+        }
+
         private static void PauseProgram() 
         {
             // hault the process from exiting to give the user more time in case of user double clicking this 
             // file from within Windows Explorer (or starting the program via a shortcut).
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();            
+        }
+
+        private static bool IsPeptideSequence(string input)
+        {
+            throw new NotImplementedException();
         }
     }
 }

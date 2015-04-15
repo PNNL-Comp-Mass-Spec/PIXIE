@@ -17,6 +17,7 @@ namespace ImsMetabolitesFinderBatchProcessor
     using System.Runtime.Serialization.Formatters.Binary;
 
     using ImsInformed.Domain;
+    using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>
     /// The ims informed process.
@@ -103,14 +104,15 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="CrossSectionWorkflowResult"/>.
         /// </returns>
-        public CrossSectionWorkflowResult DeserializeResultBinFile()
+        public IList<CrossSectionWorkflowResult> DeserializeResultBinFile()
         {
-            CrossSectionWorkflowResult result;
+            IList<CrossSectionWorkflowResult> result;
             IFormatter formatter = new BinaryFormatter();
             using (Stream stream = new FileStream(this.ResultBinFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                result = (CrossSectionWorkflowResult)formatter.Deserialize(stream);
+                result = (IList<CrossSectionWorkflowResult>)formatter.Deserialize(stream);
             }
+
             return result;
         }
     }
