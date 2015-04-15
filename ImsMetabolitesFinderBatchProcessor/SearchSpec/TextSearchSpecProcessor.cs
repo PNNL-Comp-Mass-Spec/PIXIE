@@ -11,9 +11,12 @@
 namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Data;
     using System.IO;
     using System.Linq;
+    using System.Text;
 
     /// <summary>
     /// The search spec processor.
@@ -94,7 +97,7 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
 
             var exceptions = new List<Exception>();
             int ID = 0;
-            using (var reader = new StreamReader(searchSpecFilePath))
+            using (var reader = new StreamReader(searchSpecFilePath, Encoding.UTF8))
             {
                 int lineNumber = 0;
                 string line;
@@ -117,7 +120,7 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
             
             if (exceptions.Count > 0 && !force)
             {
-                throw new AggregateException("Failed to process search spec file, abort batch processor", exceptions);
+                throw new AggregateException("Failed to process search spec file, abort batch processor. See above for reasons", exceptions);
             }
             else if (exceptions.Count > 0 && force)
             {
@@ -203,8 +206,11 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
         /// </returns>
         private ImsInformedProcess ProcessLine(string utility, string line, int lineNumber, List<Exception> exceptions, ref bool firstLine, ref int id)
         {
+            string deliminitors = ",:;";
             bool outputWhereInputsAre = string.IsNullOrEmpty(this.outputPath);
             string datasetName = string.Empty;
+            IList<string> ionizations = new List<string>();
+            IList<string> targets = new List<string>();
             
             try
             {
@@ -228,25 +234,69 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
                 {
                     throw new FormatException("Line " + lineNumber + " \"" + line + "\" does not have enough arguments");
                 }
-                else if (parts.Count() > 3)
-                {
-                    throw new FormatException("Line " + lineNumber + " \"" + line + "\" has too many arguments, please don't put spaces in targets or ionization modes");
-                }
 
-                // Group tokens into ionization modes targets according to parentheses
-                datasetName = parts[0];
-
-                IList<string> targetList = parts[1].Split(":,&".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                targetList = parts[1].Split(":,&".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                string ionization;
-                if (parts.Count() <= 2)
+                // parser state 1: stand by
+                // parser state 1: read dataset name
+                // parser state 2: read targets
+                // parser state 3: read ionizations
+                bool continuationFlag = false;
+                int parserState = 0; // Continue;
+                for (int i = 0; i < parts.Length; i++)
                 {
-                    ionization = this.InferIonization(datasetName);
-                }
-                else
-                {
-                    ionization = parts[2];
+                    string item = parts[i];
+
+                    // If the token is a comma, set continuation flag and exit
+                    if (item.Length == 1 && deliminitors.IndexOf(item[0]) >=0)
+                    {
+                        continuationFlag = true;
+                    }
+                    else 
+                    {
+                        if (deliminitors.IndexOf(item[0]) >= 0)
+                        {
+                            continuationFlag = true;
+                        }
+
+                        if (!continuationFlag)
+                        {
+                            parserState++;
+                        }
+
+                        string[] subStrings = item.Split(deliminitors.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string subString in subStrings)
+                        {
+                            if (parserState == 1)
+                            {
+                                if (datasetName != string.Empty)
+                                {
+                                    throw new ArgumentException("Parsing failed, more than 1 dataset name detected");
+                                }
+
+                                if (subString.Contains('.'))
+                                {
+                                    datasetName = Path.GetFileNameWithoutExtension(subString);    
+                                }
+                                else
+                                {
+                                    datasetName = subString;
+                                }
+                            } 
+                            else if (parserState == 2)
+                            {
+                                targets.Add(subString);    
+                            }
+                            else if (parserState == 3)
+                            {
+                                ionizations.Add(subString);    
+                            }
+                            else
+                            {
+                                throw new ArgumentException("Parsing error, more arguments are supplied than what is needed");
+                            }
+                        }
+
+                        continuationFlag = deliminitors.IndexOf(item[item.Length - 1]) >= 0;
+                    }
                 }
 
                 // Figure out various file paths
@@ -254,16 +304,15 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
                 string UIMFFileDir = Path.GetDirectoryName(uimfPath);
                 string workspaceDir = outputWhereInputsAre ? UIMFFileDir : this.outputPath;
                 
-                string outputDirectory = Path.Combine(workspaceDir, datasetName + "_ImsMetabolitesFinderResult" + "_" + ionization);
-                string binPath = Path.Combine(outputDirectory, datasetName + "_" + ionization + "_Result.bin");
+                string outputDirectory = Path.Combine(workspaceDir, datasetName + "_Result");
+                string binPath = Path.Combine(outputDirectory, datasetName + "_Result.bin");
 
                 string commandline = null;
-                commandline += String.Join(" ", targetList);
-                commandline += " -i " + uimfPath + " "; 
-                
-                commandline += "-m " + ionization + " ";
+                commandline += "find ";
+                commandline += "-i " + uimfPath + " "; 
+                commandline += "-t " + string.Join(",", targets) + " ";
+                commandline += "-m " + string.Join(",", ionizations) + " ";
                 commandline += "-o " + outputDirectory + " ";
-                commandline += "--id " + id + " ";
                 commandline += this.Arguments + " ";
 
                 id++;

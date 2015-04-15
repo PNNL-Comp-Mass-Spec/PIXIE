@@ -74,12 +74,6 @@ namespace ImsMetabolitesFinder.Options
         public bool PauseWhenDone { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating pause when done.
-        /// </summary>
-        [Option('c', "chemical", DefaultValue = "", HelpText = "Googleable, adduct independent information of what the chemical is at the target M/Z. This is used to form the primary key for the AMT library. Not necessary for anonymous searches ")]
-        public string ChemicalIdentifier { get; set; }
-
-        /// <summary>
         /// Gets or sets the ppm error.
         /// </summary>
         [Option("ppm", DefaultValue = 10, HelpText = "Specify the PPM error allowed for MZ search.")]

@@ -14,6 +14,7 @@ namespace IMSMetabolitesFinder
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -273,11 +274,14 @@ namespace IMSMetabolitesFinder
                 {
                     foreach (string ionization in options.IonizationList)
                     {
-                        string formula = item;
                         try
                         {
                             // get the ionization method.
                             IonizationMethod method = IonizationMethodUtilities.ParseIonizationMethod(ionization.Trim());
+
+                            Tuple<string, string> target = ParseTargetToken(item, datasetName);
+                            string formula = target.Item2;
+                            string chemicalIdentifier = target.Item1;
 
                             bool isDouble = Double.TryParse(formula, out Mz);
                             if (!isDouble)
@@ -288,15 +292,15 @@ namespace IMSMetabolitesFinder
 
                             if (!isDouble)
                             {
-                                targets.Add(new MolecularTarget(formula, method, options.ChemicalIdentifier));
+                                targets.Add(new MolecularTarget(formula, method, chemicalIdentifier));
                             }
 
                             else 
                             {
-                                targets.Add(new MolecularTarget(Mz, method, options.ChemicalIdentifier));
+                                targets.Add(new MolecularTarget(Mz, method, chemicalIdentifier));
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             // In case of error creating targets, create the target error result
                             AnalysisScoresHolder analysisScores;
@@ -479,6 +483,47 @@ namespace IMSMetabolitesFinder
         private static bool IsPeptideSequence(string input)
         {
             throw new NotImplementedException();
+        }
+
+        private static Tuple<string, string> ParseTargetToken(string targetToken, string datasetName)
+        {
+            string[] items = targetToken.Split("-|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            if (items.Length == 2)
+            {
+                return new Tuple<string, string>(items[0], items[1]);
+            }
+            else if (items.Length == 1)
+            {
+                return new Tuple<string, string>(items[0], InferChemicalIdentifier(datasetName));
+            }
+            else
+            {
+                throw new ArgumentException(string.Format("Cannot parse target {0}", targetToken));
+            }
+        }
+
+        /// <summary>
+        /// The infer chemical identifier.
+        /// </summary>
+        /// <param name="datasetName">
+        /// The dataset name.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// </exception>
+        private static string InferChemicalIdentifier(string datasetName)
+        {
+            if (datasetName.ToLower().Contains("mix"))
+            {
+                throw new ArgumentException("Cannot infer chemical identifier from Mixed dataset, please specify in search specs."); 
+            }
+            else
+            {
+                MetadataFromDatasetName metadata = new MetadataFromDatasetName(datasetName);
+                return metadata.SampleIdentifier;
+            }
         }
     }
 }
