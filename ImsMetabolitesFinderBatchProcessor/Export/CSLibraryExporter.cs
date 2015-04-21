@@ -52,7 +52,7 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
             string result = string.Empty;
             if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
             {
-                string name = workflowResult.Target.ChemicalIdentifier;
+                string name = workflowResult.Target.Adduct.ToString();
                 string[] crossSections = workflowResult.DetectedIsomers.Select((x) => string.Format("{0:F4}", x.CrossSectionalArea)).ToArray();
                 
 

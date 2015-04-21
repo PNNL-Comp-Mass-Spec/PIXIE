@@ -12,6 +12,7 @@ namespace ImsMetabolitesFinderTest
     using ImsInformed.Domain;
     using ImsInformed.Interfaces;
     using ImsInformed.Scoring;
+    using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
 
     using NUnit.Framework;
@@ -55,9 +56,12 @@ namespace ImsMetabolitesFinderTest
             analysisScoresHolder1.AverageVoltageGroupStabilityScore = 4;
             analysisScoresHolder1.RSquared = 6;
 
+            IImsTarget target1 = new MolecularTarget("C2H5OH", IonizationMethod.ProtonMinus, "Ginger ale");
+            IImsTarget target2 = new MolecularTarget("C2H5OH", IonizationMethod.ProtonMinus, "Volka");
+
             CrossSectionWorkflowResult result1 = new CrossSectionWorkflowResult(
                 "France", 
-                null,
+                target1,
                 AnalysisStatus.Positive,
                 analysisScoresHolder1,
                 holyGrail1);
@@ -81,7 +85,7 @@ namespace ImsMetabolitesFinderTest
 
             CrossSectionWorkflowResult result2 = new CrossSectionWorkflowResult(
                 "France", 
-                null,
+                target2,
                 AnalysisStatus.Positive,
                 analysisScoresHolder,
                 holyGrail2);

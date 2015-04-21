@@ -213,7 +213,8 @@ namespace IMSMetabolitesFinder
             {
                 string uimfFile = options.InputPath; // get the UIMF file
                 string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
-                string resultName = datasetName + "_"  + "_Result.txt";
+                string logFileName = datasetName + "_"  + "Result.txt";
+                string resultName = datasetName + "_"  + "Result.bin";
                 string resultPath = Path.Combine(options.OutputPath, resultName);
                 string outputDirectory = options.OutputPath;
                 IList<string> targetList = options.TargetList;
@@ -328,8 +329,9 @@ namespace IMSMetabolitesFinder
                 BincCentricIndexing.IndexUimfFile(uimfFile);
 
                 // Run algorithms in IMSInformed
-                CrossSectionWorkfow workflow = new CrossSectionWorkfow(uimfFile, outputDirectory, resultName, searchParameters);
+                CrossSectionWorkfow workflow = new CrossSectionWorkfow(uimfFile, outputDirectory, logFileName, searchParameters);
                 IList<CrossSectionWorkflowResult> results = workflow.RunCrossSectionWorkFlow(targets, verbose);
+                workflow.Dispose();
 
                 // Merge the target error result dictionary and other results
                 foreach (var pair in errorTargets)
@@ -365,7 +367,7 @@ namespace IMSMetabolitesFinder
             {
                 string uimfFile = options.InputPath; // get the UIMF file
                 string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
-                string resultName = datasetName + "_" + "_Result.txt";
+                string resultName = datasetName + "_Result.txt";
                 string resultPath = Path.Combine(options.OutputPath, resultName);
                 string outputDirectory = options.OutputPath;
 
@@ -494,7 +496,7 @@ namespace IMSMetabolitesFinder
             }
             else if (items.Length == 1)
             {
-                return new Tuple<string, string>(items[0], InferChemicalIdentifier(datasetName));
+                return new Tuple<string, string>(InferChemicalIdentifier(datasetName), items[0]);
             }
             else
             {

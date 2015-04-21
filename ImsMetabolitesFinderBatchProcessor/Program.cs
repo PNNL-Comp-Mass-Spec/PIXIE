@@ -15,6 +15,7 @@ namespace ImsMetabolitesFinderBatchProcessor
     using FalkorSignalPlotter.Util;
 
     using ImsInformed.Domain;
+    using ImsInformed.Interfaces;
     using ImsInformed.Workflows.CrossSectionExtraction;
 
     using ImsMetabolitesFinderBatchProcessor.Export;
@@ -201,7 +202,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Trace.WriteLine("Results summary:");
                             Trace.WriteLine(string.Empty);
                             Trace.Write("[Dataset Name]");
-                            foreach (var item in resultAggregator.SupportedIonizationMethods)
+                            foreach (var item in resultAggregator.DetectedIonizationMethods)
                             {
                                 Trace.Write(" " + item.ToFriendlyString());
                             }
@@ -219,7 +220,7 @@ namespace ImsMetabolitesFinderBatchProcessor
 
                                 Trace.Write(string.Format("    {0}: ", chemName));
 
-                                foreach (var ionization in resultAggregator.SupportedIonizationMethods)
+                                foreach (var ionization in resultAggregator.DetectedIonizationMethods)
                                 {
                                     string summary;
                                     var ionizationMethod = ionization.ToAdduct();
@@ -257,7 +258,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Trace.WriteLine(processor.Message);
                             Trace.WriteLine(string.Format("{0} out of {1} analysis jobs finished without errors.", count - failedAnalyses.Count,     count));
                             Trace.WriteLine(string.Empty);
-                            Trace.WriteLine(string.Format("{0} out of {1} chemicals have at least 1 ionization mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
+                            Trace.WriteLine(string.Format("{0} out of {1} chemicals have at least 1 target mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
                             Trace.WriteLine(string.Empty);
                             Trace.WriteLine("Results and QA data were written where the input UIMF files are.");
                             Trace.WriteLine(string.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.Positive]));
@@ -309,11 +310,11 @@ namespace ImsMetabolitesFinderBatchProcessor
                         int width = 1500;
                         int height = 700;
 
-                        foreach (var item in resultAggregator.DatasetBasedResultCollection)
+                        foreach (string dataset in resultAggregator.DatasetBasedResultCollection.Keys)
                         {
-                            foreach (var ionizationMethod in resultAggregator.SupportedIonizationMethods)
+                            foreach (KeyValuePair<IImsTarget, CrossSectionWorkflowResult> item in resultAggregator.DatasetBasedResultCollection[dataset])
                             {
-                                plotItemCount += AddResultToScoresTable(item.Key, item.Value, ionizationMethod.ToAdduct(), table, colDef);
+                                plotItemCount += AddResultToScoresTable(dataset, item.Value, item.Key, table, colDef);
                             }
 
                             if (plotItemCount >= numberOfAnalysesPerPlot)
@@ -392,8 +393,8 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <param name="chemicalResult">
         /// The chemical result.
         /// </param>
-        /// <param name="ionization">
-        /// The ionization.
+        /// <param name="target">
+        /// The target.
         /// </param>
         /// <param name="table">
         /// The table.
@@ -404,23 +405,17 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public static int AddResultToScoresTable(string dataset, IDictionary<IonizationAdduct, CrossSectionWorkflowResult> chemicalResult, IonizationAdduct ionization, NumericTable table, IList<string> colDef)
+        public static int AddResultToScoresTable(string dataset, CrossSectionWorkflowResult chemicalResult, IImsTarget target, NumericTable table, IList<string> colDef)
         {
-            if (chemicalResult.ContainsKey(ionization))
-            {
-                TableRow dict = new TableRow(dataset + ionization);
-                CrossSectionWorkflowResult workflowResult = chemicalResult[ionization];
-                dict.Name += "(" + workflowResult.AnalysisStatus + ")";
-                dict.Add(colDef[1], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore);
-                dict.Add(colDef[2], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore);
-                dict.Add(colDef[3], workflowResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore);
-                dict.Add(colDef[0], workflowResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore);
-                dict.Add(colDef[4], workflowResult.AnalysisScoresHolder.RSquared);
-                table.Add(dict);
-                return 1;
-            }
-
-            return 0;
+            TableRow dict = new TableRow(dataset + target);
+            dict.Name += "(" + chemicalResult.AnalysisStatus + ")";
+            dict.Add(colDef[1], chemicalResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore);
+            dict.Add(colDef[2], chemicalResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore);
+            dict.Add(colDef[3], chemicalResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore);
+            dict.Add(colDef[0], chemicalResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore);
+            dict.Add(colDef[4], chemicalResult.AnalysisScoresHolder.RSquared);
+            table.Add(dict);
+            return 1;
         }
 
         /// <summary>

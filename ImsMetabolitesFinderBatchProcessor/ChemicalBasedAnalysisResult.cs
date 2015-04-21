@@ -72,23 +72,6 @@ namespace ImsMetabolitesFinderBatchProcessor
             this.InitiateFromWorkflowResult(result);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChemicalBasedAnalysisResult"/> class.
-        /// </summary>
-        /// <param name="chemicalIdentifier">
-        /// The chemical Identifier.
-        /// </param>
-        /// <param name="ionization">
-        /// The ionization.
-        /// </param>
-        public ChemicalBasedAnalysisResult(string chemicalIdentifier, IonizationAdduct adduct)
-        {
-            this.AnalysisStatus = AnalysisStatus.NoAnalysis;
-            this.FusionNumber = 0;
-            this.DetectedIsomers = new List<TargetIsomerReport>();
-            this.Target = null;
-        }
-
         public ChemicalBasedAnalysisResult(ChemicalBasedAnalysisResult result, CrossSectionWorkflowResult newWorkflowResult)
         {
             // previous results inconclusive, new result conclusive

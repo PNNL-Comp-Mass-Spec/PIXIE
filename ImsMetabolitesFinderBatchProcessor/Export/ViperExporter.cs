@@ -66,67 +66,15 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
         /// </param>
         public static void ExportViperDatasetBased(ResultAggregator resultAggregator, string viperFileDir)
         {
+            Predicate<CrossSectionWorkflowResult> posChargeState = (result) => { return result.Target.ChargeState > 0; };
+            Predicate<CrossSectionWorkflowResult> negChargeState = (result) => { return result.Target.ChargeState < 0; };
+
             string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_dataset_based.txt");
             string viperNegFilePath = Path.Combine(viperFileDir, "viper_neg_dataset_based.txt");
+            string description = "#[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]";
 
-            // Export M+H and M+Na
-            using (FileStream resultFile = new FileStream(viperPosFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                using (StreamWriter writer = new StreamWriter(resultFile))
-                {
-                    writer.WriteLine("#[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
-                    foreach (var item in resultAggregator.DatasetBasedResultCollection)
-                    {
-                        string posResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonPlus.ToAdduct());
-                        string sodiumResult = SummarizeResultViper(item.Value, IonizationMethod.SodiumPlus.ToAdduct());
-                        if (!String.IsNullOrEmpty(posResult))
-                        {
-                            writer.Write(posResult);
-                        }
-
-                        if (!String.IsNullOrEmpty(sodiumResult))
-                        {
-                            writer.Write(sodiumResult);
-                        }
-                    }
-                }
-            }
-
-            // Export M-H
-            using (FileStream resultFile = new FileStream(viperNegFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                using (StreamWriter writer = new StreamWriter(resultFile))
-                {
-                    writer.WriteLine("#[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]");
-                    foreach (var item in resultAggregator.DatasetBasedResultCollection)
-                    {
-                        string negResult = SummarizeResultViper(item.Value, IonizationMethod.ProtonMinus.ToAdduct());
-                        string hcooResult = SummarizeResultViper(item.Value, IonizationMethod.HCOOMinus.ToAdduct());
-                        string proton2MinusSodiumPlusResult = SummarizeResultViper(item.Value, IonizationMethod.Proton2MinusSodiumPlus.ToAdduct());
-                        string apci = SummarizeResultViper(item.Value, IonizationMethod.APCI.ToAdduct());
-                        
-                        if (!String.IsNullOrEmpty(negResult))
-                        {
-                            writer.Write(negResult);
-                        }
-
-                        if (!String.IsNullOrEmpty(negResult))
-                        {
-                            writer.Write(hcooResult);
-                        }
-
-                        if (!String.IsNullOrEmpty(negResult))
-                        {
-                            writer.Write(proton2MinusSodiumPlusResult);
-                        }
-
-                        if (!String.IsNullOrEmpty(negResult))
-                        {
-                            writer.Write(apci);
-                        }
-                    }
-                }
-            }
+            resultAggregator.SummarizeResultDatasetBased(viperPosFilePath, SummarizeResultViper, description, posChargeState);
+            resultAggregator.SummarizeResultDatasetBased(viperNegFilePath, SummarizeResultViper, description, negChargeState);
         }
 
         /// <summary>
@@ -138,28 +86,25 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
         /// <param name="ionization">
         /// The ionization.
         /// </param>
+        /// <param name="workflowResult"></param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string SummarizeResultViper(IDictionary<IonizationAdduct, CrossSectionWorkflowResult> analysesResults, IonizationAdduct ionization)
+        private static string SummarizeResultViper(CrossSectionWorkflowResult workflowResult)
         {
             string result = string.Empty;
-            if (analysesResults.ContainsKey(ionization))
+            if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
             {
-                CrossSectionWorkflowResult workflowResult = analysesResults[ionization];
-                if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
+                foreach (var isomer in workflowResult.MatchingIsomers)
                 {
-                    foreach (var isomer in analysesResults[ionization].MatchingIsomers)
+                    if (isomer.LastVoltageGroupDriftTimeInMs > 0)
                     {
-                        if (isomer.LastVoltageGroupDriftTimeInMs > 0)
-                        {
-                            string name = workflowResult.DatasetName + "_" + workflowResult.Target.TargetDescriptor;
-                            double mass = workflowResult.Target.MonoisotopicMass;
-                            const double Net = 0.5;
-                            double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
-                            const int ChargeState = 1;
-                            result += String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}\r\n", name, mass, Net, driftTime, ChargeState);
-                        }
+                        string name = workflowResult.DatasetName + "_" + workflowResult.Target.TargetDescriptor;
+                        double mass = workflowResult.Target.MonoisotopicMass;
+                        const double Net = 0.5;
+                        double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
+                        const int ChargeState = 1;
+                        result += String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}\r\n", name, mass, Net, driftTime, ChargeState);
                     }
                 }
             }

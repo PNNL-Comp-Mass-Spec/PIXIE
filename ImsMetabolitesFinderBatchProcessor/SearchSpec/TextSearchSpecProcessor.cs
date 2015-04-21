@@ -99,6 +99,7 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
             int ID = 0;
             using (var reader = new StreamReader(searchSpecFilePath, Encoding.UTF8))
             {
+                HashSet<string> fileURIs = new HashSet<string>();
                 int lineNumber = 0;
                 string line;
                 bool firstLine = true;
@@ -109,7 +110,7 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
                     Console.WriteLine("Number of lines processed: {0}", lineNumber);
                     Console.SetCursorPosition(0, Console.CursorTop - 1);
                     
-                    ImsInformedProcess process = this.ProcessLine(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID);
+                    ImsInformedProcess process = this.ProcessLine(utilityPath, line, lineNumber, exceptions, ref firstLine, ref ID, fileURIs);
                     if (process != null)
                     {
                         
@@ -127,6 +128,8 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
                 this.Message = String.Format("{0} datasets were not found out of {1} datasets\r\n", exceptions.Count, exceptions.Count + ID);
             }
         }
+
+        // Duplication should not be allowed
 
         /// <summary>
         /// search for the uimf file in the given directory.
@@ -204,7 +207,7 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
         /// <returns>
         /// Returns null to skip current line. <see cref="ImsInformedProcess"/>.
         /// </returns>
-        private ImsInformedProcess ProcessLine(string utility, string line, int lineNumber, List<Exception> exceptions, ref bool firstLine, ref int id)
+        private ImsInformedProcess ProcessLine(string utility, string line, int lineNumber, List<Exception> exceptions, ref bool firstLine, ref int id, HashSet<string> fileURIs)
         {
             string deliminitors = ",:;";
             bool outputWhereInputsAre = string.IsNullOrEmpty(this.outputPath);
@@ -301,6 +304,12 @@ namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
 
                 // Figure out various file paths
                 string uimfPath = this.FindUimfFile(this.inputPath, datasetName);
+                if (fileURIs.Contains(uimfPath))
+                {
+                    throw new ArgumentException(string.Format("Duplicate dataset: {0}. Please make sure all datasets are unique in search spec file."));
+                }
+
+                fileURIs.Add(uimfPath);
                 string UIMFFileDir = Path.GetDirectoryName(uimfPath);
                 string workspaceDir = outputWhereInputsAre ? UIMFFileDir : this.outputPath;
                 
