@@ -1,4 +1,14 @@
-﻿namespace ImsMetabolitesFinder.Preprocess
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="BincCentricIndexing.cs" company="PNNL">
+//   Written for the Department of Energy (PNNL, Richland, WA)
+//   Copyright 2015, Battelle Memorial Institute.  All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the BincCentricIndexing type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace ImsMetabolitesFinder.Preprocess
 {
     using System;
 

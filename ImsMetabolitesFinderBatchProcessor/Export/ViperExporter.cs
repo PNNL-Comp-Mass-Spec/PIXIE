@@ -17,6 +17,7 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
     using System.Linq;
 
     using ImsInformed.Domain;
+    using ImsInformed.Interfaces;
     using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>
@@ -71,7 +72,7 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
 
             string viperPosFilePath = Path.Combine(viperFileDir, "viper_pos_dataset_based.txt");
             string viperNegFilePath = Path.Combine(viperFileDir, "viper_neg_dataset_based.txt");
-            string description = "#[Chemical Name], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]";
+            string description = "#[Dataset Name / Target], [Monoisotopic mass], [NET], [Normalized Drift Time], [Charge State]";
 
             resultAggregator.SummarizeResultDatasetBased(viperPosFilePath, SummarizeResultViper, description, posChargeState);
             resultAggregator.SummarizeResultDatasetBased(viperNegFilePath, SummarizeResultViper, description, negChargeState);
@@ -104,7 +105,7 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
                         const double Net = 0.5;
                         double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
                         const int ChargeState = 1;
-                        result += String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}\r\n", name, mass, Net, driftTime, ChargeState);
+                        result += String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}", name, mass, Net, driftTime, ChargeState);
                     }
                 }
             }
@@ -129,7 +130,7 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
             string result = String.Empty;
             if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
             {
-                string target = workflowResult.Target.ChemicalIdentifier;
+                IImsTarget target = workflowResult.Target;
                 double mass = workflowResult.Target.MonoisotopicMass;
 
                 foreach (var isomer in workflowResult.DetectedIsomers)
@@ -137,7 +138,7 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
                     const double Net = 0.5;
                     double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
                     const int ChargeState = 1;
-                    result += String.Format("{0}\t{1:F4}\t{2:F4}\t{3:F2}\t{4}", target, mass, Net, driftTime, ChargeState);
+                    result += String.Format("{0}\t{1:F4}\t{2:F4}\t{3:F2}\t{4}", target.TargetDescriptor, mass, Net, driftTime, ChargeState);
                 }
             }
 

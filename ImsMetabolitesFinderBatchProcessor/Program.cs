@@ -21,8 +21,19 @@ namespace ImsMetabolitesFinderBatchProcessor
     using ImsMetabolitesFinderBatchProcessor.Export;
     using ImsMetabolitesFinderBatchProcessor.SearchSpec;
 
+    /// <summary>
+    /// The program.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// The main.
+        /// </summary>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <exception cref="FileNotFoundException">
+        /// </exception>
         [STAThread]
         public static void Main(string[] args)
         {
@@ -202,9 +213,9 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Trace.WriteLine("Results summary:");
                             Trace.WriteLine(string.Empty);
                             Trace.Write("[Dataset Name]");
-                            foreach (var item in resultAggregator.DetectedIonizationMethods)
+                            foreach (IonizationAdduct item in resultAggregator.DetectedIonizationMethods)
                             {
-                                Trace.Write(" " + item.ToFriendlyString());
+                                Trace.Write(" " + item);
                             }
 
                             Trace.WriteLine("");
@@ -223,7 +234,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 foreach (var ionization in resultAggregator.DetectedIonizationMethods)
                                 {
                                     string summary;
-                                    var ionizationMethod = ionization.ToAdduct();
+                                    var ionizationMethod = ionization;
                                     if (resultAggregator.ChemicalBasedResultCollection[chemName].ContainsKey(ionizationMethod))
                                     {
                                         ChemicalBasedAnalysisResult result = resultAggregator.ChemicalBasedResultCollection[chemName][ionizationMethod];
@@ -256,9 +267,9 @@ namespace ImsMetabolitesFinderBatchProcessor
                             Console.WriteLine();
                             Trace.WriteLine("Analysis summary:");
                             Trace.WriteLine(processor.Message);
-                            Trace.WriteLine(string.Format("{0} out of {1} analysis jobs finished without errors.", count - failedAnalyses.Count,     count));
+                            Trace.WriteLine(string.Format("{0} out of {1} datasets were analyzed finished without errors.", count - failedAnalyses.Count,     count));
                             Trace.WriteLine(string.Empty);
-                            Trace.WriteLine(string.Format("{0} out of {1} chemicals have at least 1 target mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
+                            Trace.WriteLine(string.Format("{0} out of {1} chemicals have at least 1 ionization mode concluding positive.", identifiedChemicalCounter, totalChemicalCounter));
                             Trace.WriteLine(string.Empty);
                             Trace.WriteLine("Results and QA data were written where the input UIMF files are.");
                             Trace.WriteLine(string.Format("   Analyses concluded positive            (POS) : {0}", resultAggregator.ResultCounter[AnalysisStatus.Positive]));

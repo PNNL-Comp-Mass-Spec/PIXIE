@@ -40,7 +40,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </param>
         public ResultAggregator(IEnumerable<ImsInformedProcess> processes)
         {
-            this.DetectedIonizationMethods = new HashSet<IonizationMethod>();
+            this.DetectedIonizationMethods = new HashSet<IonizationAdduct>();
 
             this.Tasks = processes;
             this.empty = true;
@@ -87,7 +87,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <summary>
         /// Gets the dataset based result collection.
         /// </summary>
-        public HashSet<IonizationMethod> DetectedIonizationMethods { get; private set; }
+        public HashSet<IonizationAdduct> DetectedIonizationMethods { get; private set; }
 
         /// <summary>
         /// process result files collected and generate a final report.
@@ -107,6 +107,11 @@ namespace ImsMetabolitesFinderBatchProcessor
                     IList<CrossSectionWorkflowResult> results = task.DeserializeResultBinFile();
                     foreach (var result in results)
                     {
+                        if (!this.DetectedIonizationMethods.Contains(result.Target.Adduct))
+                        {
+                            this.DetectedIonizationMethods.Add(result.Target.Adduct);
+                        }
+
                         var analysisResult = result.AnalysisStatus;
                         if (!this.ResultCounter.Keys.Contains(analysisResult))
                         {
@@ -226,7 +231,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                                 string summaryLine = summaryFunction(result);
                                 if (!string.IsNullOrEmpty(summaryLine))
                                 {
-                                    writer.WriteLine();
+                                    writer.WriteLine(summaryLine);
                                 }
                             }
                         }

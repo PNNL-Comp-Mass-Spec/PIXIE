@@ -177,7 +177,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// </exception>
         private static bool CheckConflict(ChemicalBasedAnalysisResult result, CrossSectionWorkflowResult newWorkflowResult)
         {
-            if (newWorkflowResult.Target != result.Target)
+            if (!newWorkflowResult.Target.Equals(result.Target))
             {
                 throw new InvalidOperationException("Cannot check conflict for results from different chemicals or with different ionization methods");
             }

@@ -213,7 +213,6 @@ namespace IMSMetabolitesFinder
             {
                 string uimfFile = options.InputPath; // get the UIMF file
                 string datasetName = Path.GetFileNameWithoutExtension(uimfFile);
-                string logFileName = datasetName + "_"  + "Result.txt";
                 string resultName = datasetName + "_"  + "Result.bin";
                 string resultPath = Path.Combine(options.OutputPath, resultName);
                 string outputDirectory = options.OutputPath;
@@ -329,7 +328,7 @@ namespace IMSMetabolitesFinder
                 BincCentricIndexing.IndexUimfFile(uimfFile);
 
                 // Run algorithms in IMSInformed
-                CrossSectionWorkfow workflow = new CrossSectionWorkfow(uimfFile, outputDirectory, logFileName, searchParameters);
+                CrossSectionWorkfow workflow = new CrossSectionWorkfow(uimfFile, outputDirectory, searchParameters);
                 IList<CrossSectionWorkflowResult> results = workflow.RunCrossSectionWorkFlow(targets, verbose);
                 workflow.Dispose();
 

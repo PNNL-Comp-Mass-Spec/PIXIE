@@ -67,7 +67,7 @@
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="ImsInformed, Version=1.0.5541.17627, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="ImsInformed, Version=1.0.5590.25237, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ImsInformed\ImsInformed.dll</HintPath>
     </Reference>
@@ -111,7 +111,6 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S /E /C  "$(SolutionDir)lib\UIMFLibrary" "$(TargetDir)"
