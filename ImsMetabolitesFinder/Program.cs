@@ -459,7 +459,7 @@ namespace IMSMetabolitesFinder
             }
 
             IList<DriftTimeTarget> importDriftTimeLibrary = DriftTimeLibraryImporter.ImportDriftTimeLibrary(libraryPath);
-            var parameters = new LibraryMatchParameters(options.DriftTimeError, options.MassError, 9, options.PeakShapeScoreThreshold, options.IsotopicScoreThreshold, 0.25);
+            var parameters = new LibraryMatchParameters(options.DriftTimeError, 250, 9, options.PeakShapeScoreThreshold, options.IsotopicScoreThreshold, 0.25, options.MassError);
             LibraryMatchWorkflow workflow = new LibraryMatchWorkflow(inputPath, outputDirectory, resultName, parameters);
             IDictionary<DriftTimeTarget, LibraryMatchResult> results = workflow.RunLibraryMatchWorkflow(importDriftTimeLibrary);
 
