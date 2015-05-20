@@ -1,6 +1,16 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Program.cs" company="PNNL">
+//   Written for the Department of Energy (PNNL, Richland, WA)
+//   Copyright 2015, Battelle Memorial Institute.  All Rights Reserved.
+// </copyright>
+// <summary>
+//   The program.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor
+using System;
+
+namespace IFinderBatchProcessor
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -14,12 +24,12 @@ namespace ImsMetabolitesFinderBatchProcessor
     using FalkorSignalPlotter;
     using FalkorSignalPlotter.Util;
 
+    using IFinderBatchProcessor.Export;
+    using IFinderBatchProcessor.SearchSpec;
+
     using ImsInformed.Domain;
     using ImsInformed.Interfaces;
     using ImsInformed.Workflows.CrossSectionExtraction;
-
-    using ImsMetabolitesFinderBatchProcessor.Export;
-    using ImsMetabolitesFinderBatchProcessor.SearchSpec;
 
     /// <summary>
     /// The program.
@@ -420,11 +430,11 @@ namespace ImsMetabolitesFinderBatchProcessor
         {
             TableRow dict = new TableRow(dataset + target);
             dict.Name += "(" + chemicalResult.AnalysisStatus + ")";
-            dict.Add(colDef[1], chemicalResult.AnalysisScoresHolder.AverageCandidateTargetScores.IntensityScore);
-            dict.Add(colDef[2], chemicalResult.AnalysisScoresHolder.AverageCandidateTargetScores.IsotopicScore);
-            dict.Add(colDef[3], chemicalResult.AnalysisScoresHolder.AverageCandidateTargetScores.PeakShapeScore);
-            dict.Add(colDef[0], chemicalResult.AnalysisScoresHolder.AverageVoltageGroupStabilityScore);
-            dict.Add(colDef[4], chemicalResult.AnalysisScoresHolder.RSquared);
+            dict.Add(colDef[1], chemicalResult.AverageObservedPeakStatistics.IntensityScore);
+            dict.Add(colDef[2], chemicalResult.AverageObservedPeakStatistics.IsotopicScore);
+            dict.Add(colDef[3], chemicalResult.AverageObservedPeakStatistics.PeakShapeScore);
+            dict.Add(colDef[0], chemicalResult.AverageVoltageGroupStability);
+            dict.Add(colDef[4], chemicalResult.AssociationHypothesisInfo.ProbabilityOfHypothesisGivenData);
             table.Add(dict);
             return 1;
         }

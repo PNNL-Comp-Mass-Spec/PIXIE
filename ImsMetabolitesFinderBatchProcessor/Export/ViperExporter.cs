@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor.Export
+namespace IFinderBatchProcessor.Export
 {
     using System;
     using System.Collections.Generic;
@@ -96,14 +96,14 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
             string result = string.Empty;
             if (workflowResult.AnalysisStatus == AnalysisStatus.Positive)
             {
-                foreach (var isomer in workflowResult.MatchingIsomers)
+                foreach (var isomer in workflowResult.IdentifiedIsomers)
                 {
-                    if (isomer.LastVoltageGroupDriftTimeInMs > 0)
+                    if (isomer.ArrivalTimeSnapShots.Last().MeasuredArrivalTimeInMs > 0)
                     {
                         string name = workflowResult.DatasetName + "_" + workflowResult.Target.TargetDescriptor;
                         double mass = workflowResult.Target.MonoisotopicMass;
                         const double Net = 0.5;
-                        double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
+                        double driftTime = isomer.ArrivalTimeSnapShots.Last().MeasuredArrivalTimeInMs;
                         const int ChargeState = 1;
                         result += String.Format("{0}, {1:F4}, {2:F4}, {3:F2}, {4}", name, mass, Net, driftTime, ChargeState);
                     }
@@ -136,7 +136,7 @@ namespace ImsMetabolitesFinderBatchProcessor.Export
                 foreach (var isomer in workflowResult.DetectedIsomers)
                 {
                     const double Net = 0.5;
-                    double driftTime = isomer.LastVoltageGroupDriftTimeInMs;
+                    double driftTime = isomer.ArrivalTimeSnapShots.Last().MeasuredArrivalTimeInMs;
                     const int ChargeState = 1;
                     result += String.Format("{0}\t{1:F4}\t{2:F4}\t{3:F2}\t{4}", target.TargetDescriptor, mass, Net, driftTime, ChargeState);
                 }

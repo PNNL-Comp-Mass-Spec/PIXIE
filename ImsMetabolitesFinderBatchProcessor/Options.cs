@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor
+namespace IFinderBatchProcessor
 {
     using CommandLine;
     using CommandLine.Text;

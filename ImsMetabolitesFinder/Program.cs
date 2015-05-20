@@ -253,27 +253,19 @@ namespace IMSMetabolitesFinder
 
                 bool pause = options.PauseWhenDone;
 
-                CrossSectionSearchParameters searchParameters = new CrossSectionSearchParameters(
-                    1,
-                    options.PpmError,
-                    9,
-                    0.25,
-                    options.IntensityThreshold,
-                    options.PeakShapeScoreThreshold,
-                    options.IsotopicScoreThreshold,
-                    options.MinFitPoints,
-                    true,
-                    PeakDetectorEnum.WaterShed); 
+                CrossSectionSearchParameters searchParameters = new CrossSectionSearchParameters();
 
                 IFormatter formatter = new BinaryFormatter();
 
                 // If target cannot be constructed. Create a result.
                 IList<IImsTarget> targets = new List<IImsTarget>(); 
+                IImsTarget currentTarget = null;
                 IList<CrossSectionWorkflowResult> errorTargets = new List<CrossSectionWorkflowResult>();
                 foreach (string item in targetList)
                 {
                     foreach (string ionization in options.IonizationList)
                     {
+
                         try
                         {
                             // get the ionization method.
@@ -292,28 +284,20 @@ namespace IMSMetabolitesFinder
 
                             if (!isDouble)
                             {
-                                targets.Add(new MolecularTarget(formula, method, chemicalIdentifier));
+                                currentTarget = new MolecularTarget(formula, method, chemicalIdentifier);
+                                targets.Add(currentTarget);
                             }
 
                             else 
                             {
-                                targets.Add(new MolecularTarget(Mz, method, chemicalIdentifier));
+                                currentTarget = new MolecularTarget(Mz, method, chemicalIdentifier);
+                                targets.Add(currentTarget);
                             }
                         }
                         catch (Exception)
                         {
                             // In case of error creating targets, create the target error result
-                            AnalysisScoresHolder analysisScores;
-                            analysisScores.RSquared = 0;
-                            analysisScores.AverageCandidateTargetScores.IntensityScore = 0;
-                            analysisScores.AverageCandidateTargetScores.IsotopicScore = 0;
-                            analysisScores.AverageCandidateTargetScores.PeakShapeScore = 0;
-                            analysisScores.AverageVoltageGroupStabilityScore = 0;
-                            var informedResult = new CrossSectionWorkflowResult(
-                                datasetName,
-                                null,
-                                AnalysisStatus.TargetError,
-                                analysisScores);
+                            CrossSectionWorkflowResult informedResult = CrossSectionWorkflowResult.CreateErrorResult(currentTarget, datasetName);
                             
                             using (Stream stream = new FileStream("serialized_result.bin", FileMode.Create, FileAccess.Write, FileShare.None))
                             {

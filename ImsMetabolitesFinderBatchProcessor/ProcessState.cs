@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor
+namespace IFinderBatchProcessor
 {
     /// <summary>
     /// The process state.

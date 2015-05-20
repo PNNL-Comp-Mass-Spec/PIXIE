@@ -70,3 +70,18 @@ packages/
 
 #Test files
 *.testsettings
+lib/ImsInformed/System.Data.SQLite.dll
+lib/ImsInformed/System.Data.SQLite.xml
+lib/ImsInformed/UIMFLibrary.dll
+lib/ImsInformed/UIMFLibrary.pdb
+lib/ImsInformed/x64/SQLite.Interop.dll
+lib/ImsInformed/x86/SQLite.Interop.dll
+lib/ImsInformed/MathNet.Numerics.xml
+lib/ImsInformed/QuickGraph.Data.dll
+lib/ImsInformed/QuickGraph.Data.xml
+lib/ImsInformed/QuickGraph.Graphviz.dll
+lib/ImsInformed/QuickGraph.Graphviz.xml
+lib/ImsInformed/QuickGraph.Serialization.dll
+lib/ImsInformed/QuickGraph.Serialization.xml
+lib/ImsInformed/QuickGraph.dll
+lib/ImsInformed/QuickGraph.xml

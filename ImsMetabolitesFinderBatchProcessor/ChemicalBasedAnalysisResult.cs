@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor
+namespace IFinderBatchProcessor
 {
     using System;
     using System.Collections;
@@ -55,7 +55,7 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <summary>
         /// The isomer results.
         /// </summary>
-        public IEnumerable<TargetIsomerReport> DetectedIsomers { get; private set; }
+        public IEnumerable<IdentifiedIsomerInfo> DetectedIsomers { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChemicalBasedAnalysisResult"/> class. 
@@ -99,7 +99,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             }
 
             // both result conclusive, no conflict
-            IEnumerable<TargetIsomerReport> newIsomerList = result.DetectedIsomers.Zip(newWorkflowResult.MatchingIsomers, (A, B) => FuseIsomerResult(A, B, result.FusionNumber, 1));
+            IEnumerable<IdentifiedIsomerInfo> newIsomerList = result.DetectedIsomers.Zip(newWorkflowResult.IdentifiedIsomers, (A, B) => FuseIsomerResult(A, B, result.FusionNumber, 1));
 
             this.AnalysisStatus = result.AnalysisStatus;
             this.FusionNumber = result.FusionNumber + 1;
@@ -107,24 +107,26 @@ namespace ImsMetabolitesFinderBatchProcessor
             this.Target = result.Target;
         }
 
-        private static TargetIsomerReport FuseIsomerResult(TargetIsomerReport A, TargetIsomerReport B, int weightA, int weightB)
+        private static IdentifiedIsomerInfo FuseIsomerResult(IdentifiedIsomerInfo A, IdentifiedIsomerInfo B, double weightA, double weightB)
         {
-            TargetIsomerReport newIsomer;
-            newIsomer.CrossSectionalArea = A.CrossSectionalArea * weightA + B.CrossSectionalArea * weightB;
-            newIsomer.CrossSectionalArea /= weightA + weightB;
+            double sum = weightA + weightB;
+            weightB /= sum;
+            weightA /= sum;
 
-            if (A.LastVoltageGroupDriftTimeInMs > 0 && B.LastVoltageGroupDriftTimeInMs > 0)
-            {
-                newIsomer.LastVoltageGroupDriftTimeInMs = A.LastVoltageGroupDriftTimeInMs * weightA + B.LastVoltageGroupDriftTimeInMs * weightB;
-                newIsomer.LastVoltageGroupDriftTimeInMs /= weightA + weightB;
-            }
-            else
-            {
-                newIsomer.LastVoltageGroupDriftTimeInMs = A.LastVoltageGroupDriftTimeInMs;
-            }
+            IEnumerable<ArrivalTimeSnapShot> arivalTimeSnapShots = A.ArrivalTimeSnapShots.Concat(B.ArrivalTimeSnapShots);
+            
+            int numberOfFeaturePointsUsed = A.NumberOfFeaturePointsUsed + B.NumberOfFeaturePointsUsed;
 
-            newIsomer.Mobility = A.Mobility;
-            newIsomer.MonoisotopicMass = A.MonoisotopicMass;
+            IdentifiedIsomerInfo newIsomer = new IdentifiedIsomerInfo(
+                numberOfFeaturePointsUsed,
+                A.RSquared * weightA + B.RSquared * weightB,
+                A.Mobility * weightA + B.Mobility * weightB, 
+                A.CrossSectionalArea * weightA + B.CrossSectionalArea * weightB, 
+                A.AverageVoltageGroupStabilityScore * weightA + B.AverageVoltageGroupStabilityScore * weightB, 
+                arivalTimeSnapShots, 
+                A.ViperCompatibleMass  + B.ViperCompatibleMass,
+                A.AnalysisStatus);
+            
             return newIsomer;
         }
 
@@ -158,7 +160,7 @@ namespace ImsMetabolitesFinderBatchProcessor
             this.Target = result.Target;
             this.AnalysisStatus = result.AnalysisStatus;
             this.FusionNumber = 1;
-            this.DetectedIsomers = result.MatchingIsomers;
+            this.DetectedIsomers = result.IdentifiedIsomers;
         }
 
         /// <summary>
@@ -182,7 +184,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                 throw new InvalidOperationException("Cannot check conflict for results from different chemicals or with different ionization methods");
             }
 
-            if (result.DetectedIsomers.Count() != newWorkflowResult.MatchingIsomers.Count())
+            if (result.DetectedIsomers.Count() != newWorkflowResult.IdentifiedIsomers.Count())
             {
                 return true;
             }
@@ -192,7 +194,7 @@ namespace ImsMetabolitesFinderBatchProcessor
                 return true;
             }
             
-            IEnumerable<bool> r = result.DetectedIsomers.Zip(newWorkflowResult.MatchingIsomers, CheckConflict);
+            IEnumerable<bool> r = result.DetectedIsomers.Zip(newWorkflowResult.IdentifiedIsomers, CheckConflict);
             return !r.Select(b => b == false).Any();
         }
 
@@ -208,14 +210,9 @@ namespace ImsMetabolitesFinderBatchProcessor
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        private static bool CheckConflict(TargetIsomerReport A, TargetIsomerReport B)
+        private static bool CheckConflict(IdentifiedIsomerInfo A, IdentifiedIsomerInfo B)
         {
             if (Math.Abs(A.CrossSectionalArea - B.CrossSectionalArea) > CollisionCrossSectionTolerance)
-            {
-                return true;
-            }
-
-            if (Math.Abs(A.LastVoltageGroupDriftTimeInMs - B.LastVoltageGroupDriftTimeInMs) > NormalizedDriftTimeTolerance)
             {
                 return true;
             }

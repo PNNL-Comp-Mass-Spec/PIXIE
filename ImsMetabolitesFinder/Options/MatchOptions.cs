@@ -51,7 +51,7 @@ namespace ImsMetabolitesFinder.Options
         /// <summary>
         /// Gets or sets the ppm error.
         /// </summary>
-        [Option('m', "ppm", DefaultValue = 250, HelpText = "Specify the ± mass error in ppm when verifying a detected feature for a match.")]
+        [Option('m', "ppm", DefaultValue = 25, HelpText = "Specify the ± mass error in ppm when verifying a detected feature for a match.")]
         public int MassError { get; set; }
 
         /// <summary>

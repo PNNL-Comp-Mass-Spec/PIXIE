@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor.SearchSpec
+namespace IFinderBatchProcessor.SearchSpec
 {
     using System;
     using System.Collections;

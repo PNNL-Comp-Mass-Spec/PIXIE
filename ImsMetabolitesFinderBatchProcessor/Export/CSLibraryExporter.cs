@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor.Export
+namespace IFinderBatchProcessor.Export
 {
     using System;
     using System.Collections.Generic;

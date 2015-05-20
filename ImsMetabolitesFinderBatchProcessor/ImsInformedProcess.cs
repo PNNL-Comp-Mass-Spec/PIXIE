@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinderBatchProcessor
+namespace IFinderBatchProcessor
 {
     using System.Collections.Generic;
     using System.Diagnostics;

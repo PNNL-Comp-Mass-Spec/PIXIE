@@ -30,6 +30,7 @@ namespace ImsMetabolitesFinder.Preprocess
                 {
                     Console.WriteLine("No bin centric data found for file {0}.", uimfFileLocation);
                 }
+
                 uimfReader.Dispose();
             }
             
