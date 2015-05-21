@@ -1,0 +1,1905 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GraphX.PCL.Logic</name>
+    </assembly>
+    <members>
+        <member name="T:GraphX.GraphSharp.Algorithms.IAlgorithm">
+            <summary>
+            Simple algorithm interface which is not connected to any graph.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3">
+            <summary>
+            EdgeBundler class is intended to be used for bundling and straightening of the edges of the graph.
+            The goal is to get the layout that is less clutered and more suitable for analiyzing.
+            
+            This class is based on the paper "Force-Directed Edge Bundling for Graph Visualization"
+            by Danny Holten and Jarke J. van Wijk.
+            http://www.win.tue.nl/~dholten/papers/forcebundles_eurovis.pdf
+            
+            It was implemented and modified by Luka Potkonjak.
+            Adapted for GraphX by PantheR.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.EdgeRoutingAlgorithmBase`3.Compute">
+            <summary>
+            Run algorithm calculation
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.EdgeRoutingAlgorithmBase`3.EdgeRoutes">
+            <summary>
+            Gets or sets the resulting routing points of the edges.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.EdgeRoutingAlgorithmBase`3.AreaRectangle">
+            <summary>
+            GraphArea rendering size
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.BundleAllEdges(`2)">
+            <summary>
+            Bundles edges of the graph.
+            </summary>
+            
+            <param name="graph">
+            Graph whose edges should be bundled
+            </param>
+            
+            <param name="rectangle">
+            Rectangle in which the graph is laid out.
+            Control points of bundled edges should not fall outside of this rectangle.
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.BundleEdges(`2,System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            Bundles specified edges. Shapes of all the other edges remain the same,
+            so this method is faster than the one for bundling all edges, but also produces less optimal layout.
+            </summary>
+            
+            <param name="graph">
+            Parent graph of the edge set
+            </param>
+            
+            <param name="edges">
+            Edges that should be bundled
+            </param>
+            
+            <param name="rectangle">
+            Rectangle in which the graph is laid out.
+            Control points of bundled edges should not fall outside of this rectangle.
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.AddEdgeDataForMovedEdges(System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            Collects edge data from the specified edges
+            </summary>
+            
+            <param name="edges">
+            Edges whose data should be added to the collection
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.AddDataForAllEdges(System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            Collects edge data from all edges in the specified collection.
+            Used by the <see cref="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.BundleAllEdges(`2)"/> method.
+            </summary>
+            
+            <param name="edges">
+            Collection of edges whose data should be collected
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.AddEdgeData(`1)">
+            <summary>
+            Collects data from the specified edge
+            </summary>
+            
+            <param name="e">
+            Edge to collect data from
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.AddAllExistingData(System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            Collects edge data from all edges in the specified collection.
+            Used for edges that already have control points metadata.
+            </summary>
+            
+            <param name="edges">
+            Collection of edges whose data should be collected
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.AddExistingData(`1)">
+            <summary>
+            Collects data from the specified edge.
+            Used for edges that already have control points metadata.
+            </summary>
+            
+            <param name="e">
+            Edge to collect data from
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.AngleCompatibility(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Calculates angle compatibility of the two edges
+            </summary>
+            
+            <param name="ed1">
+            First edge to be used in calculation
+            </param>
+            
+            <param name="ed2">
+            Second edge to be used in calculation
+            </param>
+            
+            <returns>
+            Angle compatibility coefficient ranging from 0 to 1
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.PositionCompatibility(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Calculates position compatibility of the two edges
+            </summary>
+            
+            <param name="ed1">
+            First edge to be used in calculation
+            </param>
+            
+            <param name="ed2">
+            Second edge to be used in calculation
+            </param>
+            
+            <returns>
+            Position compatibility coefficient ranging from 0 to 1
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.ScaleCompatibility(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Calculates scale compatibility of the two edges
+            </summary>
+            
+            <param name="ed1">
+            First edge to be used in calculation
+            </param>
+            
+            <param name="ed2">
+            Second edge to be used in calculation
+            </param>
+            
+            <returns>
+            Scale compatibility coefficient ranging from 0 to 1
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.CalculateCompatibility(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Calculates compatibility of the two edges.
+            Combines angle, position, scale, and visibility compatibility coefficient.
+            </summary>
+            
+            <param name="ed1">
+            First edge to be used in calculation
+            </param>
+            
+            <param name="ed2">
+            Second edge to be used in calculation
+            </param>
+            
+            <returns>
+            Compatibility coefficient ranging from 0 to 1
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.VisibilityCompatibility(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Calculates visibility compatibility of the two edges.
+            Uses lower of the two calculated visibility coefficients.
+            </summary>
+            
+            <param name="ed1">
+            First edge to be used in calculation
+            </param>
+            
+            <param name="ed2">
+            Second edge to be used in calculation
+            </param>
+            
+            <returns>
+            Visibility compatibility coefficient ranging from 0 to 1
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.VisibilityCoefficient(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Calculates visibility coefficient of the two edges.
+            </summary>
+            
+            <param name="ed1">
+            First edge to be used in calculation
+            </param>
+            
+            <param name="ed2">
+            Second edge to be used in calculation
+            </param>
+            
+            <returns>
+            Compatibility coefficient ranging from 0 to 1
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.CalculateDirectedness(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Calculates directedness of the two edges.
+            </summary>
+            
+            <param name="ed1">
+            First edge to be used in calculation
+            </param>
+            
+            <param name="ed2">
+            Second edge to be used in calculation
+            </param>
+            
+            <returns>
+            True if edges have roughly the same direction, false otherwise
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.Intersects(GraphX.Measure.Point,GraphX.Measure.Point,GraphX.Measure.Point,GraphX.Measure.Point,GraphX.Measure.Point@,System.Single@)">
+            <summary>
+            Finds an intersection point of the two lines
+            </summary>
+            
+            <param name="p1">
+            First point of the first line
+            </param>
+            
+            <param name="p2">
+            Second point of the first line
+            </param>
+            
+            <param name="q1">
+            First point of the second line
+            </param>
+            
+            <param name="q2">
+            Second point of the second line
+            </param>
+            
+            <param name="intersection">
+            Point of intersection
+            </param>
+            
+            <param name="rp">
+            Parameter used for determining on which segment the intersection point lies
+            </param>
+            
+            <returns>
+            True if lines are not parallel, false otherwise
+            </returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.FindCompatibleEdges(System.Collections.Generic.Dictionary{GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.KeyPair,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData})">
+            <summary>
+            Finds compatible edges for the specified set of edges
+            </summary>
+            
+            <param name="edgeSet">
+            Edges for which we should find compatible edges
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.DivideAllEdges(System.Int32)">
+            <summary>
+            Divides edges into segments by adding subdivision points to them
+            </summary>
+            
+            <param name="subdivisionPointsNum">
+            Number of subdivision points that should be created
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.ResetMovedEdges">
+            <summary>
+            Straightens moved edges.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.DivideEdge(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData,System.Int32)">
+            <summary>
+            Divides an edge into segments by adding subdivision points to it
+            </summary>
+            
+            <param name="ed">
+            Edge data that is used for creating new subdivision points
+            </param>
+            
+            <param name="subdivisionPointsNum">
+            Number of subdivision points that should be created
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.DoubleSubdivisionPoints(GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData)">
+            <summary>
+            Doubles subdivision points for an edge by adding one new subdivision point between each two
+            </summary>
+            
+            <param name="ed">
+            Edge data that contains subdivision points to be doubled
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.DoubleSubdivisionPointsForAllEdges">
+            <summary>
+            Doubles subdivision points for all edges
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.CalculateNewControlPoints(System.Object)">
+            <summary>
+            Calculates new positions for the control points of an edge by applying elastic and electrostatic forces to them
+            </summary>
+            
+            <param name="o">
+            Edge data that contains subdivision points to be moved
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.MoveControlPoints(System.Collections.Generic.Dictionary{GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.KeyPair,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData})">
+            <summary>
+            Moves control points for the specified edges
+            </summary>
+            
+            <param name="groupsToMove">
+            Edges that should be moved
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.StraightenEdgesInternally(System.Collections.Generic.Dictionary{GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.KeyPair,GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting{`0,`1,`2}.EdgeGroupData},System.Single)">
+            <summary>
+            Straightens the edges using internal data sturctures
+            </summary>
+            
+            <param name="groupsToStraighten">
+            Groups of edges that should be straightened
+            </param>
+            
+            <param name="s">
+            Specifies the amount of straightening, from 0 to 1
+            </param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.StraightenEdges(`2,System.Single)">
+            <summary>
+            Moves the control points of all the edges of the graph closer to their original position on the straight edge
+            </summary>
+            
+            <param name="graph">
+            Graph whose edges should be straightened
+            </param>
+            
+            <param name="s">
+            Specifies the amount of straightening, from 0 to 1
+            </param>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.SubdivisionPoints">
+            <summary>
+            Gets or sets the number of subdivision points each edge should have.
+            Default value is 15.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.Iterations">
+            <summary>
+            Gets or sets the number of iterations for moving the control points.
+            Default value is 50.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.RepulseOpposite">
+            <summary>
+            Gets or sets the value indicating whether opposite edges should attracts or repulse each other.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.UseThreading">
+            <summary>
+            Gets or sets the the value that determines if multiple threads should be used for the calculations.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.SpringConstant">
+            <summary>
+            Gets or sets the value for the spring constant.
+            Edges are more easely bent if the value is lower.
+            Default value is 10.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.Threshold">
+            <summary>
+            Gets or sets the treshold for the edge compatibility.
+            Every pair of edges has the compatibility coefficient assigned to it.
+            Range of the coefficient is from 0 to 1.
+            Edges that have coefficient lower than the treshold between them are not considered for interaction.
+            Default value is 0.2.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.RepulsionCoefficient">
+            <summary>
+            If repulseOpposite is true, this determines how much will opposite edges repulse eachother.
+            From -1 to 0.
+            Default is -0.1
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.Straightening">
+            <summary>
+            Gets or sets the amount of straightening that will be applied after every bundling.
+            This can produce better-looking graphs.
+            Default value is 0.15, range is from 0 to 1.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.EdgeGroupData">
+            <summary>
+            Class used for storing the needed edge metadata
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRouting`3.GroupPairData">
+            <summary>
+            Class used for storing data for a pair of groups of edges (direction and compatibility coefficient)
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.SubdivisionPoints">
+            <summary>
+            Gets or sets the number of subdivision points each edge should have.
+            Default value is 15.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.Iterations">
+            <summary>
+            Gets or sets the number of iterations for moving the control points.
+            Default value is 250.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.RepulseOpposite">
+            <summary>
+            Gets or sets the value indicating whether opposite edges should attracts or repulse each other.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.UseThreading">
+            <summary>
+            Gets or sets the the value that determines if multiple threads should be used for the calculations.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.SpringConstant">
+            <summary>
+            Gets or sets the value for the spring constant.
+            Edges are more easely bent if the value is lower.
+            Default value is 10.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.Threshold">
+            <summary>
+            Gets or sets the treshold for the edge compatibility.
+            Every pair of edges has the compatibility coefficient assigned to it.
+            Range of the coefficient is from 0 to 1.
+            Edges that have coefficient lower than the treshold between them are not considered for interaction.
+            Default value is 0.2.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.RepulsionCoefficient">
+            <summary>
+            If repulseOpposite is true, this determines how much will opposite edges repulse eachother.
+            From -1 to 0.
+            Default is -0.1
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.BundleEdgeRoutingParameters.Straightening">
+            <summary>
+            Gets or sets the amount of straightening that will be applied after every bundling.
+            This can produce better-looking graphs.
+            Default value is 0.15, range is from 0 to 1.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.EdgeRouting.VectorTools">
+            <summary>
+            Used for vector calculations
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.HorizontalGridSize">
+            <summary>
+            Controls horizontal grid density. Smaller the value more points will be available.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.VerticalGridSize">
+            <summary>
+            Controls vertical grid density. Smaller the value more points will be available.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.SideGridOffset">
+            <summary>
+            Offset from the each side to enlarge grid and leave additional space for routing.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.UseDiagonals">
+            <summary>
+            Use diagonal point connections while searching for the path.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.PathFinderAlgorithm">
+            <summary>
+            Algorithm used to search for the path.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.PunishChangeDirection">
+            <summary>
+            Gets or sets if direction change is unpreferable
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.UseHeavyDiagonals">
+            <summary>
+            Gets or sets if diagonal shortcuts must be preferred
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.Heuristic">
+            <summary>
+            Heuristic level
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.UseTieBreaker">
+            <summary>
+            Use special formula for tie breaking
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharpComponents.EdgeRouting.PathFinderEdgeRoutingParameters.SearchTriesLimit">
+            <summary>
+            Maximum number of tries
+            </summary>
+        </member>
+        <member name="M:GustavoAlgorithms.PriorityQueueB`1.Push(`0)">
+            <summary>
+            Push an object onto the PQ
+            </summary>
+            <param name="O">The new object</param>
+            <returns>The index in the list where the object is _now_. This will change when objects are taken from or put onto the PQ.</returns>
+        </member>
+        <member name="M:GustavoAlgorithms.PriorityQueueB`1.Pop">
+            <summary>
+            Get the smallest object and remove it.
+            </summary>
+            <returns>The smallest object</returns>
+        </member>
+        <member name="M:GustavoAlgorithms.PriorityQueueB`1.Update(System.Int32)">
+            <summary>
+            Notify the PQ that the object at position i has changed
+            and the PQ needs to restore order.
+            Since you dont have access to any indexes (except by using the
+            explicit IList.this) you should not call this function without knowing exactly
+            what you do.
+            </summary>
+            <param name="i">The index of the changed object.</param>
+        </member>
+        <member name="M:GustavoAlgorithms.PriorityQueueB`1.Peek">
+            <summary>
+            Get the smallest object without removing it.
+            </summary>
+            <returns>The smallest object</returns>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.SimpleERParameters.SideStep">
+            <summary>
+            Get or set side step value when searching for way around vertex
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.EdgeRouting.SimpleERParameters.BackStep">
+            <summary>
+            Get or set backward step when intersection is met
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.ISoftMutableGraph`2">
+            <summary>
+            Soft mutation means: We can hide the vertices or the edges.
+            </summary>
+            <typeparam name="TVertex"></typeparam>
+            <typeparam name="TEdge"></typeparam>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphHideHelper`2.EdgesFor(`0)">
+            <summary>
+            Returns every edge connected with the vertex <code>v</code>.
+            </summary>
+            <param name="v">The vertex.</param>
+            <returns>Edges, adjacent to the vertex <code>v</code>.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphHideHelper`2.HideVertex(`0)">
+            <summary>
+            Hides the vertex <code>v</code>.
+            </summary>
+            <param name="v">The vertex to hide.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphHideHelper`2.HideVertices(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Hides a lot of vertices.
+            </summary>
+            <param name="vertices">The vertices to hide.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphSharpExtensions.GetNeighbours``2(QuickGraph.IBidirectionalGraph{``0,``1},``0)">
+            <summary>
+            Returns with the adjacent vertices of the <code>vertex</code>.
+            </summary>
+            <param name="g">The graph.</param>
+            <param name="vertex">The vertex which neighbours' we want to get.</param>
+            <returns>List of the adjacent vertices of the <code>vertex</code>.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphSharpExtensions.GetEdgesBetween``2(QuickGraph.IVertexAndEdgeListGraph{``0,``1},System.Collections.Generic.List{``0},System.Collections.Generic.List{``0})">
+            <summary>
+            If the graph g is directed, then returns every edges which source is one of the vertices in the <code>set1</code>
+            and the target is one of the vertices in <code>set2</code>.
+            </summary>
+            <typeparam name="TVertex">Type of the vertex.</typeparam>
+            <typeparam name="TEdge">Type of the edge.</typeparam>
+            <param name="g">The graph.</param>
+            <param name="set1"></param>
+            <param name="set2"></param>
+            <returns>Return the list of the selected edges.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphSharpExtensions.GetSources``2(QuickGraph.IBidirectionalGraph{``0,``1})">
+            <summary>
+            Returns with the sources in the graph.
+            </summary>
+            <typeparam name="TVertex"></typeparam>
+            <typeparam name="TEdge"></typeparam>
+            <param name="g">The graph.</param>
+            <returns>Returns with the sources in the graph.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphSharpExtensions.GetDiameter``3(``2)">
+            <summary>
+            Gets the diameter of a graph.
+            The diameter is the greatest distance between two vertices.
+            </summary>
+            <param name="g">The graph.</param>
+            <returns>The diameter of the Graph <code>g</code>.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphSharpExtensions.GetDiameter``3(``2,System.Double[0:,0:]@)">
+            <summary>
+            Gets the diameter of a graph.
+            The diameter is the greatest distance between two vertices.
+            </summary>
+            <param name="g">The graph.</param>
+            <param name="distances">This is an out parameter. It gives the distances between every vertex-pair.</param>
+            <returns>The diameter of the Graph <code>g</code>.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.GraphSharpExtensions.GetDistances``3(``2)">
+            <param name="g">The graph.</param>
+            <returns>Returns with the distance between the vertices (distance: number of the edges).</returns>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.LayeredTopologicalSortAlgorithm`2.LayerIndices">
+            <summary>
+            This dictionary contains the layer-index for every vertices.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.LayeredTopologicalSortAlgorithm`2.LayerCount">
+            <summary>
+            The count of the layers in the graph.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.LayeredTopologicalSortAlgorithm`2.Layers">
+            <summary>
+            The vertices grouped by their LayerIndex.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.DefaultParameterizedLayoutAlgorithmBase`4">
+            <summary>
+            Use this class as a base class for your layout algorithm 
+            if it's parameter class has a default contstructor.
+            </summary>
+            <typeparam name="TVertex">The type of the vertices.</typeparam>
+            <typeparam name="TEdge">The type of the edges.</typeparam>
+            <typeparam name="TGraph">The type of the graph.</typeparam>
+            <typeparam name="TParam">The type of the parameters. Must be based on the LayoutParametersBase.</typeparam>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.ParameterizedLayoutAlgorithmBase`4">
+            <typeparam name="TVertex">Type of the vertices.</typeparam>
+            <typeparam name="TEdge">Type of the edges.</typeparam>
+            <typeparam name="TGraph">Type of the graph.</typeparam>
+            <typeparam name="TParam">Type of the parameters. Must be based on the LayoutParametersBase.</typeparam>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.ParameterizedLayoutAlgorithmBase`4.InitParameters(`3)">
+            <summary>
+            Initializes the parameters (cloning or creating new parameter object with default values).
+            </summary>
+            <param name="oldParameters">Parameters from a prevorious layout. If it is null, 
+            the parameters will be set to the default ones.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.ParameterizedLayoutAlgorithmBase`4.InitializeWithRandomPositions(System.Double,System.Double)">
+            <summary>
+            Initializes the positions of the vertices. Assign a random position inside the 'bounding box' to the vertices without positions.
+            It does NOT modify the position of the other vertices.
+            
+            It generates an <code>IterationEnded</code> event.
+            
+            Bounding box:
+            x coordinates: double.Epsilon - <code>width</code>
+            y coordinates: double.Epsilon - <code>height</code>
+            </summary>
+            <param name="width">Width of the bounding box.</param>
+            <param name="height">Height of the bounding box.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.ParameterizedLayoutAlgorithmBase`4.InitializeWithRandomPositions(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Initializes the positions of the vertices. Assign a random position inside the 'bounding box' to the vertices without positions.
+            It does NOT modify the position of the other vertices.
+            
+            It generates an <code>IterationEnded</code> event.
+            
+            Bounding box:
+            x coordinates: double.Epsilon - <code>width</code>
+            y coordinates: double.Epsilon - <code>height</code>
+            </summary>
+            <param name="width">Width of the bounding box.</param>
+            <param name="height">Height of the bounding box.</param>
+            <param name="translate_x">Translates the generated x coordinate.</param>
+            <param name="translate_y">Translates the generated y coordinate.</param>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.ParameterizedLayoutAlgorithmBase`4.Parameters">
+            <summary>
+            Parameters of the algorithm. For more information see <see cref="T:GraphX.GraphSharp.Algorithms.Layout.LayoutParametersBase"/>.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.BoundedFRLayoutParameters">
+            <summary>
+            Parameters of the Fruchterman-Reingold Algorithm (FDP), bounded version.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase">
+            <summary>
+            Parameters base for the Fruchterman-Reingold Algorithm (FDP).
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.VertexCount">
+            <summary>
+            Count of the vertices (used to calculate the constants)
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.K">
+            <summary>
+            Gets the computed ideal edge length.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.InitialTemperature">
+            <summary>
+            Gets the initial temperature of the mass.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.ConstantOfAttraction">
+            <summary>
+            Constant. <code>Equals with K * attractionMultiplier</code>
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.AttractionMultiplier">
+            <summary>
+            Multiplier of the attraction. Default value is 2.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.ConstantOfRepulsion">
+            <summary>
+            Constant. Equals with <code>Pow(K * repulsiveMultiplier, 2)</code>
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.RepulsiveMultiplier">
+            <summary>
+            Multiplier of the repulsion. Default value is 1.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.IterationLimit">
+            <summary>
+            Limit of the iterations. Default value is 200.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.Lambda">
+            <summary>
+            Lambda for the cooling. Default value is 0.95.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutParametersBase.CoolingFunction">
+            <summary>
+            Gets or sets the cooling function which could be Linear or Exponential.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.BoundedFRLayoutParameters.Width">
+            <summary>
+            Width of the bounding box.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.BoundedFRLayoutParameters.Height">
+            <summary>
+            Height of the bounding box.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.BoundedFRLayoutParameters.K">
+            <summary>
+            Constant. <code>IdealEdgeLength = sqrt(height * width / vertexCount)</code>
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.BoundedFRLayoutParameters.InitialTemperature">
+            <summary>
+            Gets the initial temperature of the mass.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3">
+            <typeparam name="TVertex">The type of the vertices.</typeparam>
+            <typeparam name="TEdge">The type of the edges.</typeparam>
+            <typeparam name="TGraph">The type of the graph.</typeparam>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._phase">
+            <summary>
+            <para>Phase of the layout process.</para>
+            <para>Values: 1,2,3</para>
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._step">
+            <summary>
+            The steps in the actual phase.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._maxIterationCounts">
+            <summary>
+            The maximal iteration count in the phases.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._errorThresholds">
+            <summary>
+            The error thresholds for the phases (calculated inside the Init method).
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._treeGrowingStep">
+            <summary>
+            Grows back a tree-node level in every 'treeGrowingStep'th step.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._gravityForceMagnitude">
+            <summary>
+            The magnitude of the gravity force calculated in the init phased.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._gravityCenterCalculated">
+            <summary>
+            Has been the gravity center initiated or not.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.InternalCompute">
+            <summary>
+            This method is the skeleton of the layout algorithm.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.ApplySpringForces">
+            <summary>
+            Applies the attraction forces (between the end nodes
+            of the edges).
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.ApplyRepulsionForces">
+            <summary>
+            Applies the repulsion forces between every node-pair.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.ApplyGravitationForces">
+            <summary>
+            Applies the gravitation forces.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.ApplyApplicationSpecificForces">
+            <summary>
+            Applies the application specific forces to the vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._compoundVertexDatas">
+            <summary>
+            Informations for compound vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._simpleVertexDatas">
+            <summary>
+            Informations for the simple vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._vertexDatas">
+            <summary>
+            Informations for all kind of vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._levels">
+            <summary>
+            The levels of the graph (generated by the containment associations).
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._removedRootTreeNodeLevels">
+            <summary>
+            The list of the removed root-tree-nodes and edges by it's level
+            (level = distance from the closest not removed node).
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._vertexSizes">
+            <summary>
+            The dictionary of the initial vertex sizes.
+            DO NOT USE IT AFTER THE INITIALIZATION.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._vertexBorders">
+            <summary>
+            The dictionary of the vertex bordex.
+            DO NOT USE IT AFTER THE INITIALIZATION.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._layoutTypes">
+            <summary>
+            The dictionary of the layout types of the compound vertices.
+            DO NOT USE IT AFTER THE INITIALIZATION.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._rootCompoundVertex">
+            <summary>
+            Represents the root vertex.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.Init(System.Collections.Generic.IDictionary{`0,GraphX.Measure.Size},System.Collections.Generic.IDictionary{`0,GraphX.Measure.Thickness},System.Collections.Generic.IDictionary{`0,GraphX.GraphSharp.Algorithms.Layout.Compound.CompoundVertexInnerLayoutType})">
+            <summary>
+            <list type="ul">
+            <listheader>
+            Initializes the algorithm, and the following things:
+            </listheader>
+            <item>the nodes sizes (of the compound vertices)</item>
+            <item>the thresholds for the convergence</item>
+            <item>random initial positions (if the position is not null)</item>
+            <item>remove the 'tree-nodes' from the root graph (level 0)</item>
+            </list>
+            </summary>
+            <param name="vertexSizes">The dictionary of the inner canvas sizes 
+            of the compound vertices.</param>
+            <param name="vertexBorders">The dictionary of the border thickness of
+            the compound vertices.</param>
+            <param name="layoutTypes">The dictionary of the layout types of 
+            the compound vertices.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.InitSimpleVertices(System.Collections.Generic.IDictionary{`0,GraphX.Measure.Size})">
+            <summary>
+            Initializes the data of the simple vertices.
+            </summary>
+            <param name="vertexSizes">Dictionary of the vertex sizes.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.InitCompoundVertices(System.Collections.Generic.IDictionary{`0,GraphX.Measure.Thickness},System.Collections.Generic.IDictionary{`0,GraphX.Measure.Size},System.Collections.Generic.IDictionary{`0,GraphX.GraphSharp.Algorithms.Layout.Compound.CompoundVertexInnerLayoutType},System.Collections.Generic.Queue{`0})">
+            <summary>
+            Initializes the data of the compound vertices.
+            </summary>
+            <param name="vertexBorders">Dictionary of the border thicknesses.</param>
+            <param name="vertexSizes">Dictionary of the vertex sizes.</param>
+            <param name="layoutTypes">Dictionary of the layout types.</param>
+            <param name="movableParentUpdateQueue">The compound vertices with fixed layout
+            should be added to this queue.</param>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3._allTreesGrown">
+            <summary>
+            Indicates whether the removed tree-node 
+            has been grown back or not.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.CompoundVertexData">
+            <summary>
+            Data for the compound vertices.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData">
+            <summary>
+            Data for the simple vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.Vertex">
+            <summary>
+            Gets the vertex which is wrapped by this object.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.Level">
+            <summary>
+            The level of the vertex inside the graph.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.Position">
+            <summary>
+            The position of the vertex.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.MovableParent">
+            <summary>
+            If the vertex is fixed (cannot be moved), that's it's parent
+            that could be moved (if there's any).
+            
+            This property can only be set once.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.IsFixedToParent">
+            <summary>
+            Gets or sets that the position of the vertex is fixed to
+            it's parent vertex or not.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.Size">
+            <summary>
+            Gets the actual size of the vertex (inner size + border + anything else...).
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.SpringForce">
+            <summary>
+            Gets or sets the spring force.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.RepulsionForce">
+            <summary>
+            Gets or sets the spring force.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.GravitationForce">
+            <summary>
+            Gets or sets the spring force.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.VertexData.ApplicationForce">
+            <summary>
+            Gets or sets the spring force.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.CompoundVertexData.Borders">
+            <summary>
+            The thickness of the borders of the compound vertex.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.CompoundVertexData.InnerVertexLayoutType">
+            <summary>
+            Gets the layout type of the compound vertex.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.CompoundVertexData.PropogateToChildren(GraphX.Measure.Vector)">
+            <summary>
+            Modifies the position of the children with the given
+            vector.
+            </summary>
+            <param name="force">The vector of the position modification.</param>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.CompoundVertexData.InnerCanvasSize">
+            <summary>
+            The size of the inner canvas of the compound vertex.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.CompoundVertexData.Size">
+            <summary>
+            The overall size of the vertex (inner canvas size + borders + ...).
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.SimpleVertexData._size">
+            <summary>
+            The size of the vertex.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutAlgorithm`3.SimpleVertexData.Size">
+            <summary>
+            Gets the actual size of the vertex (inner size + border + anything else...).
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutParameters.IdealEdgeLength">
+            <summary>
+            Gets or sets the ideal edge length.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutParameters.ElasticConstant">
+            <summary>
+            Gets or sets the elastic constant for the edges.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutParameters.RepulsionConstant">
+            <summary>
+            Gets or sets the repulsion constant for the node-node 
+            repulsion.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutParameters.NestingFactor">
+            <summary>
+            Gets or sets the factor of the ideal edge length for the 
+            inter-graph edges.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Compound.FDP.CompoundFDPLayoutParameters.GravitationFactor">
+            <summary>
+            Gets or sets the factor of the gravitation.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.ILayoutIterationEventArgs`1.StatusInPercent">
+            <summary>
+            Represent the status of the layout algorithm in percent.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.ILayoutIterationEventArgs`1.Abort">
+            <summary>
+            If the user sets this value to <code>true</code>, the algorithm aborts ASAP.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.ILayoutIterationEventArgs`1.Iteration">
+            <summary>
+            Number of the actual iteration.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.ILayoutIterationEventArgs`1.Message">
+            <summary>
+            Message, textual representation of the status of the algorithm.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.LayoutIterationEventArgs`2.StatusInPercent">
+            <summary>
+            Represent the status of the layout algorithm in percent.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.LayoutIterationEventArgs`2.Abort">
+            <summary>
+            If the user sets this value to <code>true</code>, the algorithm aborts ASAP.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.LayoutIterationEventArgs`2.Iteration">
+            <summary>
+            Number of the actual iteration.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.LayoutIterationEventArgs`2.Message">
+            <summary>
+            Message, textual representation of the status of the algorithm.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.LayoutMode.Simple">
+            <summary>
+            Simple layout mode without compound vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.LayoutMode.Compound">
+            <summary>
+            Compound vertices, compound graph.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FreeFRLayoutParameters.IdealEdgeLength">
+            <summary>
+            Constant. Represents the ideal length of the edges.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutAlgorithm`3._temperature">
+            <summary>
+            Actual temperature of the 'mass'.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.FRLayoutAlgorithm`3.InternalCompute">
+            <summary>
+            It computes the layout of the vertices.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutAlgorithm`3.Adjust">
+            <summary>
+            Rбntsunk egyet az цsszes ponton.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutAlgorithm`3.GetClosest(GraphX.Measure.Point)">
+            <summary>
+            Finds the the closest vertex to the given position.
+            </summary>
+            <param name="tempPos">The position.</param>
+            <returns>Returns with the reference of the closest vertex.</returns>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.Width">
+            <summary>
+            Width of the bounding box. Default value is 300.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.Height">
+            <summary>
+            Height of the bounding box. Default value is 300.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.MaxEpoch">
+            <summary>
+            Maximum iteration number. Default value is 2000.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.RadiusConstantTime">
+            <summary>
+            Radius constant time. Default value is 100.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.InitialRadius">
+            <summary>
+            Default value is 5.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.MinRadius">
+            <summary>
+            Minimal radius. Default value is 1.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.InitialAdaption">
+            <summary>
+            Default value is 0.9.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.MinAdaption">
+            <summary>
+            Default value is 0.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.ISOMLayoutParameters.CoolingFactor">
+            <summary>
+            Default value is 2.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutAlgorithm`3.distances">
+            <summary>
+            Minimal distances between the vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutAlgorithm`3.positions">
+            <summary>
+            Positions of the vertices, stored by indices.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutAlgorithm`3.CalcEnergyIfExchanged(System.Int32,System.Int32)" -->
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutAlgorithm`3.CalcEnergy">
+            <summary>
+            Calculates the energy of the spring system.
+            </summary>
+            <returns>Returns with the energy of the spring system.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutAlgorithm`3.CalcDeltaXY(System.Int32)">
+            <summary>
+            Determines a step to new position of the vertex m.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutAlgorithm`3.CalculateEnergyGradient(System.Int32)">
+            <summary>
+            Calculates the gradient energy of a vertex.
+            </summary>
+            <param name="m">The index of the vertex.</param>
+            <returns>Calculates the gradient energy of the vertex <code>m</code>.</returns>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutParameters.Width">
+            <summary>
+            Width of the bounding box.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutParameters.Height">
+            <summary>
+            Height of the bounding box.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutParameters.MaxIterations">
+            <summary>
+            Maximum number of the iterations.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutParameters.AdjustForGravity">
+            <summary>
+            If true, then after the layout process, the vertices will be moved, so the barycenter will be
+            in the center point of the bounding box.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutParameters.LengthFactor">
+            <summary>
+            Multiplier of the ideal edge length. (With this parameter the user can modify the ideal edge length).
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.KKLayoutParameters.DisconnectedMultiplier">
+            <summary>
+            Ideal distance between the disconnected points (1 is equal the ideal edge length).
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.LinLogLayoutAlgorithm`3.AddRepulsionDirection(System.Int32,GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.LinLogLayoutAlgorithm{`0,`1,`2}.QuadTree,GraphX.Measure.Vector@)">
+            <summary>
+            Kiszбmнtja az <code>index</code> sorszбmъ pontra hatу erхt a 
+            quadTree segнtsйgйvel.
+            </summary>
+            <param name="index">A node sorszбma, melyre a repulzнv erхt szбmнtani akarjuk.</param>
+            <param name="quadTree"></param>
+            <param name="dir">A repulzнv erхt hozzбadja ehhez a Vectorhoz.</param>
+            <returns>Becsьlt mбsodik derivбltja a repulzнv energiбnak.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.LinLogLayoutAlgorithm`3.BuildQuadTree">
+            <summary>
+            Felйpнt egy QuadTree-t (olyan mint az OctTree, csak 2D-ben).
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.FDP.LinLogLayoutAlgorithm`3.QuadTree.MoveNode(GraphX.Measure.Point,GraphX.Measure.Point,System.Double)">
+            <summary>
+            Az adott rész pozícióját újraszámítja, levonva belőle a mozgatott node részét.
+            </summary>
+            <param name="oldPos"></param>
+            <param name="newPos"></param>
+            <param name="nodeWeight"></param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.BuildSparseNormalizedGraph">
+            <summary>
+            From the original graph it creates a sparse normalized graph
+            with segments and dummy vertices (p-vertex, q-vertex, s-vertex).
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.CreateDummyVerticesAndSegments">
+            <summary>
+            Replace long edge (span(edge) > 1) with dummy vertices
+            or segments (span(edge) > 2).
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.AddSegment(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.SugiVertex,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.SugiVertex,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.SugiEdge)">
+            <summary>
+            Adds a new segment to the sparse compaction graph.
+            </summary>
+            <param name="pVertex">The source vertex of the segment.</param>
+            <param name="qVertex">The target vertex of the segment.</param>
+            <param name="edge">The edge which has been replaced by the
+            dummy vertices and this segment.</param>
+            <returns>The newly created segment.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.AddDummyVertex(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.VertexTypes,System.Int32)">
+            <summary>
+            Adds a dummy vertex to the sparse compaction graph.
+            </summary>
+            <param name="type">The type of the dummy vertex (p,q,r).</param>
+            <param name="layerIndex">The index of the layer of the vertex.</param>
+            <returns>The new vertex which has been added to the graph and the
+            layers.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.DoCrossingMinimizations">
+            <summary>
+            Minimizes the crossings between the layers by sweeping up and down
+            while there could be something optimized.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.Sweeping(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean@,System.Int32@)">
+            <summary>
+            Sweeps between the <paramref name="startLayerIndex"/> and <paramref name="endLayerIndex"/>
+            in the way represented by the step 
+            </summary>
+            <param name="startLayerIndex">The index of the start layer (where the sweeping starts from).</param>
+            <param name="endLayerIndex">The index of the last layer (where the sweeping ends).</param>
+            <param name="step">Increment or decrement of the layer index. (1 or -1)</param>
+            <returns>The number of the edge crossings.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.AppendSegmentsToAlternatingLayer(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.AlternatingLayer,System.Boolean)">
+            <summary>
+            Replaces the P or Q vertices of the actualLayer with their
+            segment on the next layer.
+            </summary>
+            <param name="alternatingLayer">The actual alternating layer. It will be modified.</param>
+            <param name="straightSweep">If true, we are sweeping down else we're sweeping up.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.AssignPositionsOnActualLayer(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.AlternatingLayer)">
+            <summary>
+            Assigns the positions of the vertices and segment container 
+            on the actual layer.
+            </summary>
+            <param name="alternatingLayer">The actual layer (L_i).</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.RemoveLoops">
+            <summary>
+            Removes the edges which source and target is the same vertex.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.RemoveCycles">
+            <summary>
+            Removes the cycles from the original graph with simply reverting
+            some edges.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3._graph">
+            <summary>
+            The copy of the VisitedGraph which should be laid out.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3._edgeRoutingPoints">
+            <summary>
+            Routing points for the edges of the original graph.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3._isolatedVertices">
+            <summary>
+            Isolated vertices in the visited graph, which will be handled only in
+            the last step of the layout.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3._cycleEdges">
+            <summary>
+            Edges that has been involved in cycles in the original graph. (These has
+            been reverted during this layout algorithm).
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3._layers">
+            <summary>
+            It stores the vertices or segments which inside the layers.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.InitTheGraph">
+            <summary>
+            Initializes the private _graph field which stores the graph that 
+            we operate on.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.CalculateHorizontalPositions(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.LeftRightMode,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.UpperLowerEdges)">
+            <summary>
+            Calculates the horizontal positions based on the selected modes.
+            </summary>
+            <param name="leftRightMode">Mode of the vertical alignment.</param>
+            <param name="upperLowerEdges">Alignment based on which edges (upper or lower ones).</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.AlternatingLayer.EnsureAlternatingAndPositions">
+            <summary>
+            This method ensures that the layer is a real alternating
+            layer: starts with a SegmentContainer followed by a Vertex,
+            another SegmentContainer, another Vertex, ... ending wiht 
+            a SegmentContainer.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.SugiEdge.Marked">
+            <summary>
+            Gets or sets that the edge is included in a 
+            type 1 conflict as a non-inner segment (true) or not (false).
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.SugiEdge.OriginalEdge">
+            <summary>
+            Gets the original edge of this SugiEdge.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.Segment.PVertex">
+            <summary>
+            Gets or sets the p-vertex of the segment.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.Segment.QVertex">
+            <summary>
+            Gets or sets the q-vertex of the segment.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.ISegmentContainer.Append(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.Segment)">
+            <summary>
+            Appends the segment <paramref name="s"/> to the end of the 
+            container.
+            </summary>
+            <param name="s">The segment to append.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.ISegmentContainer.Join(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.ISegmentContainer)">
+            <summary>
+            Appends all elements of the container <paramref name="sc"/> to 
+            this container.
+            </summary>
+            <param name="sc"></param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.ISegmentContainer.Split(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.Segment,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.ISegmentContainer@,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.ISegmentContainer@)">
+            <summary>
+            Split this container at segment <paramref name="s"/> into two contsiners
+            <paramref name="sc1"/> and <paramref name="sc2"/>. 
+            All elements less than s are stored in container <paramref name="sc1"/> and
+            those who are greated than <paramref name="s"/> in <paramref name="sc2"/>.
+            Element <paramref name="s"/> is neither in <paramref name="sc1"/> or 
+            <paramref name="sc2"/>.
+            </summary>
+            <param name="s">The segment to split at.</param>
+            <param name="sc1">The container which contains the elements before <paramref name="s"/>.</param>
+            <param name="sc2">The container which contains the elements after <paramref name="s"/>.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm`3.ISegmentContainer.Split(System.Int32,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.ISegmentContainer@,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.EfficientSugiyamaLayoutAlgorithm{`0,`1,`2}.ISegmentContainer@)">
+            <summary>
+            Split the container at position <paramref name="k"/>. The first <paramref name="k"/>
+            elements of the container are stored in <paramref name="sc1"/> and the remainder
+            in <paramref name="sc2"/>.
+            </summary>
+            <param name="k">The index where the container should be splitted.</param>
+            <param name="sc1">The container which contains the elements before <paramref name="s"/>.</param>
+            <param name="sc2">The container which contains the elements after <paramref name="s"/>.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.ConvertGraph(System.Collections.Generic.IDictionary{`0,GraphX.Measure.Size})">
+            <summary>
+            Converts the VisitedGraph to the inner type (which is a mutable graph representation).
+            Wraps the vertices, converts the edges.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.FilterCycles">
+            <summary>
+            Removes the cycles from the given graph.
+            It reverts some edges, so the cycles disappeares.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.FiltersAndRemovals">
+            <summary>
+            First step of the algorithm.
+            Filters the unappropriate vertices and edges.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.AssignLayers">
+            <summary>
+            Creates the layering of the graph. (Assigns every vertex to a layer.)
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.MinimizeHierarchicalEdgeLong">
+            <summary>
+            Minimizes the long of the hierarchical edges by 
+            putting down the vertices to the layer above  
+            its descendants.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.ReplaceLongEdges">
+            <summary>
+            Long edges ( span(e) > 1 ) will be replaced by 
+            span(e) edges (1 edge between every 2 neighbor layer)
+            and span(e)-1 dummy vertices will be added to graph.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiyamaPhase1Sweep(System.Int32,System.Int32,System.Int32,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.BaryCenter,System.Boolean,System.Boolean)">
+            <summary>
+            Sweeps in one direction in the 1st Phase of the Sugiyama's algorithm.
+            </summary>
+            <param name="start">The index of the layer where the sweeping starts.</param>
+            <param name="end">The index of the layer where the sweeping ends.</param>
+            <param name="step">Stepcount.</param>
+            <param name="baryCenter">Kind of the barycentering (Up/Down-barycenter).</param>
+            <param name="dirty">If this is a dirty sweep</param>
+            <param name="byRealPosition"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiyamaPhase2Sweep(System.Int32,System.Int32,System.Int32,GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.BaryCenter,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="start"></param>
+            <param name="end"></param>
+            <param name="step"></param>
+            <param name="baryCenter"></param>
+            <param name="byRealPosition"></param>
+            <returns>The index of the layer which is not ordered by <paramref name="baryCenter"/> anymore.
+            If all of the layers ordered, and phase2 sweep done it returns with -1.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.CopyPositions">
+            <summary>
+            Copies the coordinates of the vertices to the VertexPositions dictionary.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.Position">
+            <summary>
+            The position of the vertex inside the layer.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.Measure">
+            <summary>
+            The measure of the vertex (up/down-barycenter/median depends on the implementation).
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.RealPosition">
+            <summary>
+            The real position (x and y coordinates) of the vertex.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.Temp">
+            <summary>
+            Used in the algorithms for temporary storage.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.Size">
+            <summary>
+            Size of the vertex.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.Priority">
+            <summary>
+            The priority of the vertex. Used in the horizontal position assignment phase.
+            The dummy vertices has maximal priorities (because the dummy edge should be as vertical as possible).
+            The other vertices priority based on it's edge count.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.SubPriority">
+            <summary>
+            Represents the subpriority of this vertex between the vertices with the same priority.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.#ctor(`0,GraphX.Measure.Size)">
+            <summary>
+            Constructor of the vertex.
+            </summary>
+            <param name="originalVertex">The object which is wrapped by this ComplexVertex.</param>
+            <param name="size">The size of the original vertex.</param>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.LayerIndex">
+            <summary>
+            The index of the layer where this vertex belongs to.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.SugiVertex.IsDummyVertex">
+            <summary>
+            Gets that this vertex is a dummy vertex (a point of a replaced long edge) or not.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.Measure(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.BaryCenter,System.Boolean)">
+            <summary>
+            Computes the measures for every vertex in the layer by the given barycenters.
+            </summary>
+            <param name="baryCenters">The barycenters.</param>
+            <param name="byRealPosition">If true, the barycenters will be computed based on the RealPosition.X value of the vertices. Otherwise the barycenter will be computed based on the value of the Position field (which is basically the index of the vertex inside the layer).</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.Measure(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.SugiVertex,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Computes the measure for the given <paramref name="vertex"/>.
+            </summary>
+            <param name="vertex"></param>
+            <param name="computeUpBaryCenter"></param>
+            <param name="computeDownBaryCenter"></param>
+            <param name="computeSubBaryCenter"></param>
+            <param name="divCount"></param>
+            <param name="byRealPosition"></param>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.ComputeBaryCenter(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.SugiVertex,System.Collections.Generic.IEnumerable{GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.SugiEdge},System.Boolean)">
+            <summary>
+            Computes the barycenter of the given <paramref name="vertex"/>
+            based on positions of the vertices on other side of the given <paramref name="edges"/>.
+            </summary>
+            <param name="vertex">The vertex which barycenter will be computed.</param>
+            <param name="edges">The edges used for the computation.</param>
+            <param name="byRealPosition"></param>
+            <returns>The computed barycenter.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.ComputeHeight">
+            <summary>
+            Computes the height of the vertexlayer (which is the maximum height of the vertices 
+            in this layer).
+            </summary>
+            <returns>Returns with the computed height of the layer.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.IsOrderedByBaryCenters(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.BaryCenter,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="baryCenters"></param>
+            <param name="byRealPosition"></param>
+            <returns>Returns with true if the vertices in this 
+            layer ordered by the given <paramref name="baryCenters"/>.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.SortByMeasure">
+            <summary>
+            Sort the vertices in the layer by it's measures.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.Permutate(System.Collections.Generic.IList{GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.SugiVertex})">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <returns>Returns true if the vertices have permutated, 
+            otherwise (no more permutation) returns with false.</returns>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.FindBestPermutation(GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm{`0,`1,`2}.CrossCount)">
+            <summary>
+            Changes the order of the vertices with the same measure.
+            It does that in the brute-force way (every permutation will be analyzed).
+            Vertices should be sorted by it's measures.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.ReassignPositions">
+            <summary>
+            Reassigns the position of vertices to it's indexes in the vertexlayer.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.LayerIndex">
+            <summary>
+            Index of the layer.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.Height">
+            <summary>
+            Height of the layer. (Equals with the height of the heightest vertex.)
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.UpEdges">
+            <summary>
+            List of the hierarchical edges comes into this layer.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayer.DownEdges">
+            <summary>
+            List of the hierarhical edges goes out from this layer.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutAlgorithm`3.VertexLayerCollection">
+            <summary>
+            Collection of the layers of the vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.PositionCalculationMethodTypes.IndexBased">
+            <summary>
+            Barycenters of the vertices computed based on the 
+            indexes of the vertices.
+            </summary>
+        </member>
+        <member name="F:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.PositionCalculationMethodTypes.PositionBased">
+            <summary>
+            Barycenters of the vertices computed based on
+            the vertex sizes and positions.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters">
+            <summary>
+            Parameters of the Sugiyama layout.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters.HorizontalGap">
+            <summary>
+            Minimal horizontal gap between the vertices.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters.VerticalGap">
+            <summary>
+            Minimal vertical gap between the vertices.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters.DirtyRound">
+            <summary>
+            Start with a dirty round (allow to increase the number of the edge-crossings, but 
+            try to put the vertices to it's barycenter).
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters.Phase1IterationCount">
+            <summary>
+            Maximum iteration count in the Phase 1 of the Sugiyama algo.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters.Phase2IterationCount">
+            <summary>
+            Maximum iteration count in the Phase 2 of the Sugiyama algo.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters.Simplify">
+            <summary>
+            Gets or sets the 'Simplify' parameter.
+            If true than the edges which directly goes to a vertex which could 
+            be reached on another path (which is not directly goes to that vertex, there's some plus vertices)
+            will not be count in the layout algorithm.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical.SugiyamaLayoutParameters.Prompting">
+            <summary>
+            Prompting constraint type for the starting positions.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Tree.SimpleTreeLayoutParameters.VertexGap">
+            <summary>
+            Gets or sets the gap between the vertices.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Tree.SimpleTreeLayoutParameters.LayerGap">
+            <summary>
+            Gets or sets the gap between the layers.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Tree.SimpleTreeLayoutParameters.Direction">
+            <summary>
+            Gets or sets the direction of the layout.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.Layout.Simple.Tree.SimpleTreeLayoutParameters.SpanningTreeGeneration">
+            <summary>
+            Gets or sets the direction of the layout.
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.OverlapRemoval.FSAAlgorithm`2">
+            <summary>
+            Tim Dwyer бltal JAVA-ban implementбlt FSA algoritmus portolбsa .NET alб.
+            
+            http://adaptagrams.svn.sourceforge.net/viewvc/adaptagrams/trunk/RectangleOverlapSolver/placement/FSA.java?view=markup
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.OverlapRemoval.FSAAlgorithm`2.force(GraphX.Measure.Rect,GraphX.Measure.Rect)">
+            <summary>
+            Megadja a kйt tйglalap kцtцtt fellйpх erхt.
+            </summary>
+            <param name="vi">Egyik tйglalap.</param>
+            <param name="vj">Mбsik tйglalap.</param>
+            <returns></returns>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.OverlapRemoval.IOverlapRemovalAlgorithmFactory`1.AlgorithmTypes">
+            <summary>
+            List of the available algorithms.
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.OverlapRemoval.OverlapRemovalParameters.VerticalGap">
+            <summary>
+            Gets or sets minimal vertical distance between vertices
+            </summary>
+        </member>
+        <member name="P:GraphX.GraphSharp.Algorithms.OverlapRemoval.OverlapRemovalParameters.HorizontalGap">
+            <summary>
+            Gets or sets minimal horizontal distance between vertices
+            </summary>
+        </member>
+        <member name="T:GraphX.GraphSharp.Algorithms.OverlapRemoval.RectangleWrapper`1">
+            <summary>
+            A System.Windows.Rect egy struktъra, ezйrt a heap-en tбrolуdik. Bizonyos esetekben ez nem
+            szerencsйs, нgy szьksйg van erre a wrapper osztбlyra. Mivel ez class, ezйrt nem
+            йrtйk szerinti бtadбs van.
+            </summary>
+        </member>
+        <member name="M:GraphX.GraphSharp.Algorithms.OverlapRemoval.RectangleWrapper`1.#ctor(GraphX.Measure.Rect,`0)">
+            <summary>
+            
+            </summary>
+            <param name="rectangle"></param>
+            <param name="id">Az adott tйglalap azonosнtуja (az overlap-removal vйgйn tudnunk kell, hogy 
+            melyik tйglalap melyik objektumhoz tartozik. Az azonosнtбs megoldhatу lesz id alapjбn.</param>
+        </member>
+        <member name="M:GraphX.GraphSharp.SoftMutableHierarchicalGraph`2.Init">
+            <summary>
+            Called from inside the constructor.
+            </summary>
+        </member>
+        <member name="M:GraphX.Logic.GXLogicCore`3.SetDefaultParams(System.Int32)">
+            <summary>
+            Create default params if algorithm was changed and default params property is null
+            </summary>
+            <param name="type">Algorithm type (inner)</param>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.AlgorithmFactory">
+            <summary>
+            Provides different algorithm creation methods
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.AlgorithmStorage">
+            <summary>
+            Get algorithm storage that contain all currently defined algorithms by type (default or external)
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.FileServiceProvider">
+            <summary>
+            Gets or sets file operations provider for GXCore
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.EnableEdgeLabelsOverlapRemoval">
+            <summary>
+            Gets or sets if if edge label overlap removal enabled
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.IsCustomLayout">
+            <summary>
+            Gets is custom layout selected and used
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.EdgeCurvingEnabled">
+            <summary>
+            Use edge curving technique for smoother edges. Default value is false.
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.EdgeCurvingTolerance">
+            <summary>
+            This is roughly the length of each line segment in the polyline
+            approximation to a continuous curve in WPF units.  The smaller the
+            number the smoother the curve, but slower the performance. Default is 8.
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.EdgeSelfLoopCircleRadius">
+            <summary>
+            Radius of a self-loop edge, which is drawn as a circle. Default is 20.
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.EdgeSelfLoopCircleOffset">
+            <summary>
+            Offset from the corner of the vertex. Useful for custom vertex shapes. Default is 10,10.
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.EdgeShowSelfLooped">
+            <summary>
+            Show self looped edges on vertices. Default value is true.
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.Graph">
+            <summary>
+            Main graph object
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.EnableParallelEdges">
+            <summary>
+            Enables parallel edges. All edges between the same nodes will be separated by ParallelEdgeDistance value.
+            This is post-process procedure and it may be performance-costly.
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.ParallelEdgeDistance">
+            <summary>
+            Distance by which edges are parallelized if EnableParallelEdges is true. Default value is 5.
+            </summary>
+        </member>
+        <member name="P:GraphX.Logic.GXLogicCore`3.IsEdgeRoutingEnabled">
+            <summary>
+            Value overloaded for extensibility purposes. Indicates if ER will be performed on Compute().
+            </summary>
+        </member>
+    </members>
+</doc>

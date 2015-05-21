@@ -2937,6 +2937,11 @@
             </summary>
             <value>The path to the JSON where the error occurred.</value>
         </member>
+        <member name="T:Newtonsoft.Json.JsonRequiredAttribute">
+            <summary>
+            Instructs the <see cref="T:Newtonsoft.Json.JsonSerializer"/> to always serialize the member, and require the member has a value.
+            </summary>
+        </member>
         <member name="T:Newtonsoft.Json.JsonSerializationException">
             <summary>
             The exception thrown when an error occurs during JSON serialization or deserialization.
@@ -3355,6 +3360,12 @@
             Gets or sets the <see cref="T:Newtonsoft.Json.Serialization.IReferenceResolver"/> used by the serializer when resolving references.
             </summary>
             <value>The reference resolver.</value>
+        </member>
+        <member name="P:Newtonsoft.Json.JsonSerializerSettings.ReferenceResolverProvider">
+            <summary>
+            Gets or sets a function that creates the <see cref="T:Newtonsoft.Json.Serialization.IReferenceResolver"/> used by the serializer when resolving references.
+            </summary>
+            <value>A function that creates the <see cref="T:Newtonsoft.Json.Serialization.IReferenceResolver"/> used by the serializer when resolving references.</value>
         </member>
         <member name="P:Newtonsoft.Json.JsonSerializerSettings.TraceWriter">
             <summary>
@@ -7568,7 +7579,14 @@
             Resolves the name of the property.
             </summary>
             <param name="propertyName">Name of the property.</param>
-            <returns>Name of the property.</returns>
+            <returns>Resolved name of the property.</returns>
+        </member>
+        <member name="M:Newtonsoft.Json.Serialization.DefaultContractResolver.ResolveDictionaryKey(System.String)">
+            <summary>
+            Resolves the key of the dictionary. By default <see cref="M:Newtonsoft.Json.Serialization.DefaultContractResolver.ResolvePropertyName(System.String)"/> is used to resolve dictionary keys.
+            </summary>
+            <param name="dictionaryKey">Key of the dictionary.</param>
+            <returns>Resolved key of the dictionary.</returns>
         </member>
         <member name="M:Newtonsoft.Json.Serialization.DefaultContractResolver.GetResolvedPropertyName(System.String)">
             <summary>
@@ -8086,6 +8104,12 @@
             Gets or sets the property name resolver.
             </summary>
             <value>The property name resolver.</value>
+        </member>
+        <member name="P:Newtonsoft.Json.Serialization.JsonDictionaryContract.DictionaryKeyResolver">
+            <summary>
+            Gets or sets the dictionary key resolver.
+            </summary>
+            <value>The dictionary key resolver.</value>
         </member>
         <member name="P:Newtonsoft.Json.Serialization.JsonDictionaryContract.DictionaryKeyType">
             <summary>

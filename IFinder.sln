@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFinder", "ImsMetabolitesFinder\IFinder.csproj", "{1DEF059F-5D8D-4DAC-AEE3-43561F789402}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFinder", "IFinder\IFinder.csproj", "{1DEF059F-5D8D-4DAC-AEE3-43561F789402}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFinderBatchProcessor", "ImsMetabolitesFinderBatchProcessor\IFinderBatchProcessor.csproj", "{698909F3-6F6E-4DE2-ABF0-4D46B9A3F3F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFinderBatchProcessor", "IFinderBatchProcessor\IFinderBatchProcessor.csproj", "{698909F3-6F6E-4DE2-ABF0-4D46B9A3F3F2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1DEF059F-5D8D-4DAC-AEE3-43561F789402} = {1DEF059F-5D8D-4DAC-AEE3-43561F789402}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFinderTest", "ImsMetabolitesFinderTest\IFinderTest.csproj", "{A3E863FB-0BBB-4AEE-B38C-2DBB276AF24C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFinderTest", "IFinderTest\IFinderTest.csproj", "{A3E863FB-0BBB-4AEE-B38C-2DBB276AF24C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IFinderGUI", "IFinderGUI\IFinderGUI.csproj", "{985F1456-641E-4E37-B2A3-B6A1131A0114}"
 EndProject
