@@ -11,15 +11,12 @@
 namespace IFinderBatchProcessor
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
-    using ImsInformed.Domain;
-    using ImsInformed.Interfaces;
+    using ImsInformed;
+    using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
-
-    using OxyPlot;
 
     /// <summary>
     /// The chemical based analysis result.

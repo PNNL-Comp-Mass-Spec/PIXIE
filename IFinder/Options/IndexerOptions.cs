@@ -1,4 +1,4 @@
-﻿namespace ImsMetabolitesFinder.Options
+﻿namespace IFinder.Options
 {
     using System.Collections.Generic;
 

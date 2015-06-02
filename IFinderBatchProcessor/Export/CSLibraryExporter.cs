@@ -10,13 +10,11 @@
 
 namespace IFinderBatchProcessor.Export
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
     using System.IO;
     using System.Linq;
 
-    using ImsInformed.Domain;
+    using ImsInformed;
+    using ImsInformed.Targets;
 
     /// <summary>
     /// The viper exporter.

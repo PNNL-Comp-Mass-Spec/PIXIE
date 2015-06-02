@@ -11,15 +11,11 @@
 namespace IFinderBatchProcessor
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Management.Instrumentation;
-    using System.Security.Policy;
 
-    using ImsInformed.Domain;
-    using ImsInformed.Interfaces;
+    using ImsInformed;
+    using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>

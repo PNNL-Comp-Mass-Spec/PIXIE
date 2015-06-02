@@ -1,17 +1,13 @@
 ﻿
-namespace ImsMetabolitesFinderTest
+namespace IFinderTest
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
 
-    using ImsInformed.Domain;
-    using ImsInformed.Domain.DataAssociation;
-    using ImsInformed.Interfaces;
+    using ImsInformed;
     using ImsInformed.Scoring;
     using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;

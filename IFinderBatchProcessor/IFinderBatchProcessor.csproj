@@ -125,7 +125,9 @@
     <Compile Include="ChemicalBasedAnalysisResult.cs" />
     <Compile Include="Export\CSLibraryExporter.cs" />
     <Compile Include="Export\ViperExporter.cs" />
-    <Compile Include="ImsInformedProcess.cs" />
+    <Compile Include="ImsInformedProcess.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Options.cs" />
     <Compile Include="ProcessState.cs" />
     <Compile Include="Program.cs" />

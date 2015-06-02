@@ -12,12 +12,11 @@ namespace IFinderBatchProcessor.Export
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.IO;
     using System.Linq;
 
-    using ImsInformed.Domain;
-    using ImsInformed.Interfaces;
+    using ImsInformed;
+    using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>

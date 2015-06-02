@@ -8,15 +8,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace IFinderBatchProcessor
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading;
+
+    using CommandLine;
 
     using FalkorSDK.SignalPlotter;
     using FalkorSDK.SignalPlotter.Data;
@@ -26,8 +27,8 @@ namespace IFinderBatchProcessor
     using IFinderBatchProcessor.Export;
     using IFinderBatchProcessor.SearchSpec;
 
-    using ImsInformed.Domain;
-    using ImsInformed.Interfaces;
+    using ImsInformed;
+    using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>
@@ -56,7 +57,7 @@ namespace IFinderBatchProcessor
                 }
 
                 var options = new Options();
-                if (CommandLine.Parser.Default.ParseArguments(args, options))
+                if (Parser.Default.ParseArguments(args, options))
                 {
                     string searchSpecPath = options.SearchSpecFile;
 

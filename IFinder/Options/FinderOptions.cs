@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ImsMetabolitesFinder.Options
+namespace IFinder.Options
 {
     using System;
     using System.Collections.Generic;

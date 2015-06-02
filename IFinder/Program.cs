@@ -14,19 +14,19 @@ namespace IMSMetabolitesFinder
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    using ImsInformed.Domain;
-    using ImsInformed.Interfaces;
+    using CommandLine;
+
+    using IFinder.Options;
+
+    using ImsInformed;
     using ImsInformed.IO;
-    using ImsInformed.Scoring;
     using ImsInformed.Targets;
-    using ImsInformed.Util;
     using ImsInformed.Workflows.CrossSectionExtraction;
     using ImsInformed.Workflows.DriftTimeLibraryMatch;
     using ImsInformed.Workflows.VoltageAccumulation;
@@ -56,7 +56,7 @@ namespace IMSMetabolitesFinder
             string invokedVerb = "Nothing";
             object invokedVerbInstance = null;
             var options = new Options();
-            if (!CommandLine.Parser.Default.ParseArguments(
+            if (!Parser.Default.ParseArguments(
                 args,
                 options,
                 (verb, subOptions) =>
@@ -65,7 +65,7 @@ namespace IMSMetabolitesFinder
                     invokedVerbInstance = subOptions;
                 }))
             {
-                Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+                Environment.Exit(Parser.DefaultExitCodeFail);
             }
 
             if (invokedVerb == "find") 

@@ -13,7 +13,7 @@ namespace ImsMetabolitesFinder.Options
     using CommandLine;
     using CommandLine.Text;
 
-    using IMSMetabolitesFinder;
+    using IFinder.Options;
 
     /// <summary>
     /// The options.

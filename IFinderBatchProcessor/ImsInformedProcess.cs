@@ -11,18 +11,18 @@
 namespace IFinderBatchProcessor
 {
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
 
-    using ImsInformed.Domain;
     using ImsInformed.Workflows.CrossSectionExtraction;
 
     /// <summary>
     /// The ims informed process.
     /// </summary>
-    [System.ComponentModel.DesignerCategory("Code")]
+    [DesignerCategory("Code")]
     public class ImsInformedProcess : Process
     {
         public int JobID { get; private set; }

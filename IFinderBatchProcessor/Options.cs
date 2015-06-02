@@ -13,8 +13,6 @@ namespace IFinderBatchProcessor
     using CommandLine;
     using CommandLine.Text;
 
-    using FalkorSDK.Devices;
-
     /// <summary>
     /// The options.
     /// </summary>
