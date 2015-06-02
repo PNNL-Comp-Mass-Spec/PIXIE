@@ -137,3 +137,5 @@ lib/FalkorSDK/x64/SQLite.Interop.dll
 lib/FalkorSDK/x86/SQLite.Interop.dll
 lib/FalkorSDK/Splat.dll
 lib/FalkorSDK/Splat.pdb
+lib/ImsInformed/nunit.framework.dll
+lib/ImsInformed/nunit.framework.xml

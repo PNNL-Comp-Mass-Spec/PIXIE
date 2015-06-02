@@ -46,7 +46,7 @@ namespace ImsMetabolitesFinder.Options
         /// <summary>
         /// Gets or sets the input path.
         /// </summary>
-        [Option('i', "input", Required = true, HelpText = "Input UIMF files to be read.")]
+        [Option('i', "input", Required = true, HelpText = "The input UIMF file to be read.")]
         public string InputPath { get; set; }
 
         /// <summary>

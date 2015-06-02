@@ -72,6 +72,15 @@ namespace IFinderBatchProcessor
             this.InitiateFromWorkflowResult(result);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChemicalBasedAnalysisResult"/> class.
+        /// </summary>
+        /// <param name="result">
+        /// The result.
+        /// </param>
+        /// <param name="newWorkflowResult">
+        /// The new workflow result.
+        /// </param>
         public ChemicalBasedAnalysisResult(ChemicalBasedAnalysisResult result, CrossSectionWorkflowResult newWorkflowResult)
         {
             // previous results inconclusive, new result conclusive
@@ -107,6 +116,24 @@ namespace IFinderBatchProcessor
             this.Target = result.Target;
         }
 
+        /// <summary>
+        /// The fuse isomer result.
+        /// </summary>
+        /// <param name="A">
+        /// The a.
+        /// </param>
+        /// <param name="B">
+        /// The b.
+        /// </param>
+        /// <param name="weightA">
+        /// The weight a.
+        /// </param>
+        /// <param name="weightB">
+        /// The weight b.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IdentifiedIsomerInfo"/>.
+        /// </returns>
         private static IdentifiedIsomerInfo FuseIsomerResult(IdentifiedIsomerInfo A, IdentifiedIsomerInfo B, double weightA, double weightB)
         {
             double sum = weightA + weightB;
