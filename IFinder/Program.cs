@@ -294,7 +294,7 @@ namespace IMSMetabolitesFinder
                                 targets.Add(currentTarget);
                             }
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
                             // In case of error creating targets, create the target error result
                             CrossSectionWorkflowResult informedResult = CrossSectionWorkflowResult.CreateErrorResult(currentTarget, datasetName);
@@ -303,6 +303,8 @@ namespace IMSMetabolitesFinder
                             {
                                 formatter.Serialize(stream, informedResult);
                             }
+
+                            throw e;
                         }
                     }
                 } 

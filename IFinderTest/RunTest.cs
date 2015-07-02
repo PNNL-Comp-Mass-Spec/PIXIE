@@ -37,7 +37,7 @@ namespace IFinderTest
             IList<CrossSectionWorkflowResult> results = new List<CrossSectionWorkflowResult>();
 
             // create fake result 1
-            IdentifiedIsomerInfo holyGrail1 = new IdentifiedIsomerInfo(10, 6, 10, 22, 4, null, 5, AnalysisStatus.Positive);
+            IdentifiedIsomerInfo holyGrail1 = new IdentifiedIsomerInfo(10, 250, 6, 10, 22, 4, null, 5, AnalysisStatus.Positive);
             FeatureStatistics averageFeatureScores1 = new FeatureStatistics(3, 4, 5);
 
             IImsTarget target1 = new MolecularTarget("C2H5OH", IonizationMethod.ProtonMinus, "Ginger ale");

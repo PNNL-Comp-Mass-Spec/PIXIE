@@ -143,6 +143,7 @@ namespace IFinderBatchProcessor
 
             IdentifiedIsomerInfo newIsomer = new IdentifiedIsomerInfo(
                 numberOfFeaturePointsUsed,
+                (A.MzInDalton + B.MzInDalton) / 2,
                 A.RSquared * weightA + B.RSquared * weightB,
                 A.Mobility * weightA + B.Mobility * weightB, 
                 A.CrossSectionalArea * weightA + B.CrossSectionalArea * weightB, 

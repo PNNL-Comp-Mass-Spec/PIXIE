@@ -88,14 +88,14 @@ namespace IFinderBatchProcessor
                            };
             help.AddPreOptionsLine(string.Empty);
             help.AddPreOptionsLine("    This application batche processes IMS target identification");
-            help.AddPreOptionsLine("    using ImsMetabolitesFinder. It reads in a search spec file ");
+            help.AddPreOptionsLine("    using IFinder. It reads in a search spec file ");
             help.AddPreOptionsLine("    specifying the Dataset names to be searched and their targets");
             help.AddPreOptionsLine("    files. ");
             help.AddPreOptionsLine(string.Empty);
 
             help.AddPreOptionsLine("    Usage:");
             help.AddPreOptionsLine("      Example: To use <SEARCH_FILE> on UIMF files in directory <UIMF_DIR>");
-            help.AddPreOptionsLine("        ImsMetabolitesFinderBatchProcessor.exe -i <UIMF_DIR> -s <SEARCH_FILE>");
+            help.AddPreOptionsLine("        IFinderBatchProcessor.exe -i <UIMF_DIR> -s <SEARCH_FILE>");
             help.AddPreOptionsLine(string.Empty);
 
             help.AddDashesToOption = true;

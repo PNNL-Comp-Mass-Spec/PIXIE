@@ -49,8 +49,8 @@ namespace IFinderBatchProcessor
         {
             try
             {
-                // Check if ImsMetabolitesFinder.exe is present.
-                string exe = "ImsMetabolitesFinder.exe";
+                // Check if IFinder.exe is present.
+                string exe = "IFinder.exe";
                 if (!File.Exists(exe))
                 {
                     throw new FileNotFoundException("ImsMetabolitesFinder.exe not found in directory " + Directory.GetCurrentDirectory() + "Please double check installation");

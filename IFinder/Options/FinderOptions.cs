@@ -76,7 +76,7 @@ namespace IFinder.Options
         /// <summary>
         /// Gets or sets the ppm error.
         /// </summary>
-        [Option("ppm", DefaultValue = 10, HelpText = "Specify the PPM error allowed for MZ search.")]
+        [Option("ppm", DefaultValue = 250, HelpText = "Specify the PPM error allowed for MZ search.")]
         public int PpmError { get; set; }
 
         /// <summary>
