@@ -249,11 +249,25 @@ namespace IMSMetabolitesFinder
                 }
 
                 // Load parameters
-                double Mz = 0;
-
+                double Mz;
+                double ppmError = options.PpmError;
+                double intensityThreshold = options.IntensityThreshold;
+                double peakShapeThreshold = options.PeakShapeScoreThreshold;
+                double isotopicThreshold = options.IsotopicScoreThreshold;
+                int minFitPoints = options.MinFitPoints;
                 bool pause = options.PauseWhenDone;
 
-                CrossSectionSearchParameters searchParameters = new CrossSectionSearchParameters();
+                CrossSectionSearchParameters searchParameters = new CrossSectionSearchParameters(
+                    CrossSectionSearchParameters.DefaultDriftTimeToleranceInMs,
+                    ppmError,
+                    CrossSectionSearchParameters.DefaultNumPointForSmoothing,
+                    CrossSectionSearchParameters.DefaultFeatureFilterLevel,
+                    intensityThreshold,
+                    peakShapeThreshold,
+                    isotopicThreshold,
+                    minFitPoints,
+                    CrossSectionSearchParameters.DefaultPeakDetectorSelection,
+                    CrossSectionSearchParameters.DefaultMinR2);
 
                 IFormatter formatter = new BinaryFormatter();
 
@@ -265,7 +279,6 @@ namespace IMSMetabolitesFinder
                 {
                     foreach (string ionization in options.IonizationList)
                     {
-
                         try
                         {
                             // get the ionization method.
