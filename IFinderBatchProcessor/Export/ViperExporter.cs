@@ -36,11 +36,11 @@ namespace IFinderBatchProcessor.Export
         public static void ExportViperChemicalBased(ResultAggregator resultAggregator, string viperFileDir)
         {
             IList<IonizationAdduct> posMode = new List<IonizationAdduct>();
-            posMode.Add(IonizationMethod.ProtonPlus.ToAdduct());
-            posMode.Add(IonizationMethod.SodiumPlus.ToAdduct());
+            posMode.Add(IonizationMethod.Protonated.ToAdduct());
+            posMode.Add(IonizationMethod.Sodiumated.ToAdduct());
 
             IList<IonizationAdduct> negMode = new List<IonizationAdduct>();
-            negMode.Add(IonizationMethod.ProtonMinus.ToAdduct());
+            negMode.Add(IonizationMethod.Deprotonated.ToAdduct());
             negMode.Add(IonizationMethod.APCI.ToAdduct());
             negMode.Add(IonizationMethod.HCOOMinus.ToAdduct());
             negMode.Add(IonizationMethod.Proton2MinusSodiumPlus.ToAdduct());

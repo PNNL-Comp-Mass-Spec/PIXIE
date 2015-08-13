@@ -150,7 +150,9 @@ namespace IFinderBatchProcessor
                 A.AverageVoltageGroupStabilityScore * weightA + B.AverageVoltageGroupStabilityScore * weightB, 
                 arivalTimeSnapShots, 
                 A.ViperCompatibleMass  + B.ViperCompatibleMass,
-                A.AnalysisStatus);
+                A.AnalysisStatus,
+                null,
+                null);
             
             return newIsomer;
         }

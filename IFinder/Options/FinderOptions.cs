@@ -16,6 +16,8 @@ namespace IFinder.Options
     using CommandLine;
     using CommandLine.Text;
 
+    using ImsInformed.Workflows.CrossSectionExtraction;
+
     using IMSMetabolitesFinder;
 
     /// <summary>
@@ -76,8 +78,14 @@ namespace IFinder.Options
         /// <summary>
         /// Gets or sets the ppm error.
         /// </summary>
-        [Option("ppm", DefaultValue = 250, HelpText = "Specify the PPM error allowed for MZ search.")]
-        public int PpmError { get; set; }
+        [Option("pre_ppm", DefaultValue = CrossSectionSearchParameters.DefaultMzWindowHalfWidthInPpm, HelpText = "Specify the PPM error allowed for initial MZ search based on the target list.")]
+        public double PrePpm { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ppm error.
+        /// </summary>
+        [Option("post_ppm", DefaultValue = CrossSectionSearchParameters.DefaultConformerMzTolerance, HelpText = "Specify the PPM error allowed for an for conformer identification.")]
+        public double PostPpm { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.
@@ -86,11 +94,47 @@ namespace IFinder.Options
         public bool DetailedVerbose{ get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option("smoothingpoints", DefaultValue = CrossSectionSearchParameters.DefaultNumPointForSmoothing, HelpText = "Specify the number of points to use for smoothing the IMS spectra")]
+        public int NumberOfPointsForSmoothing{ get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option("filterlevel", DefaultValue = CrossSectionSearchParameters.DefaultFeatureFilterLevel, HelpText = "Specify filter level for multidimensional peak finding")]
+        public double FeatureFilterLevel{ get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option("trelativeintensity", DefaultValue = CrossSectionSearchParameters.DefaultRelativeIntensityPercentageThreshold, HelpText = "Relative intensity as percenrage of the highest peak intensity in a single m/z range")]
+        public double RelativeIntensityPercentageThreshold{ get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option("tdrifttime", DefaultValue = CrossSectionSearchParameters.DefaultDriftTimeToleranceInMs, HelpText = "Drift time tolerance in milliseconds")]
+        public double DriftTimeToleranceInMs { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option('r', "tr2", DefaultValue = CrossSectionSearchParameters.DefaultMinR2, HelpText = "Specify the minimum acceptable R^2 value for peak responses of the same ion")]
+        public double MinR2 { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option('g', "graphics", DefaultValue = CrossSectionSearchParameters.DefaultGraphicsExtension, HelpText = "Specify the number of points to use for smoothing the IMS spectra")]
+        public string GraphicsFormat{ get; set; }
+
+        /// <summary>
         /// Gets or sets the intensity threshold.
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("Tintensity", DefaultValue = 0.0, HelpText = "Specify intensity score threshold for features")]
+        [Option("tabsoluteintensity", DefaultValue = CrossSectionSearchParameters.DefaultAbsoluteIntensityThreshold, HelpText = "Specify absolute intensity score threshold for features")]
         public double IntensityThreshold
         {
             get
@@ -116,7 +160,7 @@ namespace IFinder.Options
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("minfitpoints", DefaultValue = 4, HelpText = "Specify minimum number of fit points required to compute cross section")]
+        [Option("minfitpoints", DefaultValue = CrossSectionSearchParameters.DefaultMinFitPoints, HelpText = "Specify minimum number of fit points required to compute cross section")]
         public int MinFitPoints
         {
             get
@@ -141,7 +185,7 @@ namespace IFinder.Options
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("Tisotopic", DefaultValue = 0.4, HelpText = "Specify isotopic profile score threshold for features")]
+        [Option("tisotopicscore", DefaultValue = CrossSectionSearchParameters.DefaultIsotopicThreshold, HelpText = "Specify isotopic profile score threshold for features")]
         public double IsotopicScoreThreshold
         {
             get
@@ -166,7 +210,7 @@ namespace IFinder.Options
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("Tpeakshape", DefaultValue = 0.4, HelpText = "Specify peak shape score threshold for features.")]
+        [Option("tpeakshapescore", DefaultValue = CrossSectionSearchParameters.DefaultPeakShapeThreshold, HelpText = "Specify peak shape score threshold for features.")]
         public double PeakShapeScoreThreshold
         {
             get

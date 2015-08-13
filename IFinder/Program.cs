@@ -27,6 +27,7 @@ namespace IMSMetabolitesFinder
     using ImsInformed;
     using ImsInformed.IO;
     using ImsInformed.Targets;
+    using ImsInformed.Util;
     using ImsInformed.Workflows.CrossSectionExtraction;
     using ImsInformed.Workflows.DriftTimeLibraryMatch;
     using ImsInformed.Workflows.VoltageAccumulation;
@@ -250,24 +251,21 @@ namespace IMSMetabolitesFinder
 
                 // Load parameters
                 double Mz;
-                double ppmError = options.PpmError;
-                double intensityThreshold = options.IntensityThreshold;
-                double peakShapeThreshold = options.PeakShapeScoreThreshold;
-                double isotopicThreshold = options.IsotopicScoreThreshold;
-                int minFitPoints = options.MinFitPoints;
-                bool pause = options.PauseWhenDone;
 
                 CrossSectionSearchParameters searchParameters = new CrossSectionSearchParameters(
-                    CrossSectionSearchParameters.DefaultDriftTimeToleranceInMs,
-                    ppmError,
-                    CrossSectionSearchParameters.DefaultNumPointForSmoothing,
-                    CrossSectionSearchParameters.DefaultFeatureFilterLevel,
-                    intensityThreshold,
-                    peakShapeThreshold,
-                    isotopicThreshold,
-                    minFitPoints,
+                    options.DriftTimeToleranceInMs,
+                    options.PrePpm,
+                    options.NumberOfPointsForSmoothing,
+                    options.FeatureFilterLevel,
+                    options.IntensityThreshold,
+                    options.PeakShapeScoreThreshold,
+                    options.IsotopicScoreThreshold,
+                    options.MinFitPoints,
                     CrossSectionSearchParameters.DefaultPeakDetectorSelection,
-                    CrossSectionSearchParameters.DefaultMinR2);
+                    options.MinR2,
+                    options.PostPpm,
+                    options.RelativeIntensityPercentageThreshold,
+                    options.GraphicsFormat);
 
                 IFormatter formatter = new BinaryFormatter();
 
@@ -345,7 +343,7 @@ namespace IMSMetabolitesFinder
                         formatter.Serialize(stream, results);
                 }
                 
-                if (pause)
+                if (options.PauseWhenDone)
                 {
                     PauseProgram();
                 }
