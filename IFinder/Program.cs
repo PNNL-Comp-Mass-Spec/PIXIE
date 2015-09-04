@@ -261,7 +261,7 @@ namespace IMSMetabolitesFinder
                     options.PeakShapeScoreThreshold,
                     options.IsotopicScoreThreshold,
                     options.MinFitPoints,
-                    CrossSectionSearchParameters.DefaultPeakDetectorSelection,
+                    CrossSectionSearchParameters.DefaultPeakDetectorSelection, // No longer an option
                     options.MinR2,
                     options.PostPpm,
                     options.RelativeIntensityPercentageThreshold,
@@ -284,7 +284,7 @@ namespace IMSMetabolitesFinder
 
                             Tuple<string, string> target = ParseTargetToken(item, datasetName);
                             string formula = target.Item2;
-                            string chemicalIdentifier = target.Item1;
+                            string sampleClass = target.Item1;
 
                             bool isDouble = Double.TryParse(formula, out Mz);
                             if (!isDouble)
@@ -295,13 +295,13 @@ namespace IMSMetabolitesFinder
 
                             if (!isDouble)
                             {
-                                currentTarget = new MolecularTarget(formula, method, chemicalIdentifier);
+                                currentTarget = new MolecularTarget(formula, method, sampleClass);
                                 targets.Add(currentTarget);
                             }
 
                             else 
                             {
-                                currentTarget = new MolecularTarget(Mz, method, chemicalIdentifier);
+                                currentTarget = new MolecularTarget(Mz, method, sampleClass);
                                 targets.Add(currentTarget);
                             }
                         }

@@ -4,8 +4,11 @@ namespace IFinderTest
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
+
+    using IFinderBatchProcessor.Export;
 
     using ImsInformed;
     using ImsInformed.Scoring;
@@ -30,6 +33,13 @@ namespace IFinderTest
         #endif
         
         private const string UimfFilePath = @"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-BPS_pos2_13Sep14_Columbia_DI.uimf";
+
+        [Test]  
+        public static void AnalysisDBTest()
+        {
+            string fileName = @"output\test.sqlite";
+            AnalysisLibrary lib = new AnalysisLibrary(fileName);
+        }
 
         [Test]  
         public static void SerializerDeserializerTest()

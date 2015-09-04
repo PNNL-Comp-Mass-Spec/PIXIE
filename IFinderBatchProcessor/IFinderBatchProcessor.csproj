@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>1976f660</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -97,7 +98,12 @@
       <HintPath>..\packages\Splat.1.6.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.93.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\UimfLibrary\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -123,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChemicalBasedAnalysisResult.cs" />
+    <Compile Include="Export\AnalysisLibrary.cs" />
     <Compile Include="Export\CSLibraryExporter.cs" />
     <Compile Include="Export\ViperExporter.cs" />
     <Compile Include="ImsInformedProcess.cs">
@@ -135,6 +142,7 @@
     <Compile Include="ResultAggregator.cs" />
     <Compile Include="SearchSpec\TextSearchSpecProcessor.cs" />
     <Compile Include="SearchSpec\XMLSearchSpecProcessor.cs" />
+    <Compile Include="Util\AsyncLock.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -86,7 +86,7 @@ namespace IFinderBatchProcessor
         public HashSet<IonizationAdduct> DetectedIonizationMethods { get; private set; }
 
         /// <summary>
-        /// process result files collected and generate a final report.
+        /// process result files collected and generate the CCS/mz DB.
         /// </summary>
         /// <param name="analysisDirectory">
         /// The analysis directory.
@@ -132,7 +132,7 @@ namespace IFinderBatchProcessor
                             this.DatasetBasedResultCollection[datasetName].Add(result.Target, result);
                         }
 
-                        string chemName = result.Target.ChemicalIdentifier;
+                        string chemName = result.Target.SampleClass;
                         if (!this.ChemicalDatasetsMap.Keys.Contains(chemName))
                         {
                             this.ChemicalDatasetsMap.Add(chemName, new List<string>());
@@ -169,7 +169,7 @@ namespace IFinderBatchProcessor
                     foreach (IImsTarget target in this.DatasetBasedResultCollection[dataset].Keys)
                     {
                         // Only use the target with matching chemical identifier.
-                        if (target.ChemicalIdentifier == chemIdentifier)
+                        if (target.SampleClass == chemIdentifier)
                         {
                             CrossSectionWorkflowResult workflowResult = this.DatasetBasedResultCollection[dataset][target];
                             if (!ionizatonDictionary.ContainsKey(target.Adduct))
