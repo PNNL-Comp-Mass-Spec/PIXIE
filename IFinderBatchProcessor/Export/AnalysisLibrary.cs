@@ -8,8 +8,11 @@ namespace IFinderBatchProcessor.Export
 {
     using System.Data.SQLite;
     using System.IO;
+    using System.Runtime.CompilerServices;
 
     using IFinderBatchProcessor.Util;
+
+    using ImsInformed.Workflows.CrossSectionExtraction;
 
     // A Sqlite library as a sqlite database connection
     public class AnalysisLibrary 
@@ -121,6 +124,64 @@ namespace IFinderBatchProcessor.Export
             SQLiteConnection.CreateFile(path);
             this.dbConnection = new SQLiteConnection(connectionString, true);
             this.CreateTables();
+        }
+
+        /// <summary>
+        /// Insert a single result
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public async Task InsertResult(CrossSectionWorkflowResult result)
+        {
+            using (await this.dbLock.LockAsync())
+            {
+                this.dbConnection.Open();
+                
+                using (SQLiteCommand cmd = new SQLiteCommand(this.dbConnection))
+                {
+                    await this.InsertResult(cmd, result);
+                }
+                
+                this.dbConnection.Close();
+            }
+        }
+
+        /// <summary>
+        /// Insert multiple results
+        /// </summary>
+        /// <param name="results"></param>
+        /// <returns></returns>
+        public async Task InsertResult(IEnumerable<CrossSectionWorkflowResult> results)
+        {
+            using (await this.dbLock.LockAsync())
+            {
+                this.dbConnection.Open();
+                
+                using (SQLiteCommand cmd = new SQLiteCommand(this.dbConnection))
+                {
+                    foreach (var result in results)
+                    {
+                        await this.InsertResult(cmd, result);
+                    }
+                }
+                
+                this.dbConnection.Close();
+            }
+        }
+
+        private async Task InsertResult(SQLiteCommand cmd, CrossSectionWorkflowResult result)
+        {
+            // Insert chemical info to chemicals table
+            
+            // Insert dataset info to datasets table
+
+            // Insert target info th targets table
+
+            // Insert analysis info the analyses table
+
+            // Insert identification info to identifications table
+
+            // Insert snapshot info to peaks table
         }
 
         private async Task CreateTables()
