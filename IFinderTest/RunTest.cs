@@ -11,6 +11,7 @@ namespace IFinderTest
     using IFinderBatchProcessor.Export;
 
     using ImsInformed;
+    using ImsInformed.Domain.DataAssociation;
     using ImsInformed.Scoring;
     using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
@@ -34,11 +35,32 @@ namespace IFinderTest
         
         private const string UimfFilePath = @"\\proto-2\UnitTest_Files\IMSInformedTestFiles\uimf_files\smallMolecule\EXP-BPS_pos2_13Sep14_Columbia_DI.uimf";
 
-        [Test]  
-        public static void AnalysisDBTest()
+        [Test]
+        public async static void AnalysisDBTest()
         {
+            var snapshot1 = new ArrivalTimeSnapShot();
+            snapshot1.DriftTubeVoltageInVolt = 1000;
+            snapshot1.MeasuredArrivalTimeInMs = 22;
+            snapshot1.PressureInTorr = 4;
+            snapshot1.TemperatureInKelvin = 10;
+            var iso1 = new IdentifiedIsomerInfo(2 ,222, 0.9, 10.5, 115, 123, new List<ArrivalTimeSnapShot>(){snapshot1}, 100, AnalysisStatus.Positive, new PeakScores(1.0, 0.8, 0.7), new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), 0.1);
+            var idens = new List<IdentifiedIsomerInfo>() {iso1};
+            
+            PeakScores scores = new PeakScores(0, 0.5, 1);
+            CrossSectionWorkflowResult result1 = new CrossSectionWorkflowResult("ABC_Dataset_01", new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.2), idens, scores, 0.5);
+            CrossSectionWorkflowResult result2 = new CrossSectionWorkflowResult("ABC_Dataset_02", new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
+            CrossSectionWorkflowResult result3 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Deprotonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
+            CrossSectionWorkflowResult result4 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Sodiumated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
+            CrossSectionWorkflowResult result5 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C10H40", IonizationMethod.Protonated, "googlin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
+
             string fileName = @"output\test.sqlite";
             AnalysisLibrary lib = new AnalysisLibrary(fileName);
+            await lib.CreateTables();
+            await lib.InsertResult(result1);
+            await lib.InsertResult(result2);
+            await lib.InsertResult(result3);
+            await lib.InsertResult(result4);
+            await lib.InsertResult(result5);
         }
 
         [Test]  
@@ -47,7 +69,7 @@ namespace IFinderTest
             IList<CrossSectionWorkflowResult> results = new List<CrossSectionWorkflowResult>();
 
             // create fake result 1
-            IdentifiedIsomerInfo holyGrail1 = new IdentifiedIsomerInfo(10, 250, 6, 10, 22, 4, null, 5, AnalysisStatus.Positive, null, null);
+            IdentifiedIsomerInfo holyGrail1 = new IdentifiedIsomerInfo(10, 250, 6, 10, 22, 4, null, 5, AnalysisStatus.Positive, null, null, 1);
             PeakScores averageFeatureScores1 = new PeakScores(3, 4, 5);
 
             IImsTarget target1 = new MolecularTarget("C2H5OH", IonizationMethod.Deprotonated, "Ginger ale");

@@ -14,6 +14,8 @@ namespace IFinderBatchProcessor
     using System.Collections.Generic;
     using System.IO;
 
+    using IFinderBatchProcessor.Export;
+
     using ImsInformed;
     using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
@@ -93,7 +95,7 @@ namespace IFinderBatchProcessor
         /// </param>
         /// <exception cref="Exception">
         /// </exception>
-        public void ProcessResultFiles(string analysisDirectory)
+        public void ProcessResultFiles(string analysisDirectory, AnalysisLibrary lib)
         {
             foreach (var task in this.Tasks)
             {
@@ -101,6 +103,9 @@ namespace IFinderBatchProcessor
                 try
                 {
                     IList<CrossSectionWorkflowResult> results = task.DeserializeResultBinFile();
+                    
+                    lib.InsertResult(results);
+
                     foreach (var result in results)
                     {
                         if (!this.DetectedIonizationMethods.Contains(result.Target.Adduct))

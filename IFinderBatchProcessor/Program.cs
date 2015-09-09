@@ -26,6 +26,7 @@ namespace IFinderBatchProcessor
 
     using IFinderBatchProcessor.Export;
     using IFinderBatchProcessor.SearchSpec;
+    using IFinderBatchProcessor.Util.DeviceModule.Util;
 
     using ImsInformed;
     using ImsInformed.Targets;
@@ -97,6 +98,9 @@ namespace IFinderBatchProcessor
                         HashSet<ImsInformedProcess> runningTasks = new HashSet<ImsInformedProcess>();
 
                         List<ImsInformedProcess> failedAnalyses = new List<ImsInformedProcess>();
+                        
+                        AnalysisLibrary lib = new AnalysisLibrary(Path.Combine(options.OutputPath, "analysesDB.sqlite"));
+                        AsyncHelpers.RunSync(() => lib.CreateTables());
 
                         while (count < numberOfCommands)
                         {
@@ -192,11 +196,10 @@ namespace IFinderBatchProcessor
 
                         // Collect result from result files
                         Console.WriteLine("Aggregating Analyses Results...");
-                        
                         IEnumerable<ImsInformedProcess> sortedTasks = processor.TaskList;
                         
                         ResultAggregator resultAggregator = new ResultAggregator(sortedTasks);
-                        resultAggregator.ProcessResultFiles(workspaceDir);
+                        resultAggregator.ProcessResultFiles(workspaceDir, lib);
                         Console.WriteLine("Aggregating Analyses Done");
                         Console.WriteLine();
 

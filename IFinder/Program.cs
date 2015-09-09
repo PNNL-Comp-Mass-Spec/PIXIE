@@ -485,7 +485,7 @@ namespace IMSMetabolitesFinder
 
         private static Tuple<string, string> ParseTargetToken(string targetToken, string datasetName)
         {
-            string[] items = targetToken.Split("-|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string[] items = targetToken.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             if (items.Length == 2)
             {
                 return new Tuple<string, string>(items[0], items[1]);
