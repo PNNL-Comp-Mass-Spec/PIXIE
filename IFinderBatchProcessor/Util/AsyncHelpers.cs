@@ -124,7 +124,7 @@ namespace IFinderBatchProcessor.Util
                         task.Item1(task.Item2);
                         if (this.InnerException != null) // the method threw an exeption
                         {
-                            throw new AggregateException("AsyncHelpers.Run method threw an exception.", this.InnerException);
+                            throw this.InnerException;
                         }
                     }
                     else
