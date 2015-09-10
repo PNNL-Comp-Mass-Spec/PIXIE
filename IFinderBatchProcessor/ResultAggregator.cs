@@ -15,6 +15,7 @@ namespace IFinderBatchProcessor
     using System.IO;
 
     using IFinderBatchProcessor.Export;
+    using IFinderBatchProcessor.Util.DeviceModule.Util;
 
     using ImsInformed;
     using ImsInformed.Targets;
@@ -104,7 +105,7 @@ namespace IFinderBatchProcessor
                 {
                     IList<CrossSectionWorkflowResult> results = task.DeserializeResultBinFile();
                     
-                    lib.InsertResult(results);
+                    AsyncHelpers.RunSync(() => lib.InsertResult(results));
 
                     foreach (var result in results)
                     {
@@ -163,36 +164,37 @@ namespace IFinderBatchProcessor
                 }
             }
 
-            foreach (string chemIdentifier in this.ChemicalDatasetsMap.Keys)
-            {
-                Dictionary<IonizationAdduct, ChemicalBasedAnalysisResult> ionizatonDictionary = new Dictionary<IonizationAdduct, ChemicalBasedAnalysisResult>();
-                ICollection<string> datasets = this.ChemicalDatasetsMap[chemIdentifier];
+            // Create the chemical based result
+            //foreach (string chemIdentifier in this.ChemicalDatasetsMap.Keys)
+            //{
+            //    Dictionary<IonizationAdduct, ChemicalBasedAnalysisResult> ionizatonDictionary = new Dictionary<IonizationAdduct, ChemicalBasedAnalysisResult>();
+            //    ICollection<string> datasets = this.ChemicalDatasetsMap[chemIdentifier];
 
-                // Loop through every target and create the chemical based result collection.
-                foreach (string dataset in datasets)
-                {
-                    foreach (IImsTarget target in this.DatasetBasedResultCollection[dataset].Keys)
-                    {
-                        // Only use the target with matching chemical identifier.
-                        if (target.SampleClass == chemIdentifier)
-                        {
-                            CrossSectionWorkflowResult workflowResult = this.DatasetBasedResultCollection[dataset][target];
-                            if (!ionizatonDictionary.ContainsKey(target.Adduct))
-                            {
+            //    // Loop through every target and create the chemical based result collection.
+            //    foreach (string dataset in datasets)
+            //    {
+            //        foreach (IImsTarget target in this.DatasetBasedResultCollection[dataset].Keys)
+            //        {
+            //            // Only use the target with matching chemical identifier.
+            //            if (target.SampleClass == chemIdentifier)
+            //            {
+            //                CrossSectionWorkflowResult workflowResult = this.DatasetBasedResultCollection[dataset][target];
+            //                if (!ionizatonDictionary.ContainsKey(target.Adduct))
+            //                {
                                 
-                                ionizatonDictionary.Add(target.Adduct, new ChemicalBasedAnalysisResult(workflowResult));
-                            }
-                            else
-                            {
-                                ChemicalBasedAnalysisResult previousResult = ionizatonDictionary[target.Adduct];
-                                ionizatonDictionary[target.Adduct] = new ChemicalBasedAnalysisResult(previousResult, workflowResult);
-                            }
-                        }
-                    }
-                }
+            //                    ionizatonDictionary.Add(target.Adduct, new ChemicalBasedAnalysisResult(workflowResult));
+            //                }
+            //                else
+            //                {
+            //                    ChemicalBasedAnalysisResult previousResult = ionizatonDictionary[target.Adduct];
+            //                    ionizatonDictionary[target.Adduct] = new ChemicalBasedAnalysisResult(previousResult, workflowResult);
+            //                }
+            //            }
+            //        }
+            //    }
 
-                this.ChemicalBasedResultCollection.Add(chemIdentifier, ionizatonDictionary);
-            }
+            //    this.ChemicalBasedResultCollection.Add(chemIdentifier, ionizatonDictionary);
+            //}
 
             this.empty = false;
         }

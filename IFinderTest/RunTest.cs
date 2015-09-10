@@ -52,6 +52,7 @@ namespace IFinderTest
             CrossSectionWorkflowResult result3 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Deprotonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
             CrossSectionWorkflowResult result4 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Sodiumated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
             CrossSectionWorkflowResult result5 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C10H40", IonizationMethod.Protonated, "googlin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
+            CrossSectionWorkflowResult result6 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C10H40", IonizationMethod.Protonated, "googlin"), AnalysisStatus.Negative, null, idens, scores, 0.8);
 
             string fileName = @"output\test.sqlite";
             AnalysisLibrary lib = new AnalysisLibrary(fileName);
@@ -61,6 +62,7 @@ namespace IFinderTest
             await lib.InsertResult(result3);
             await lib.InsertResult(result4);
             await lib.InsertResult(result5);
+            await lib.InsertResult(result6);
         }
 
         [Test]  

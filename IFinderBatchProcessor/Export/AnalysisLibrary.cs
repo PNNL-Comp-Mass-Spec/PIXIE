@@ -301,12 +301,16 @@ namespace IFinderBatchProcessor.Export
             cmd.Parameters.AddWithValue("@analyzed_dataset", datasetID);
             cmd.Parameters.AddWithValue("@analyzed_target", targetID);
             cmd.Parameters.AddWithValue("@analysis_status", result.AnalysisStatus.ToString());
-            cmd.Parameters.AddWithValue("@average_intensity_score", result.AverageObservedPeakStatistics.IntensityScore);
-            cmd.Parameters.AddWithValue("@average_peak_shape_score", result.AverageObservedPeakStatistics.PeakShapeScore);
-            cmd.Parameters.AddWithValue("@average_isotopic_score", result.AverageObservedPeakStatistics.IsotopicScore);
+            cmd.Parameters.AddWithValue("@average_intensity_score", result.AssociationHypothesisInfo != null ? 
+                result.AverageObservedPeakStatistics.IntensityScore : 0);
+            cmd.Parameters.AddWithValue("@average_peak_shape_score", result.AssociationHypothesisInfo != null ?
+                result.AverageObservedPeakStatistics.PeakShapeScore : 0);
+            cmd.Parameters.AddWithValue("@average_isotopic_score", result.AssociationHypothesisInfo != null ?
+                result.AverageObservedPeakStatistics.IsotopicScore : 0);
             cmd.Parameters.AddWithValue("@environment_stability_score", result.AverageVoltageGroupStability);
-            cmd.Parameters.AddWithValue("@data_likelihood", result.AssociationHypothesisInfo.ProbabilityOfDataGivenHypothesis);
-            cmd.Parameters.AddWithValue("@a_posteriori_probability", result.AssociationHypothesisInfo.ProbabilityOfHypothesisGivenData);
+            cmd.Parameters.AddWithValue("@data_likelihood", result.AssociationHypothesisInfo != null ? 
+                result.AssociationHypothesisInfo.ProbabilityOfDataGivenHypothesis : 0);
+            cmd.Parameters.AddWithValue("@a_posteriori_probability", result.AssociationHypothesisInfo != null ?result.AssociationHypothesisInfo.ProbabilityOfHypothesisGivenData : 0);
             cmd.Parameters.AddWithValue("@qc_plot", "");
             await Task.Run(() => cmd.ExecuteNonQuery());
             return await this.LastID(cmd);
