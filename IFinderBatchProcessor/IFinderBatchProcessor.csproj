@@ -134,8 +134,6 @@
   <ItemGroup>
     <Compile Include="ChemicalBasedAnalysisResult.cs" />
     <Compile Include="Export\AnalysisLibrary.cs" />
-    <Compile Include="Export\CSLibraryExporter.cs" />
-    <Compile Include="Export\ViperExporter.cs" />
     <Compile Include="ImsInformedProcess.cs">
       <SubType>Component</SubType>
     </Compile>

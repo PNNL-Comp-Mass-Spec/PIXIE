@@ -22,6 +22,10 @@ namespace IFinderBatchProcessor.Export
         private readonly AsyncLock dbLock;
         private readonly string dbPath;
         private SQLiteConnection dbConnection;
+        
+        private readonly string mobilityQuery = @"SELECT targets.target_chemical, targets.target_description, identifications.ppm_error, identifications.collision_cross_section, identifications.mobility FROM identifications 
+          INNER JOIN analyses ON analyses.id=identifications.detection_analysis
+          INNER JOIN targets ON analyses.analyzed_target=targets.id";
 
         private readonly string createDatasetTableCommand = ("create table datasets (" + 
                 "id integer primary key," + 
@@ -187,6 +191,7 @@ namespace IFinderBatchProcessor.Export
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = this.createSnapshotTableCommand;
                     cmd.ExecuteNonQuery();
+                    await this.CreateViews(cmd);
                 }
                 
                 this.dbConnection.Close();
@@ -354,6 +359,12 @@ namespace IFinderBatchProcessor.Export
             object lastId = cmd.ExecuteScalar();
             
             return (long)lastId;
+        }
+
+        private async Task CreateViews(SQLiteCommand cmd)
+        {
+            cmd.CommandText = this.mobilityQuery;
+            cmd.ExecuteNonQuery();
         }
     }
 }
