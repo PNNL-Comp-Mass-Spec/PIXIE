@@ -54,37 +54,37 @@ namespace IFinder.Options
         /// <summary>
         /// Gets or sets the ionization method.
         /// </summary>
-        [OptionList('m', "method", Required = true, Separator = ',', HelpText = "Select the ionization method used for the given experiment(Choose one or many: M+H, M-H, M+Na, APCI, M+HCOO, M-2H+Na), separated by a comma.")]
+        [OptionList('m', "method", Required = true, Separator = ',', HelpText = "Select the ionization method used for the given experiment(Choose one or many: M+H, M-H, M+Na, APCI, M+HCOO, M-2H+Na), separated by a comma, no space.")]
         public IList<string> IonizationList { get; set; }
         
         /// <summary>
         /// Gets or sets the target list.
         /// </summary>
-        [OptionList('t', "targetlist", Required = true, Separator = ',', HelpText = "Select the target to be searched, e.g., C2H5OH, 220.55, separated by a comma.")]
+        [OptionList('t', "targetlist", Required = true, Separator = ',', HelpText = "Select the target to be searched, e.g., C2H5OH, 220.55, separated by a comma, no space.")]
         public IList<string> TargetList { get; set; }
 
         /// <summary>
         /// Gets or sets the output path.
         /// </summary>
-        [Option('o', "output", DefaultValue = "", HelpText = "Folder where the search result and the QC file get stored.")]
+        [Option('o', "output", DefaultValue = "", HelpText = "Directory where the search result and the QC file get stored.")]
         public string OutputPath { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating pause when done.
         /// </summary>
-        [Option('p', "pause", DefaultValue = false, HelpText = "Pause the program when result is generated.")]
+        [Option('p', "pause", DefaultValue = false, HelpText = "Pause the program after processing")]
         public bool PauseWhenDone { get; set; }
 
         /// <summary>
         /// Gets or sets the ppm error.
         /// </summary>
-        [Option("pre_ppm", DefaultValue = CrossSectionSearchParameters.DefaultMzWindowHalfWidthInPpm, HelpText = "Specify the PPM error allowed for initial MZ search based on the target list.")]
+        [Option("pre_ppm", DefaultValue = CrossSectionSearchParameters.DefaultMzWindowHalfWidthInPpm, HelpText = "Specify the PPM error window for initial MZ search based on the target list.")]
         public double PrePpm { get; set; }
 
         /// <summary>
         /// Gets or sets the ppm error.
         /// </summary>
-        [Option("post_ppm", DefaultValue = CrossSectionSearchParameters.DefaultConformerMzTolerance, HelpText = "Specify the PPM error allowed for an for conformer identification.")]
+        [Option("post_ppm", DefaultValue = CrossSectionSearchParameters.DefaultConformerMzTolerance, HelpText = "Specify the PPM error allowed for confirming a conformer identification.")]
         public double PostPpm { get; set; }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace IFinder.Options
         /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.
         /// </summary>
-        [Option("smoothingpoints", DefaultValue = CrossSectionSearchParameters.DefaultNumPointForSmoothing, HelpText = "Specify the number of points to use for smoothing the IMS spectra")]
+        [Option("smoothingpoints", DefaultValue = CrossSectionSearchParameters.DefaultNumPointForSmoothing, HelpText = "Specify the number of points to be used to smooth the IMS spectra")]
         public int NumberOfPointsForSmoothing{ get; set; }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace IFinder.Options
         /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.
         /// </summary>
-        [Option("trelativeintensity", DefaultValue = CrossSectionSearchParameters.DefaultRelativeIntensityPercentageThreshold, HelpText = "Relative intensity as percenrage of the highest peak intensity in a single m/z range")]
+        [Option("trelativeintensity", DefaultValue = CrossSectionSearchParameters.DefaultRelativeIntensityPercentageThreshold, HelpText = "Relative intensity as percentage of the highest peak intensity in a single m/z range")]
         public double RelativeIntensityPercentageThreshold{ get; set; }
 
         /// <summary>
@@ -120,13 +120,13 @@ namespace IFinder.Options
         /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.
         /// </summary>
-        [Option('r', "tr2", DefaultValue = CrossSectionSearchParameters.DefaultMinR2, HelpText = "Specify the minimum acceptable R^2 value for peak responses of the same ion")]
+        [Option('r', "tr2", DefaultValue = CrossSectionSearchParameters.DefaultMinR2, HelpText = "Specify the minimum acceptable R^2 value identifying peak responses belonging to the same ion")]
         public double MinR2 { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.
         /// </summary>
-        [Option('g', "graphics", DefaultValue = CrossSectionSearchParameters.DefaultGraphicsExtension, HelpText = "Specify the number of points to use for smoothing the IMS spectra")]
+        [Option('g', "graphics", DefaultValue = CrossSectionSearchParameters.DefaultGraphicsExtension, HelpText = "Specify the format you want to qc file to be plotted, e.g., svg, png")]
         public string GraphicsFormat{ get; set; }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace IFinder.Options
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("tabsoluteintensity", DefaultValue = CrossSectionSearchParameters.DefaultAbsoluteIntensityThreshold, HelpText = "Specify absolute intensity score threshold for features")]
+        [Option("tabsoluteintensity", DefaultValue = CrossSectionSearchParameters.DefaultAbsoluteIntensityThreshold, HelpText = "Specify absolute intensity score threshold for features, 0 - 1")]
         public double IntensityThreshold
         {
             get
@@ -185,7 +185,7 @@ namespace IFinder.Options
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("tisotopicscore", DefaultValue = CrossSectionSearchParameters.DefaultIsotopicThreshold, HelpText = "Specify isotopic profile score threshold for features")]
+        [Option("tisotopicscore", DefaultValue = CrossSectionSearchParameters.DefaultIsotopicThreshold, HelpText = "Specify isotopic profile score threshold for features, 0 - 1")]
         public double IsotopicScoreThreshold
         {
             get
@@ -210,7 +210,7 @@ namespace IFinder.Options
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("tpeakshapescore", DefaultValue = CrossSectionSearchParameters.DefaultPeakShapeThreshold, HelpText = "Specify peak shape score threshold for features.")]
+        [Option("tpeakshapescore", DefaultValue = CrossSectionSearchParameters.DefaultPeakShapeThreshold, HelpText = "Specify peak shape score threshold for features, 0 - 1")]
         public double PeakShapeScoreThreshold
         {
             get

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IFinderBatchProcessor.Export
+﻿namespace IFinderBatchProcessor.Export
 {
+    using System;
+    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.IO;
-    using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
 
     using IFinderBatchProcessor.Util;
 
@@ -213,13 +209,17 @@ namespace IFinderBatchProcessor.Export
             long analysisID = await this.InsertAnalysis(cmd, result, targetId, datasetId);
 
             // Insert identification info to identifications table
-            foreach (var detection in result.IdentifiedIsomers)
+
+            if (result.IdentifiedIsomers != null)
             {
-                long detectionId = await this.InsertIdentifications(cmd, detection, analysisID);
-                foreach (var snapshot in detection.ArrivalTimeSnapShots)
+                foreach (var detection in result.IdentifiedIsomers)
                 {
-                    // Insert snapshot info to peaks table
-                    await this.InsertSnapshots(cmd, snapshot, detectionId);
+                    long detectionId = await this.InsertIdentifications(cmd, detection, analysisID);
+                    foreach (var snapshot in detection.ArrivalTimeSnapShots)
+                    {
+                        // Insert snapshot info to peaks table
+                        await this.InsertSnapshots(cmd, snapshot, detectionId);
+                    }
                 }
             }
         }
@@ -274,7 +274,7 @@ namespace IFinderBatchProcessor.Export
 
         private async Task<long> InsertTarget(SQLiteCommand cmd, IImsTarget target)
         {
-            cmd.CommandText = string.Format("SELECT count(*) FROM targets WHERE target_description ='{0}'", target.TargetDescriptor);
+            cmd.CommandText = string.Format("SELECT count(*) FROM targets WHERE target_description ='{0}' AND target_chemical = '{1}'", target.TargetDescriptor, target.SampleClass);
             int count = Convert.ToInt32(cmd.ExecuteScalar());
             if(count == 0)
             {

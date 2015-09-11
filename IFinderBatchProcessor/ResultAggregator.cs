@@ -61,6 +61,7 @@ namespace IFinderBatchProcessor
         {
             long count = 0;
             long totalTasks = this.Tasks.Count();
+
             foreach (ImsInformedProcess task in this.Tasks)
             {
                 // Deserialize the results and dispatch them into lookup tables.
