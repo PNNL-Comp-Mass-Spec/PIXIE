@@ -47,12 +47,12 @@ namespace IFinderTest
             var idens = new List<IdentifiedIsomerInfo>() {iso1};
             
             PeakScores scores = new PeakScores(0, 0.5, 1);
-            CrossSectionWorkflowResult result1 = new CrossSectionWorkflowResult("ABC_Dataset_01", new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.2), idens, scores, 0.5);
-            CrossSectionWorkflowResult result2 = new CrossSectionWorkflowResult("ABC_Dataset_02", new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
-            CrossSectionWorkflowResult result3 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Deprotonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
-            CrossSectionWorkflowResult result4 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Sodiumated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
-            CrossSectionWorkflowResult result5 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C10H40", IonizationMethod.Protonated, "googlin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8);
-            CrossSectionWorkflowResult result6 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C10H40", IonizationMethod.Protonated, "googlin"), AnalysisStatus.Negative, null, idens, scores, 0.8);
+            CrossSectionWorkflowResult result1 = new CrossSectionWorkflowResult("ABC_Dataset_01", new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.2), scores, 0.5, OutputFileDir, "123");
+            CrossSectionWorkflowResult result2 = new CrossSectionWorkflowResult("ABC_Dataset_02", new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), scores, 0.8, OutputFileDir, "123");
+            CrossSectionWorkflowResult result3 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Deprotonated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8, OutputFileDir, "123");
+            CrossSectionWorkflowResult result4 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C2H4O16P2", IonizationMethod.Sodiumated, "testamin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8, OutputFileDir, "123");
+            CrossSectionWorkflowResult result5 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C10H40", IonizationMethod.Protonated, "googlin"), AnalysisStatus.Positive, new AssociationHypothesisInfo(0.1, 0.4), idens, scores, 0.8, OutputFileDir, "123");
+            CrossSectionWorkflowResult result6 = new CrossSectionWorkflowResult("ABC_Dataset_03", new MolecularTarget("C10H40", IonizationMethod.Protonated, "googlin"), AnalysisStatus.Negative, null, idens, scores, 0.8, OutputFileDir, "123");
 
             string fileName = @"output\test.sqlite";
             AnalysisLibrary lib = new AnalysisLibrary(fileName);
@@ -82,7 +82,9 @@ namespace IFinderTest
                 target1,
                 AnalysisStatus.Positive,
                 null,averageFeatureScores1,
-                4);
+                4,
+                "",
+                "");
 
             results.Add(result1);
 

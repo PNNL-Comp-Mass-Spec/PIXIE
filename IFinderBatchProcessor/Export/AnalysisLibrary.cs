@@ -227,7 +227,7 @@
         private async Task<string> InsertChemical(SQLiteCommand cmd, IImsTarget target)
         {
             // Query if chemical is already added.
-            string chemicalName = target.SampleClass;
+            string chemicalName = target.CorrespondingChemical;
 
             cmd.CommandText = string.Format("SELECT count(*) FROM chemicals WHERE name='{0}'", chemicalName); 
             int count = Convert.ToInt32(cmd.ExecuteScalar());
@@ -257,8 +257,8 @@
                 // Insert dataset info to chemicals table
                 cmd.CommandText = "INSERT INTO datasets (name, path, date) VALUES      (@name, @path, @date)";
                 cmd.Parameters.AddWithValue("@name", result.DatasetName);
-                cmd.Parameters.AddWithValue("@path", "");
-                cmd.Parameters.AddWithValue("@date", "");
+                cmd.Parameters.AddWithValue("@path", result.DatasetPath);
+                cmd.Parameters.AddWithValue("@date", result.DateTime);
                 await Task.Run(() => cmd.ExecuteNonQuery());
                 return await this.LastID(cmd);
             }
@@ -274,13 +274,13 @@
 
         private async Task<long> InsertTarget(SQLiteCommand cmd, IImsTarget target)
         {
-            cmd.CommandText = string.Format("SELECT count(*) FROM targets WHERE target_description ='{0}' AND target_chemical = '{1}'", target.TargetDescriptor, target.SampleClass);
+            cmd.CommandText = string.Format("SELECT count(*) FROM targets WHERE target_description ='{0}' AND target_chemical = '{1}'", target.TargetDescriptor, target.CorrespondingChemical);
             int count = Convert.ToInt32(cmd.ExecuteScalar());
             if(count == 0)
             {
                 // Insert target info to chemicals table
                 cmd.CommandText = "INSERT INTO targets (target_chemical, target_type, adduct, target_description, monoisotopic_mass, composition_with_adduct, mass_with_adduct,     charge_state) VALUES      (@target_chemical, @target_type, @adduct, @target_description, @monoisotopic_mass, @composition_with_adduct, @mass_with_adduct,   @charge_state)";
-                cmd.Parameters.AddWithValue("@target_chemical", target.SampleClass);
+                cmd.Parameters.AddWithValue("@target_chemical", target.CorrespondingChemical);
                 cmd.Parameters.AddWithValue("@target_type", target.TargetType);
                 cmd.Parameters.AddWithValue("@adduct", target.Adduct);
                 cmd.Parameters.AddWithValue("@target_description", target.TargetDescriptor);

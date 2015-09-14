@@ -15,6 +15,7 @@ namespace IMSMetabolitesFinder
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text.RegularExpressions;
@@ -308,7 +309,7 @@ namespace IMSMetabolitesFinder
                         catch (Exception e)
                         {
                             // In case of error creating targets, create the target error result
-                            CrossSectionWorkflowResult informedResult = CrossSectionWorkflowResult.CreateErrorResult(currentTarget, datasetName);
+                            CrossSectionWorkflowResult informedResult = CrossSectionWorkflowResult.CreateErrorResult(currentTarget, datasetName, uimfFile, resultPath, "");
                             
                             using (Stream stream = new FileStream("serialized_result.bin", FileMode.Create, FileAccess.Write, FileShare.None))
                             {

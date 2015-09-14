@@ -304,7 +304,7 @@ namespace IFinderBatchProcessor.SearchSpec
                 string uimfPath = this.FindUimfFile(this.inputPath, datasetName);
                 if (fileURIs.Contains(uimfPath))
                 {
-                    throw new ArgumentException(string.Format("Duplicate dataset: {0}. Please make sure all datasets are unique in search spec file."));
+                    throw new ArgumentException(string.Format("Duplicate dataset: {0}. Please make sure all datasets are unique in search spec file.", datasetName));
                 }
 
                 fileURIs.Add(uimfPath);
@@ -324,6 +324,12 @@ namespace IFinderBatchProcessor.SearchSpec
 
                 id++;
                 return new ImsInformedProcess(id, datasetName, utility, commandline, this.showWindow, binPath, lineNumber);
+            }
+            catch (FileNotFoundException e)
+            {
+                e.Data.Add("lineNumber", lineNumber);
+                exceptions.Add(e);
+                return null;
             }
             catch (Exception e)
             {
