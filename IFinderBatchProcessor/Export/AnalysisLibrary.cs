@@ -19,9 +19,34 @@
         private readonly string dbPath;
         private SQLiteConnection dbConnection;
         
-        private readonly string mobilityQuery = @"SELECT targets.target_chemical, targets.target_description, identifications.ppm_error, identifications.collision_cross_section, identifications.mobility FROM identifications 
+        private readonly string mobilityQuery = @"SELECT targets.target_chemical, analyses.a_posteriori_probability, targets.adduct,  datasets.name, identifications.ppm_error, identifications.collision_cross_section, identifications.mobility,  identifications.intensity_score, identifications.isotopic_score, identifications.peak_shape_score, identifications.measured_mz_in_dalton, datasets.path
+          FROM identifications 
           INNER JOIN analyses ON analyses.id=identifications.detection_analysis
-          INNER JOIN targets ON analyses.analyzed_target=targets.id";
+          INNER JOIN targets ON analyses.analyzed_target=targets.id
+          INNER JOIN datasets ON analyses.analyzed_dataset =datasets.id
+          WHERE ABS(ppm_error) < 30
+          AND identifications.isotopic_score > 0.7
+          AND identifications.intensity_score > 0.1 
+          -- AND targets.target_chemical = 'Asparagine'
+          ORDER BY target_description ASC, datasets.name, identifications.collision_cross_section DESC";
+
+        private readonly string peaksView = @"SELECT targets.target_chemical,  targets.adduct, identifications.collision_cross_section, peaks.arrival_time_in_ms, peaks.drift_tube_voltage, peaks.temperature, peaks.pressure
+          FROM peaks 
+          INNER JOIN identifications ON peaks.ion = identifications.id 
+          INNER JOIN analyses ON analyses.id = detection_analysis
+          INNER JOIN targets ON analyses.analyzed_target=targets.id
+          INNER JOIN datasets ON analyses.analyzed_dataset =datasets.id
+          WHERE peaks.temperature < 1000
+          ORDER BY targets.target_chemical, targets.adduct, drift_tube_voltage";
+
+        private readonly string replicatesView = @"SELECT chemicals.name, targets.adduct, count(*)
+          FROM analyses 
+          INNER JOIN targets ON targets.id = analyses.analyzed_target
+          INNER JOIN chemicals ON targets.target_chemical = chemicals.name
+          INNER JOIN datasets ON analyses.analyzed_dataset = datasets.id
+          WHERE analyses.analysis_status='Positive'
+          GROUP BY chemicals.name, targets.adduct
+          ORDER BY count(*) DESC";
 
         private readonly string createDatasetTableCommand = ("create table datasets (" + 
                 "id integer primary key," + 
@@ -363,8 +388,15 @@
 
         private async Task CreateViews(SQLiteCommand cmd)
         {
-            cmd.CommandText = this.mobilityQuery;
-            cmd.ExecuteNonQuery();
+            await this.CreateView(cmd, this.mobilityQuery, "ccs_view");
+            await this.CreateView(cmd, this.peaksView, "peaks_view");
+            await this.CreateView(cmd, this.replicatesView, "replicates_count");
+        }
+
+        private async Task CreateView(SQLiteCommand cmd, string query, string viewName)
+        {
+            cmd.CommandText = string.Format("CREATE VIEW {0} AS {1}", viewName, query);
+            await Task.Run(() => cmd.ExecuteNonQuery());
         }
     }
 }
