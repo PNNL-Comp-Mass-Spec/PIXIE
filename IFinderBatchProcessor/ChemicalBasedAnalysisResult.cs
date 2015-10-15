@@ -152,7 +152,8 @@ namespace IFinderBatchProcessor
                 A.ViperCompatibleMass  + B.ViperCompatibleMass,
                 A.AnalysisStatus,
                 null,
-                null, A.T0 * weightA + B.T0 * weightB);
+                null, A.T0 * weightA + B.T0 * weightB,
+                A.RelativeMzInPpm * weightA + B.RelativeMzInPpm * weightB);
             
             return newIsomer;
         }

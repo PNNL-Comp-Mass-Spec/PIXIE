@@ -86,6 +86,7 @@
                 "collision_cross_section real," +
                 "mobility real," + 
                 "t0 real," + 
+                "relative_ppm," + 
                 "foreign key(detection_analysis) references analyses(id)" + 
                 ");");
 
@@ -348,7 +349,7 @@
 
         private async Task<long> InsertIdentifications(SQLiteCommand cmd, IdentifiedIsomerInfo result, long analysisID)
         {
-                cmd.CommandText = "INSERT INTO identifications (detection_analysis , measured_mz_in_dalton, ppm_error, viper_compatible_mz, r2 , analysis_status, intensity_score , peak_shape_score , isotopic_score , collision_cross_section, mobility, t0) VALUES      (@detection_analysis , @measured_mz_in_dalton, @ppm_error, @viper_compatible_mz, @r2, @analysis_status, @intensity_score, @peak_shape_score, @isotopic_score, @collision_cross_section, @mobility, @t0)";
+                cmd.CommandText = "INSERT INTO identifications (detection_analysis , measured_mz_in_dalton, ppm_error, viper_compatible_mz, r2 , analysis_status, intensity_score , peak_shape_score , isotopic_score , collision_cross_section, mobility, t0, relative_ppm) VALUES      (@detection_analysis , @measured_mz_in_dalton, @ppm_error, @viper_compatible_mz, @r2, @analysis_status, @intensity_score, @peak_shape_score, @isotopic_score, @collision_cross_section, @mobility, @t0, @relative_ppm)";
                 cmd.Parameters.AddWithValue("@detection_analysis", analysisID);
                 cmd.Parameters.AddWithValue("@measured_mz_in_dalton", result.MzInDalton);
                 cmd.Parameters.AddWithValue("@ppm_error", result.MzInPpm);
@@ -361,6 +362,7 @@
                 cmd.Parameters.AddWithValue("@collision_cross_section", result.CrossSectionalArea);
                 cmd.Parameters.AddWithValue("@mobility", result.Mobility);
                 cmd.Parameters.AddWithValue("@t0", result.T0);
+                cmd.Parameters.AddWithValue("@relative_ppm", result.RelativeMzInPpm);
                 await Task.Run(() => cmd.ExecuteNonQuery());
                 return await this.LastID(cmd);
         }

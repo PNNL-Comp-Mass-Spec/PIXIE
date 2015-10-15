@@ -82,12 +82,6 @@ namespace IFinder.Options
         public double PrePpm { get; set; }
 
         /// <summary>
-        /// Gets or sets the ppm error.
-        /// </summary>
-        [Option("post_ppm", DefaultValue = CrossSectionSearchParameters.DefaultConformerMzTolerance, HelpText = "Specify the PPM error allowed for confirming a conformer identification.")]
-        public double PostPpm { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.
         /// </summary>
         [Option('v', "verbose", DefaultValue = true, HelpText = "Detailed verbose and log of each step of the finder algorithm")]

@@ -264,7 +264,6 @@ namespace IMSMetabolitesFinder
                     options.MinFitPoints,
                     CrossSectionSearchParameters.DefaultPeakDetectorSelection, // No longer an option
                     options.MinR2,
-                    options.PostPpm,
                     options.RelativeIntensityPercentageThreshold,
                     options.GraphicsFormat);
 

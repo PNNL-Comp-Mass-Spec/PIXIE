@@ -43,7 +43,7 @@ namespace IFinderTest
             snapshot1.MeasuredArrivalTimeInMs = 22;
             snapshot1.PressureInTorr = 4;
             snapshot1.TemperatureInKelvin = 10;
-            var iso1 = new IdentifiedIsomerInfo(2 ,222, 0.9, 10.5, 115, 123, new List<ArrivalTimeSnapShot>(){snapshot1}, 100, AnalysisStatus.Positive, new PeakScores(1.0, 0.8, 0.7), new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), 0.1);
+            var iso1 = new IdentifiedIsomerInfo(2 ,222, 0.9, 10.5, 115, 123, new List<ArrivalTimeSnapShot>(){snapshot1}, 100, AnalysisStatus.Positive, new PeakScores(1.0, 0.8, 0.7), new MolecularTarget("C2H4O16P2", IonizationMethod.Protonated, "testamin"), 0.1, 0);
             var idens = new List<IdentifiedIsomerInfo>() {iso1};
             
             PeakScores scores = new PeakScores(0, 0.5, 1);
@@ -71,7 +71,7 @@ namespace IFinderTest
             IList<CrossSectionWorkflowResult> results = new List<CrossSectionWorkflowResult>();
 
             // create fake result 1
-            IdentifiedIsomerInfo holyGrail1 = new IdentifiedIsomerInfo(10, 250, 6, 10, 22, 4, null, 5, AnalysisStatus.Positive, null, null, 1);
+            IdentifiedIsomerInfo holyGrail1 = new IdentifiedIsomerInfo(10, 250, 6, 10, 22, 4, null, 5, AnalysisStatus.Positive, null, null, 1, 2);
             PeakScores averageFeatureScores1 = new PeakScores(3, 4, 5);
 
             IImsTarget target1 = new MolecularTarget("C2H5OH", IonizationMethod.Deprotonated, "Ginger ale");
