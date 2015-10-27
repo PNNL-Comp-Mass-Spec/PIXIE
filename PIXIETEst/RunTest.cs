@@ -1,5 +1,4 @@
-﻿
-namespace PIXIETest
+﻿namespace PIXIETest
 {
     using System.Collections.Generic;
     using System.IO;

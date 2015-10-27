@@ -140,7 +140,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMSMzFinder.cs" />
     <Compile Include="Options\ConverterOptions.cs" />
     <Compile Include="Options\FinderOptions.cs" />
     <Compile Include="Options\IndexerOptions.cs" />
