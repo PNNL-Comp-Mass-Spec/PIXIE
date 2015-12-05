@@ -38,7 +38,7 @@ namespace PIXIE.Options
         /// <summary>
         /// The min fit points.
         /// </summary>
-        private int minFitPoints;
+        private int maxOutliers;
 
         /// <summary>
         /// The peak shape score threshold.
@@ -124,6 +124,12 @@ namespace PIXIE.Options
         public string GraphicsFormat{ get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating the type of regression to use.
+        /// </summary>
+        [Option("robustregression", DefaultValue = true, HelpText = "Use iteratively reweighted least squares, weighted using bisquare weights to imporve measurement accuracy. Highly recommanded")]
+        public bool RobustRegression{ get; set; }
+
+        /// <summary>
         /// Gets or sets the intensity threshold.
         /// </summary>
         /// <exception cref="ArgumentException">
@@ -154,23 +160,16 @@ namespace PIXIE.Options
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
-        [Option("minfitpoints", DefaultValue = CrossSectionSearchParameters.DefaultMinFitPoints, HelpText = "Specify minimum number of fit points required to compute cross section")]
-        public int MinFitPoints
+        [Option("maxoutliers", DefaultValue = CrossSectionSearchParameters.DefaultMaxOutliers, HelpText = "Specify minimum number of fit points required to compute cross section")]
+        public int MaxOutliers
         {
             get
             {
-                return this.minFitPoints;
+                return this.maxOutliers;
             }
             set
             {
-                if (value > 1)
-                {
-                    this.minFitPoints = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Minimium fit points should be greaster than 1.");
-                }
+                this.maxOutliers = value;
             }
         }
 

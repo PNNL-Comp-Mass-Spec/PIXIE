@@ -30,6 +30,7 @@ namespace PIXIE
 
     using ImsInformed;
     using ImsInformed.IO;
+    using ImsInformed.Statistics;
     using ImsInformed.Targets;
     using ImsInformed.Workflows.CrossSectionExtraction;
     using ImsInformed.Workflows.DriftTimeLibraryMatch;
@@ -263,8 +264,9 @@ namespace PIXIE
                     options.IntensityThreshold,
                     options.PeakShapeScoreThreshold,
                     options.IsotopicScoreThreshold,
-                    options.MinFitPoints,
+                    options.MaxOutliers,
                     CrossSectionSearchParameters.DefaultPeakDetectorSelection, // No longer an option
+                    options.RobustRegression ? FitlineEnum.IterativelyBiSquareReweightedLeastSquares : FitlineEnum.OrdinaryLeastSquares,
                     options.MinR2,
                     options.RelativeIntensityPercentageThreshold,
                     options.GraphicsFormat);

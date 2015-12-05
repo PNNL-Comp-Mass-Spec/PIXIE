@@ -28,8 +28,14 @@ namespace PIXIE.Preprocess
         {
             List<string> components = datasetName.Split('_').ToList();
             this.SampleIdentifier = components[0];
-            this.IonizationMode = components[1];
+            if (components.Count >= 1)
+            {
+                this.IonizationMode = components[1];
+            }
+            else if (components.Count >= 2)
+            {
             this.DatePrepared = components[2];
+            }
         }
 
         /// <summary>
