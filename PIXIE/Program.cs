@@ -269,7 +269,9 @@ namespace PIXIE
                     options.RobustRegression ? FitlineEnum.IterativelyBiSquareReweightedLeastSquares : FitlineEnum.OrdinaryLeastSquares,
                     options.MinR2,
                     options.RelativeIntensityPercentageThreshold,
-                    options.GraphicsFormat);
+                    options.GraphicsFormat,
+                    options.InsufficientFramesFraction,
+                    options.DriftTubeLength);
 
                 IFormatter formatter = new BinaryFormatter();
 
@@ -460,7 +462,7 @@ namespace PIXIE
             }
 
             IList<DriftTimeTarget> importDriftTimeLibrary = DriftTimeLibraryImporter.ImportDriftTimeLibrary(libraryPath);
-            var parameters = new LibraryMatchParameters(options.DriftTimeError, 250, 9, options.PeakShapeScoreThreshold, options.IsotopicScoreThreshold, 0.25, options.MassError);
+            var parameters = new LibraryMatchParameters(options.DriftTimeError, 250, 9, options.PeakShapeScoreThreshold, options.IsotopicScoreThreshold, 0.25, options.MassError, options.DriftTubeLength);
             LibraryMatchWorkflow workflow = new LibraryMatchWorkflow(inputPath, outputDirectory, resultName, parameters);
             IDictionary<DriftTimeTarget, LibraryMatchResult> results = workflow.RunLibraryMatchWorkflow(importDriftTimeLibrary);
 

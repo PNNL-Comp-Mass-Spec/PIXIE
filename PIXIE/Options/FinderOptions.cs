@@ -45,6 +45,20 @@ namespace PIXIE.Options
         /// </summary>
         private double peakShapeScoreThreshold;
 
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option('d', "drifttubelength", Required = true, HelpText = "Specify length of the drift tube in centimeters")]
+        public double DriftTubeLength{ get; set; }
+
+                
+        /// <summary>
+        /// Gets or sets a value indicating whether detailed verbose.
+        /// </summary>
+        [Option("framesfraction", DefaultValue = CrossSectionSearchParameters.DefaultInsufficientFramesFraction, HelpText = "Specify fration of max accumulated frames under which voltage groups would be discarded")]
+        public double InsufficientFramesFraction{ get; set; }
+
         /// <summary>
         /// Gets or sets the input path.
         /// </summary>
