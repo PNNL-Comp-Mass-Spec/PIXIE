@@ -56,7 +56,7 @@ namespace PIXIE.Options
         /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.
         /// </summary>
-        [Option("framesfraction", DefaultValue = CrossSectionSearchParameters.DefaultInsufficientFramesFraction, HelpText = "Specify fration of max accumulated frames under which voltage groups would be discarded")]
+        [Option('f', "framesfraction", DefaultValue = CrossSectionSearchParameters.DefaultInsufficientFramesFraction, HelpText = "Specify fration of max accumulated frames under which voltage groups would be discarded")]
         public double InsufficientFramesFraction{ get; set; }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace PIXIE.Options
         /// <summary>
         /// Gets or sets a value indicating the type of regression to use.
         /// </summary>
-        [Option("robustregression", DefaultValue = true, HelpText = "Use iteratively reweighted least squares, weighted using bisquare weights to imporve measurement accuracy. Highly recommanded")]
+        [Option("robustregression", DefaultValue = false, HelpText = "Use iteratively reweighted least squares, weighted using bisquare weights to imporve measurement accuracy. Highly recommanded")]
         public bool RobustRegression{ get; set; }
 
         /// <summary>

@@ -24,7 +24,7 @@
           INNER JOIN analyses ON analyses.id=identifications.detection_analysis
           INNER JOIN targets ON analyses.analyzed_target=targets.id
           INNER JOIN datasets ON analyses.analyzed_dataset =datasets.id
-          WHERE ABS(ppm_error) < 30
+          WHERE ABS(ppm_error) < 20
           AND identifications.isotopic_score > 0.7
           AND identifications.intensity_score > 0.1 
           -- AND targets.target_chemical = 'Asparagine'
