@@ -45,6 +45,15 @@ namespace PIXIE.Options
         /// </summary>
         private double peakShapeScoreThreshold;
 
+        /// <summary>
+        /// If use average temperature is set, PIXiE use individual temperature to
+        /// calculate mobility K0, instead of the average mobility. Otherwise, PIXiE
+        /// uses average temperature to calculate mobility K0. Both cases use average
+        /// temperature to calculate CCS.
+        /// </summary>
+        [Option("useaveragetemperature", DefaultValue = CrossSectionSearchParameters.DefaultUseAverageTemperature, HelpText = "If use average temperature is set, PIXiE use individual temperature to calculate mobility K0, instead of the average mobility.")]
+        public bool UseAverageTemperature{ get; set; }
+
         
         /// <summary>
         /// Gets or sets a value indicating whether detailed verbose.

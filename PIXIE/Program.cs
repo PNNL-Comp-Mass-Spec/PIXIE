@@ -271,7 +271,8 @@ namespace PIXIE
                     options.RelativeIntensityPercentageThreshold,
                     options.GraphicsFormat,
                     options.InsufficientFramesFraction,
-                    options.DriftTubeLength);
+                    options.DriftTubeLength,
+                    options.UseAverageTemperature);
 
                 IFormatter formatter = new BinaryFormatter();
 
