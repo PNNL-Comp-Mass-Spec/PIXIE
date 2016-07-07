@@ -1,0 +1,10 @@
+
+IMS model overview
+http://bowers.chem.ucsb.edu/theory_analysis/ion-mobility/index.shtml
+
+Cook's distance
+http://www.mathworks.com/help/stats/cooks-distance.html
+
+Quick graph documentation
+https://quickgraph.codeplex.com/documentation
+
