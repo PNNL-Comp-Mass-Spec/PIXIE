@@ -185,7 +185,6 @@ namespace PIXIE
                     {
                         DirectoryInfo info = new DirectoryInfo(inputPath);
                         string fileName = info.Name.Replace(".d", "");
-                        outputPath = Path.Combine(outputPath, fileName + ".uimf");
                     }
                     
                     Task conversion = AgilentToUimfConversion.ConvertToUimf(inputPath, outputPath, tubeLength);
