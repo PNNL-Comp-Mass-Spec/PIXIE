@@ -26,7 +26,7 @@ namespace PIXIE.Options
         /// <summary>
         /// Gets or sets the output path.
         /// </summary>
-        [Option('o', "output", DefaultValue = "", HelpText = "Output sirectory.")]
+        [Option('o', "output", DefaultValue = "", HelpText = "Output directory.")]
         public string OutputPath { get; set; }
 
         /// <summary>
@@ -34,6 +34,9 @@ namespace PIXIE.Options
         /// </summary>
         [Option('t', "type", DefaultValue = "uimf", HelpText = "The format to convert to, such as uimf, mzML")]
         public string ConversionType { get; set; }
+
+        [Option('d', Required = false, HelpText = "IMS Drift Tube length.")]
+        public string TubeLength { get; set; }
 
         [HelpOption]
         public string GetUsage()

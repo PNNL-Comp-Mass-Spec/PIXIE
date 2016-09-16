@@ -10,7 +10,6 @@
 
 namespace PIXIE.Preprocess
 {
-    using System.Diagnostics;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -18,8 +17,6 @@ namespace PIXIE.Preprocess
     /// </summary>
     public class AgilentToUimfConversion
     {
-        private const string Converter = "AgilentToUimfConverter.exe";
-
         /// <summary>
         /// The convert to uimf.
         /// </summary>
@@ -29,19 +26,22 @@ namespace PIXIE.Preprocess
         /// <param name="outputPath">
         /// The output path.
         /// </param>
+        /// <param name="tubeLength">Drift tube length</param>
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public static async Task ConvertToUimf(string inputPath, string outputPath)
+        public static async Task ConvertToUimf(string inputPath, string outputPath, string tubeLength)
         {
-            await Task.Run(() => AgilentToUimfConverter.Program.Main(new string[] { inputPath, outputPath }));
-            //Process conversionProcess = new Process();
-            //conversionProcess.StartInfo.FileName = Converter;
-            //conversionProcess.StartInfo.Arguments = inputPath + " " + outputPath;
-            //conversionProcess.StartInfo.UseShellExecute = false;
-            //conversionProcess.StartInfo.CreateNoWindow = true;
-            //conversionProcess.Start();
-            //await Task.Run(() => conversionProcess.WaitForExit());
+            string[] args;
+            if (tubeLength != null)
+            {
+                args = new string[] {inputPath, "-l", tubeLength, "-o", outputPath};
+            }
+            else
+            {
+                args = new string[] { inputPath, "-o", outputPath };
+            }
+            await Task.Run(() => AgilentToUimfConverter.Program.Main(args));
         }
     }
 }

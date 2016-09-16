@@ -156,6 +156,7 @@ namespace PIXIE
         {
             string inputPath = options.InputPath;
             string outputPath = options.OutputPath;
+            string tubeLength = options.TubeLength;
             string inputExtension = Path.GetExtension(inputPath).ToLower();
             string conversionType = options.ConversionType.ToLower();
             string outputExtension = Path.GetExtension(outputPath).ToLower();
@@ -187,7 +188,7 @@ namespace PIXIE
                         outputPath = Path.Combine(outputPath, fileName + ".uimf");
                     }
                     
-                    Task conversion = AgilentToUimfConversion.ConvertToUimf(inputPath, outputPath);
+                    Task conversion = AgilentToUimfConversion.ConvertToUimf(inputPath, outputPath, tubeLength);
                     conversion.Wait();
                 }
                 else
