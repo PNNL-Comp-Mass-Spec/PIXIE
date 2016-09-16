@@ -77,6 +77,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AgilentToUimfConverter">
+      <HintPath>..\lib\Midac\AgilentToUimfConverter.exe</HintPath>
+    </Reference>
     <Reference Include="BaseDataAccess, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Midac\BaseDataAccess.dll</HintPath>

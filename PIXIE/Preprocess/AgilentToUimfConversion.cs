@@ -32,15 +32,16 @@ namespace PIXIE.Preprocess
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public async static Task ConvertToUimf(string inputPath, string outputPath)
+        public static async Task ConvertToUimf(string inputPath, string outputPath)
         {
-            Process conversionProcess = new Process();
-            conversionProcess.StartInfo.FileName = Converter;
-            conversionProcess.StartInfo.Arguments = inputPath + " " + outputPath;
-            conversionProcess.StartInfo.UseShellExecute = false;
-            conversionProcess.StartInfo.CreateNoWindow = true;
-            conversionProcess.Start();
-            await Task.Run(() => conversionProcess.WaitForExit());
+            await Task.Run(() => AgilentToUimfConverter.Program.Main(new string[] { inputPath, outputPath }));
+            //Process conversionProcess = new Process();
+            //conversionProcess.StartInfo.FileName = Converter;
+            //conversionProcess.StartInfo.Arguments = inputPath + " " + outputPath;
+            //conversionProcess.StartInfo.UseShellExecute = false;
+            //conversionProcess.StartInfo.CreateNoWindow = true;
+            //conversionProcess.Start();
+            //await Task.Run(() => conversionProcess.WaitForExit());
         }
     }
 }
