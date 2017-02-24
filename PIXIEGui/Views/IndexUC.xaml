@@ -1,0 +1,140 @@
+﻿<UserControl x:Class="PIXIEGui.Views.IndexUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:PIXIEGui.ViewModels"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance d:Type=viewModels:IndexViewModel, IsDesignTimeCreatable=True}">
+    <Grid>
+        <GroupBox Margin="3">
+            <GroupBox.Header>
+                <TextBlock FontWeight="Bold" Margin="5,0,5,0" FontSize="14">Index/Convert Datasets</TextBlock>
+            </GroupBox.Header>
+
+            <Grid Margin="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />  <!-- Dataset list and converter settings -->
+                    <RowDefinition Height="30" /> <!-- Bottom buttons -->
+                </Grid.RowDefinitions>
+
+                <!-- Dataset list and Settings -->
+                <TabControl Grid.Row="0">
+                    
+                    <!-- Dataset list -->
+                    <TabItem Header="Datasets">
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40" />   <!-- Instruction text -->
+                                <RowDefinition Height="*" />    <!-- File list -->
+                            </Grid.RowDefinitions>
+
+                            <!-- Instruction text -->
+                            <TextBlock Grid.Row="0" FontStyle="Italic">
+                                To Index Files: Select files that are not already marked as indexed.
+                                <LineBreak />
+                                To Convert Files: Select files and select an output directory (Converter Settings tab).
+                            </TextBlock>
+                            
+                            <!-- File list -->
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding Datasets}" AutoGenerateColumns="False" IsReadOnly="True">
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow" 
+                                       d:DataContext="{d:DesignInstance d:Type=viewModels:DatasetViewModel, IsDesignTimeCreatable=True}">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                                        <Setter Property="ToolTip" Value="{Binding DatasetPath}" />
+                                    </Style>
+                                </DataGrid.RowStyle>
+
+                                <DataGrid.Columns>
+
+                                    <!-- Remove Button -->
+                                    <DataGridTemplateColumn Width="25">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Height="25"
+                                            Command="{Binding RemoveCommand}" 
+                                            d:DataContext="{d:DesignInstance d:Type=viewModels:DatasetViewModel, IsDesignTimeCreatable=True}"
+                                            ToolTip="Remove Item">-</Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- File Path -->
+                                    <DataGridTextColumn Width="*" Header="File" Binding="{Binding DatasetPath}" />
+
+                                    <!-- Data type column -->
+                                    <DataGridTextColumn Width="75" Header="Type" Binding="{Binding FileType}" />
+
+                                    <!-- Is indexed checkbox -->
+                                    <DataGridCheckBoxColumn Width="75" Header="Indexed" Binding="{Binding IsIndexed}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+                    
+                    <!-- Settings -->
+                    <TabItem Header="Converter Settings">
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" /> <!-- Output directory -->
+                                <RowDefinition Height="30" /> <!-- Coversion target format -->
+                                <RowDefinition Height="30" /> <!-- Drift tube length -->
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140" /> <!-- Label -->
+                                <ColumnDefinition Width="*" />   <!-- Input field -->
+                                <ColumnDefinition Width="75" />  <!-- Browse button -->
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Output directory -->
+                            <Label Grid.Row="0" Grid.Column="0" Height="25" VerticalAlignment="Center">Output Directory</Label>
+                            <TextBox Grid.Row="0" Grid.Column="1" Height="25" Margin="0,0,3,0" Text="{Binding OutputDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Grid.Row="0" Grid.Column="2" Height="25" Command="{Binding BrowseOutputDirectoriesCommand}">Browse</Button>
+                            
+                            <!-- Coversion target format -->
+                            <Label Grid.Row="1" Grid.Column="0" Height="25" VerticalAlignment="Center">Target Format</Label>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Height="25" ItemsSource="{Binding AvailableFileFormats}" SelectedItem="{Binding SelectedFileFormat}" />
+                            
+                            <!-- Tube Length -->
+                            <Label Grid.Row="2" Grid.Column="0" Height="25" VerticalAlignment="Center">Drift Tube Length (cm)</Label>
+                            <xctk:DoubleUpDown Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Height="25" Minimum="0" Value="{Binding DriftTubeLength}" />
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+
+                <!-- Bottom Buttons -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="75" />  <!-- Add Files button -->
+                        <ColumnDefinition Width="*" />   <!-- Progress bar / Status Message -->
+                        <ColumnDefinition Width="103" /> <!-- Restore defaults button -->
+                        <ColumnDefinition Width="78" />  <!-- Convert button -->
+                        <ColumnDefinition Width="75" />  <!-- Index Files button -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Add files button -->
+                    <Button Grid.Column="0" Height="25" Width="75" HorizontalAlignment="Left" Command="{Binding AddDatasetCommand}">+ Add Files</Button>
+
+                    <!-- Status message -->
+                    <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" FontStyle="Italic" VerticalAlignment="Center" />
+
+                    <!-- Progress bar -->
+                    <ProgressBar Grid.Column="1" Height="25" Margin="3,0,3,0" Value="{Binding CompletionPercent, Mode=OneWay}" Visibility="{Binding ShowProgressBar}" />
+
+                    <!-- Restore defaults button -->
+                    <Button Grid.Column="2" Height="25" Width="100" HorizontalAlignment="Left" Command="{Binding RestoreDefaultsCommand}">Restore Defaults</Button>
+                    
+                    <!-- Convert Button -->
+                    <Button Grid.Column="3" Height="25" Width="75" HorizontalAlignment="Left" Command="{Binding ConvertFilesCommand}">Convert Files</Button>
+
+                    <!-- Index files button -->
+                    <Button Grid.Column="4" Height="25" Width="75" Command="{Binding IndexFilesCommand}">Index Files</Button>
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>
