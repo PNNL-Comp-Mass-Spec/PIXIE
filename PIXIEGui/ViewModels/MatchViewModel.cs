@@ -100,7 +100,7 @@
             this.DriftError = 1;
             this.MzError = 250;
 
-            this.DriftTubeLength = 100;
+            this.DriftTubeLength = 78.45;
             this.IsotopicScoreThreshold = 0.4;
             this.PeakShapeScoreThreshold = 0.4;
         }

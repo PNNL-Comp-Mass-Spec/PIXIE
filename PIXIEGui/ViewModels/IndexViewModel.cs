@@ -114,7 +114,7 @@
         {
             this.OutputDirectory = string.Empty;
             this.SelectedFileFormat = FileFormatEnum.MzML;
-            this.DriftTubeLength = 100;
+            this.DriftTubeLength = 78.45;
         }
 
         /// <summary>

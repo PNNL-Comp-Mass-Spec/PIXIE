@@ -209,7 +209,7 @@
 
             this.SelectedIonizationMethod = "M+H";
 
-            this.DriftTubeLength = 100;
+            this.DriftTubeLength = 78.45;
             this.SmoothingPoints = 11;
             this.FeatureFilterLevel = 0.25;
             this.AbsoluteMaxIntensity = 0;
