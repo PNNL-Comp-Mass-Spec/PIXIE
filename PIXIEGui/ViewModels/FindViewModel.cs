@@ -215,8 +215,9 @@
             this.AbsoluteMaxIntensity = 0;
             this.IsotopicScoreThreshold = 0.4;
             this.PeakShapeScoreThreshold = 0.4;
+            this.RelativeIntensityThreshold = 10;
             this.MaxOutliers = 1;
-            this.UseRobustRegression = true;
+            this.UseRobustRegression = false;
             this.MinR2 = 0.96;
             this.InsufficientFramesFraction = 0.0;
 
@@ -251,6 +252,7 @@
                 GraphicsFormat = this.GraphicsFormat,
                 IntensityThreshold = this.AbsoluteMaxIntensity,
                 MaxOutliers = this.MaxOutliers,
+                UseAverageTemperature = true
             };
 
             try
