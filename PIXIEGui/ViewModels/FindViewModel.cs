@@ -49,7 +49,7 @@
                                 .Select(_ => 
                                              this.IsSelectedTargetValid() && 
                                              this.SelectedDataset != null &&
-                                             this.SelectedDataset.IsIndexed &&
+                                             this.SelectedDataset.IsRunnableDataset() &&
                                              Directory.Exists(this.OutputDirectory));
             this.FindCommand = ReactiveCommand.CreateFromTask(async () => await this.FindImpl(), canSearch);
         }

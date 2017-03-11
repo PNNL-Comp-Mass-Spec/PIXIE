@@ -67,6 +67,18 @@
         public bool IsSelected { get; set; }
 
         /// <summary>
+        /// Checks to see if a dataset is a selected and it is one that can be run on.
+        /// </summary>
+        /// <returns>A value indicating whether the selected dataset is valid.</returns>
+        public bool IsRunnableDataset()
+        {
+            var lowerFilePath = this.DatasetPath;
+            return this.IsIndexed &&
+                   ((File.Exists(lowerFilePath) && lowerFilePath.EndsWith(".uimf")) ||
+                    (Directory.Exists(lowerFilePath) && lowerFilePath.EndsWith(".d")));
+        }
+
+        /// <summary>
         /// Asks the user to confirm whether they actually want to remove the item.
         /// </summary>
         /// <returns>A value indicating whether the user actually wants to remove the item.</returns>

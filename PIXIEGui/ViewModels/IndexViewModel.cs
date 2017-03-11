@@ -11,7 +11,7 @@
 
     using ImsInformed.IO;
 
-    using Microsoft.Win32;
+    using Microsoft.WindowsAPICodePack.Dialogs;
 
     using PIXIE.Options;
     using PIXIE.Runners;
@@ -53,7 +53,8 @@
                                  .Select(x => Directory.Exists(x.Item1) && this.Datasets.Any(ds => ds.IsSelected));
             this.ConvertFilesCommand = ReactiveCommand.CreateFromTask(this.ConvertFilesImpl, canConvert);
 
-            this.AddDatasetCommand = ReactiveCommand.Create(this.AddDatasetImpl);
+            this.AddDatasetFilesCommand = ReactiveCommand.Create(this.AddDatasetFilesImpl);
+            this.AddDatasetFoldersCommand = ReactiveCommand.Create(this.AddDatasetFoldersImpl);
 
             this.AvailableFileFormats = new ReactiveList<FileFormatEnum>(Enum.GetValues(typeof(FileFormatEnum)).Cast<FileFormatEnum>());
             this.SelectedFileFormat = FileFormatEnum.UIMF;  // Select UIMF as conversion target format by default
@@ -85,9 +86,16 @@
         public ReactiveCommand<Unit, Unit> ConvertFilesCommand { get; }
 
         /// <summary>
-        /// Gets a commmand that requests that the user selects a file path and then adds the file to the <see cref="Datasets" /> collection.
+        /// Gets a commmand that requests that the user selects a file path and then
+        /// adds the file to the <see cref="Datasets" /> collection.
         /// </summary>
-        public ReactiveCommand<Unit, Unit> AddDatasetCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddDatasetFilesCommand { get; }
+
+        /// <summary>
+        /// Gets a commmand that requests that the user selects a folder path and then
+        /// adds the folders to the <see cref="Datasets" /> collection.
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> AddDatasetFoldersCommand { get; }
 
         /// <summary>
         /// Gets a list of the possible file formats that can be selected for conversion.
@@ -208,31 +216,83 @@
 
         /// <summary>
         /// Requests that the user selects a file path and then adds the file to the <see cref="Datasets" /> collection.
-        /// Implementation of the <see cref="AddDatasetCommand" />.
+        /// Implementation of the <see cref="AddDatasetFilesCommand" />.
         /// </summary>
-        public void AddDatasetImpl()
+        public void AddDatasetFilesImpl()
         {
-            var dialog = new OpenFileDialog
+            var dialog = new CommonOpenFileDialog
             {
-                DefaultExt = ".uimf",
-                Filter = @"Supported Files|*.uimf;*.mzML;*.d",
-                Multiselect = true
+                DefaultExtension = ".uimf",
+                Filters =
+                    {
+                        new CommonFileDialogFilter("UIMF", ".uimf"),
+                        new CommonFileDialogFilter("MzML", ".mzml")
+                    },
+                Multiselect = true,
             };
 
             var result = dialog.ShowDialog();
-            IEnumerable<string> filePaths;
-            if (result == true)
+            if (result == CommonFileDialogResult.Ok)
             {
-                filePaths = dialog.FileNames;
+                this.ValidateAndAddFiles(dialog.FileNames);
             }
-            else
-            {
-                return;
-            }
+        }
 
+        /// <summary>
+        /// Requests that the user selects a folder path and then
+        /// adds the folders to the <see cref="Datasets" /> collection.
+        /// Implementation of the <see cref="AddDatasetFoldersCommand" />.
+        /// </summary>
+        public void AddDatasetFoldersImpl()
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                DefaultExtension = ".uimf",
+                Multiselect = true,
+                IsFolderPicker = true
+            };
+
+            var result = dialog.ShowDialog();
+            if (result == CommonFileDialogResult.Ok)
+            {
+                this.ValidateAndAddFiles(dialog.FileNames);
+            }
+        }
+
+        /// <summary>
+        /// Select valid files from the list of files selected by the user and
+        /// add them to the <see cref="Datasets" /> list.
+        /// </summary>
+        /// <param name="filePaths">The collection of all files selected by the user.</param>
+        public void ValidateAndAddFiles(IEnumerable<string> filePaths)
+        {
             foreach (var filePath in filePaths)
             {
-                this.AddDataset(filePath);
+                if (string.IsNullOrWhiteSpace(filePath))
+                {
+                    continue;
+                }
+
+                var lowerFilePath = filePath.ToLower();
+                if (File.Exists(lowerFilePath) && lowerFilePath.EndsWith(".uimf") || lowerFilePath.EndsWith(".mzml"))
+                {   // Valid UIMF or MZML file.
+                    this.AddDataset(filePath);
+                }
+                else if (Directory.Exists(lowerFilePath))
+                {
+                    if (lowerFilePath.EndsWith(".d"))
+                    {
+                        // Valid .D file
+                        this.AddDataset(filePath);
+                    }
+                    else
+                    {   // Normal directory
+                        // Using recursion, but since Directory.GetFiles should not return any directories,
+                        // it shouldn't go more than a second level deep
+                        var files = Directory.GetFiles(lowerFilePath);
+                        this.ValidateAndAddFiles(files);
+                    }
+                }
             }
         }
     }

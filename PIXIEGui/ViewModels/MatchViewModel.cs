@@ -28,7 +28,7 @@
             this.BrowseLibraryFilesCommand = ReactiveCommand.Create(this.BrowseLibraryFilesImpl);
 
             var canMatch = this.WhenAnyValue(x => x.SelectedDataset, x => x.LibraryFilePath, x => x.OutputDirectory)
-                               .Select(x => x.Item1 != null && File.Exists(x.Item2) && Directory.Exists(x.Item3));
+                               .Select(x => x.Item1 != null && x.Item1.IsRunnableDataset() && File.Exists(x.Item2) && Directory.Exists(x.Item3));
             this.RunFeatureMatchingCommand = ReactiveCommand.CreateFromTask(async () => await this.RunFeatureMatchingImpl(), canMatch);
         }
 
