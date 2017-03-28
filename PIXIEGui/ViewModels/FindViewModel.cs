@@ -221,7 +221,7 @@
             this.MinR2 = 0.96;
             this.InsufficientFramesFraction = 0.0;
 
-            this.GraphicsFormat = "SVG";
+            this.GraphicsFormat = "PNG";
         }
 
         /// <summary>
@@ -252,7 +252,8 @@
                 GraphicsFormat = this.GraphicsFormat,
                 IntensityThreshold = this.AbsoluteMaxIntensity,
                 MaxOutliers = this.MaxOutliers,
-                UseAverageTemperature = true
+                UseAverageTemperature = true,
+                DetailedVerbose = true              
             };
 
             try
