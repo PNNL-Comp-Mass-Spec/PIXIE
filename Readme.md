@@ -17,3 +17,6 @@ data files, analyses, detected ions and peaks. This database can later be
 queried directly for quality control, post-processing or visualization purposes. 
 Results after post processing can then be exported to an accurate mass and 
 CCS library.
+
+## Download
+[PIXiE.zip](https://raw.github.com/PNNL-Comp-Mass-Spec/PIXIE/master/PIXiE_GUI.zip)
