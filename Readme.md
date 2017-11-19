@@ -19,4 +19,14 @@ Results after post processing can then be exported to an accurate mass and
 CCS library.
 
 ## Download
-[PIXiE.zip](https://raw.github.com/PNNL-Comp-Mass-Spec/PIXIE/master/PIXiE_GUI.zip)
+[PIXiE.zip](https://raw.github.com/PNNL-Comp-Mass-Spec/PIXIE/master/PIXiE_GUI.zip) from GitHub
+
+## Contacts
+
+Written by Jian Ma and Chris Wilkins for the Department of Energy (PNNL, Richland, WA) \
+E-mail: proteomics@pnnl.gov \
+Website: https://panomics.pnl.gov/ or https://omics.pnl.gov
+
+## License
+
+See the details in file [PNNL OSS License file](https://github.com/PNNL-Comp-Mass-Spec/PIXIE/blob/master/PNNL%20OSS%20License_citation.doc) on GitHub.
